@@ -2,7 +2,7 @@ package com.docomodigital.delorean.voucher.web.api;
 
 import com.docomodigital.delorean.voucher.domain.Amount;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
-import com.docomodigital.delorean.voucher.service.VoucherService;
+import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import org.apache.commons.lang3.StringUtils;
@@ -25,16 +25,16 @@ import java.util.List;
 @RequestMapping("/v1")
 public class VoucherTypeController implements VoucherTypeApi {
 
-    private final VoucherService voucherService;
+    private final VoucherTypeService voucherTypeService;
 
-    public VoucherTypeController(VoucherService voucherService) {
-        this.voucherService = voucherService;
+    public VoucherTypeController(VoucherTypeService voucherTypeService) {
+        this.voucherTypeService = voucherTypeService;
     }
 
     @Override
     public ResponseEntity<List<AvailableVoucherTypes>> getAvailableVoucherTypes(String merchant, String paymentProvider, String country) {
 
-        List<AvailableVoucherTypes> availableVoucherTypes = voucherService.getAvailableVoucherTypes(merchant, paymentProvider, country);
+        List<AvailableVoucherTypes> availableVoucherTypes = voucherTypeService.getAvailableVoucherTypes(merchant, paymentProvider, country);
         if(availableVoucherTypes.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -65,8 +65,13 @@ public class VoucherTypeController implements VoucherTypeApi {
         voucherType.setCreatedDate(null);
         voucherType.setLastModifiedDate(null);
         Example<VoucherType> example = Example.of(voucherType);
-        List<VoucherTypes> voucherTypes = voucherService.getVoucherTypes(example);
+        List<VoucherTypes> voucherTypes = voucherTypeService.getVoucherTypes(example);
 
         return ResponseEntity.ok(voucherTypes);
+    }
+
+    @Override
+    public ResponseEntity<VoucherTypes> getVoucherType(String code) {
+        return ResponseEntity.of(voucherTypeService.getVoucherType(code));
     }
 }

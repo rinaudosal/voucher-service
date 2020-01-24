@@ -6,6 +6,7 @@ import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import org.springframework.data.domain.Example;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Business class that manage the voucher types
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-public interface VoucherService {
+public interface VoucherTypeService {
 
 
     /**
@@ -33,4 +34,12 @@ public interface VoucherService {
      * @return List of result filtered
      */
     List<VoucherTypes> getVoucherTypes(Example<VoucherType> example);
+
+    /**
+     * Retrieve the voucher type by code (unique)
+     *
+     * @param code the code of the voucher type id
+     * @return the voucher type if found, false otherwise
+     */
+    Optional<VoucherTypes> getVoucherType(String code);
 }

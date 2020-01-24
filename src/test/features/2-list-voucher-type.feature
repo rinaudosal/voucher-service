@@ -29,3 +29,8 @@ Feature: Retrieve the List of Voucher types available
      |shop             |shop1 |4     |
      |enabled          |false |1     |
      |enabled          |true  |7     |
+
+  # Retrieve the voucher types filtered
+ Scenario: List of voucher types by merchant, country and paymentProvider
+    When the operator requires the voucher with merchant 'tinder' and country 'IN' and paymentProvider 'PAYTM'
+    Then the user retrieve the list with 2 Element

@@ -15,6 +15,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -23,14 +24,14 @@ import java.util.stream.Collectors;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Service
-public class VoucherServiceImpl implements VoucherService {
+public class VoucherTypeServiceImpl implements VoucherTypeService {
 
     private final VoucherTypeRepository voucherTypeRepository;
     private final VoucherRepository voucherRepository;
     private final Clock clock;
     private final VoucherTypeMapper voucherTypeMapper;
 
-    public VoucherServiceImpl(VoucherTypeRepository voucherTypeRepository, VoucherRepository voucherRepository, Clock clock, VoucherTypeMapper voucherTypeMapper) {
+    public VoucherTypeServiceImpl(VoucherTypeRepository voucherTypeRepository, VoucherRepository voucherRepository, Clock clock, VoucherTypeMapper voucherTypeMapper) {
         this.voucherTypeRepository = voucherTypeRepository;
         this.voucherRepository = voucherRepository;
         this.clock = clock;
@@ -81,5 +82,11 @@ public class VoucherServiceImpl implements VoucherService {
     public List<VoucherTypes> getVoucherTypes(Example<VoucherType> example) {
         List<VoucherType> domainList = voucherTypeRepository.findAll(example);
         return voucherTypeMapper.toDto(domainList);
+    }
+
+    @Override
+    public Optional<VoucherTypes> getVoucherType(String code) {
+        return voucherTypeRepository.findByCode(code)
+            .map(voucherTypeMapper::toDto);
     }
 }

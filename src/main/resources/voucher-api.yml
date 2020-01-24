@@ -102,6 +102,27 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/VoucherTypes'
+  /voucher-type/{code}:
+    get:
+      tags:
+        - voucher-types
+      summary: search the voucher type by code
+      operationId: getVoucherType
+      description: voucher type with code passed
+      parameters:
+        - in: path
+          name: code
+          description: code of the voucher type
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: resulting Voucher type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherTypes'
 
 components:
   schemas:

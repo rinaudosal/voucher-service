@@ -5,6 +5,7 @@ import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -28,7 +29,9 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -82,6 +85,32 @@ public class VoucherTypeStepDef extends StepDefs {
         }
     }
 
+    @When("the operator requires the voucher with merchant {string} and country {string} and paymentProvider {string}")
+    public void theOperatorRequiresTheVoucherWithMultiple(String merchant, String country, String paymentProvider) throws Exception {
+        resultActions = mockMvc.perform(get("/v1/voucher-type")
+            .accept(MediaType.APPLICATION_JSON)
+            .param("merchant", merchant)
+            .param("country", country)
+            .param("paymentProvider", paymentProvider)
+        );
+    }
+
+    @When("the operator requires the voucher type with code {string}")
+    public void theOperatorRequiresTheVoucherTypeWithCode(String voucherCode) throws Exception {
+        resultActions = mockMvc.perform(get("/v1/voucher-type/" + voucherCode)
+            .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("the operator wants to create the voucher type:")
+    public void theOperatorWantsToCreateTheVoucherType(List<Map<String, String>> datatable) throws Exception {
+        VoucherTypes voucherTypes = buildVoucherTypes(datatable);
+
+        resultActions = mockMvc.perform(post("/v1/voucher-type")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(objectMapper.writeValueAsString(voucherTypes))
+            .accept(MediaType.APPLICATION_JSON));
+    }
+
     @Then("the user retrieve the list:")
     public void theUserRetrieveTheList(List<Map<String, String>> datatable) throws Exception {
         resultActions.andExpect(status().isOk());
@@ -107,6 +136,29 @@ public class VoucherTypeStepDef extends StepDefs {
             .andExpect(jsonPath("$.[*]", hasSize(size)));
     }
 
+    @Then("the user retrieve the voucher type")
+    public void theUserRetrieveTheVoucherType() throws Exception {
+        resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").isNotEmpty());
+    }
+
+    @Then("the user receive the error 'No Voucher type found'")
+    public void theUserReceiveTheErrorNoVoucherTypeFound() throws Exception {
+        resultActions.andExpect(status().isNotFound());
+    }
+
+    @Then("the operator create the voucher type correctly")
+    public void theOperatorCreateTheVoucherTypeCorrectly() throws Exception {
+        resultActions.andExpect(status().isCreated());
+    }
+
+    @Then("the operator receive the error 'Voucher Type already exist'")
+    public void theOperatorReceiveTheErrorVoucherTypeAlreadyExist() throws Exception {
+        resultActions.andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errorCode", hasValue("ALREADY_EXIST")))
+        .andExpect(jsonPath("$.errorDescription", hasValue("Voucher Type already exist")));
+    }
+
     private void checkResultList(List<Map<String, String>> expectedList, List<AvailableVoucherTypes> resultList) {
 
         Assertions.assertThat(resultList).hasSize(expectedList.size());
@@ -123,6 +175,25 @@ public class VoucherTypeStepDef extends StepDefs {
             Assertions.assertThat(resultValue.getCurrency()).isEqualTo(expectedValue.get("currency"));
             Assertions.assertThat(resultValue.getVoucherAvailable().toString()).isEqualTo(expectedValue.get("Voucher Available"));
         }
+    }
+
+    private VoucherTypes buildVoucherTypes(List<Map<String, String>> datatable) {
+        Map<String, String> firstRow = datatable.get(0);
+
+        VoucherTypes voucherType = new VoucherTypes();
+        voucherType.setCode(firstRow.get("code"));
+        voucherType.setDescription(firstRow.get("description"));
+        voucherType.setCurrency(firstRow.get("currency"));
+        voucherType.setAmount(new BigDecimal(firstRow.get("amount")));
+        voucherType.setMerchant(firstRow.get("merchant"));
+        voucherType.setPaymentProvider(firstRow.get("paymentProvider"));
+        voucherType.setCountry(firstRow.get("country"));
+        voucherType.setShop(firstRow.get("shop"));
+        voucherType.setEnabled(firstRow.get("enabled").equals("true"));
+        voucherType.setStartDate(LocalDate.parse(firstRow.get("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        voucherType.setEndDate(LocalDate.parse(firstRow.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+        return voucherType;
     }
 
     private Map<VoucherType, List<Voucher>> extractDatatableData(List<Map<String, String>> datatable) {
