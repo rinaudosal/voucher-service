@@ -624,11 +624,15 @@
                                 <generatorName>spring</generatorName>
                                 <apiPackage>com.docomodigital.delorean.voucher.web.api</apiPackage>
                                 <modelPackage>com.docomodigital.delorean.voucher.web.api.model</modelPackage>
-                                <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
+                                <generateApiTests>false</generateApiTests>
+                                <generateModelTests>false</generateModelTests>
+                                <generateApiDocumentation>true</generateApiDocumentation>
+                                <generateModelDocumentation>true</generateModelDocumentation>
                                 <importMappings>Problem=org.zalando.problem.Problem</importMappings>
                                 <skipValidateSpec>false</skipValidateSpec>
                                 <configOptions>
-                                    <delegatePattern>true</delegatePattern>
+                                    <interfaceOnly>true</interfaceOnly>
+                                    <delegatePattern>false</delegatePattern>
                                     <title>voucher</title>
                                 </configOptions>
                             </configuration>

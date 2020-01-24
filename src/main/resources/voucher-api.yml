@@ -2,12 +2,71 @@
 # This file will be used at compile time to generate Spring-MVC endpoint stubs using openapi-generator
 openapi: '3.0.1'
 info:
-  title: 'voucher'
+  title: Voucher API
   version: 0.0.1
-servers:
-  - url: http://localhost:8085
-    description: Development server
-  - url: https://localhost:8085
-    description: Development server with TLS Profile
-paths: {}
+  description: Voucher API
+  contact:
+    email: delorean@docomodigital.com
 
+servers:
+  - url: /v1
+    description: Development server
+paths:
+  /voucher-type/{merchant}/available:
+    get:
+      tags:
+        - voucher-types
+      summary: search the voucher type available
+      operationId: getAvailableVoucherTypes
+      description: list of voucher types for specific merchant
+      parameters:
+        - in: path
+          name: merchant
+          description: merchant identifier
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: paymentProvider
+          description: payment provider that can be consume the vouchers
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: country
+          description: country when the voucher can be consumed the vouchers
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: resulting Voucher types list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AvailableVoucherTypes'
+        '404':
+          description: voucher types not available
+
+components:
+  schemas:
+    AvailableVoucherTypes:
+      type: object
+      properties:
+        code:
+          type: string
+          example: VOU1MONTH
+        description:
+          type: string
+          example: 1 Month Voucher
+        amount:
+          type: number
+          example: 19.99
+        currency:
+          type: string
+          example: USD
+        voucherAvailable:
+          type: integer
+          example: 42

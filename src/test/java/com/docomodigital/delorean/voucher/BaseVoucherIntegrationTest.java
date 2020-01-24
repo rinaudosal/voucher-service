@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher;
 
+import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
@@ -38,6 +39,9 @@ public abstract class BaseVoucherIntegrationTest {
 
     @Autowired
     protected VoucherTypeRepository voucherTypeRepository;
+
+    @Autowired
+    protected VoucherRepository voucherRepository;
 
     @MockBean
     protected Clock clock;
@@ -122,6 +126,7 @@ public abstract class BaseVoucherIntegrationTest {
     @After
     public void deleteDb() {
         voucherTypeRepository.deleteAll();
+        voucherRepository.deleteAll();
     }
 
 }

@@ -1,6 +1,12 @@
 package com.docomodigital.delorean.voucher.domain;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import java.time.LocalDate;
 
 /**
  * 2020/01/21
@@ -9,14 +15,23 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Document
 public class VoucherType extends AbstractAuditingEntity {
-    public enum TYPE {
-        M1, M3, M6, M12
-    }
 
+    @Id
     private String id;
-    private TYPE type;
+    private String code;
     private String description;
-    private String merchantCode;
+    @NotNull
+    private Amount amount;
+    @NotBlank
+    private String merchantId;
+    @NotBlank
+    private String paymentProvider;
+    private String country;
+    @NotBlank
+    private String shopId;
+    private boolean enabled;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     public String getId() {
         return id;
@@ -26,12 +41,12 @@ public class VoucherType extends AbstractAuditingEntity {
         this.id = id;
     }
 
-    public TYPE getType() {
-        return type;
+    public String getCode() {
+        return code;
     }
 
-    public void setType(TYPE type) {
-        this.type = type;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getDescription() {
@@ -42,11 +57,67 @@ public class VoucherType extends AbstractAuditingEntity {
         this.description = description;
     }
 
-    public String getMerchantCode() {
-        return merchantCode;
+    public Amount getAmount() {
+        return amount;
     }
 
-    public void setMerchantCode(String merchantCode) {
-        this.merchantCode = merchantCode;
+    public void setAmount(Amount amount) {
+        this.amount = amount;
+    }
+
+    public String getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public String getPaymentProvider() {
+        return paymentProvider;
+    }
+
+    public void setPaymentProvider(String paymentProvider) {
+        this.paymentProvider = paymentProvider;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getShopId() {
+        return shopId;
+    }
+
+    public void setShopId(String shopId) {
+        this.shopId = shopId;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 }
