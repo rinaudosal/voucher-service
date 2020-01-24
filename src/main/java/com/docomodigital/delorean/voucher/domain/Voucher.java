@@ -32,7 +32,6 @@ public class Voucher extends AbstractAuditingEntity {
     @NotBlank
     private String transactionId;
     private LocalDate transactionDate;
-    private String paymentProvider;
     private LocalDate purchaseDate;
     private LocalDate redeemDate;
     private String activationUrl;
@@ -91,14 +90,6 @@ public class Voucher extends AbstractAuditingEntity {
 
     public void setTransactionDate(LocalDate transactionDate) {
         this.transactionDate = transactionDate;
-    }
-
-    public String getPaymentProvider() {
-        return paymentProvider;
-    }
-
-    public void setPaymentProvider(String paymentProvider) {
-        this.paymentProvider = paymentProvider;
     }
 
     public LocalDate getPurchaseDate() {

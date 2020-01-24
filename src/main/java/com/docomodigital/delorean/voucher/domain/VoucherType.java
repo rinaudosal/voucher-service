@@ -29,7 +29,7 @@ public class VoucherType extends AbstractAuditingEntity {
     private String country;
     @NotBlank
     private String shopId;
-    private boolean enabled;
+    private Boolean enabled;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -97,11 +97,11 @@ public class VoucherType extends AbstractAuditingEntity {
         this.shopId = shopId;
     }
 
-    public boolean isEnabled() {
+    public Boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 

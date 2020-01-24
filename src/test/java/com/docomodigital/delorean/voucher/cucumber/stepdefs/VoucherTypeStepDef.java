@@ -11,6 +11,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -26,7 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -58,12 +61,25 @@ public class VoucherTypeStepDef extends StepDefs {
     @When("the user of the merchant {string} request the product available for the payment provider {string} in country {string}")
     public void theUserOfTheMerchantTinderRequestTheProductAvailable(String merchant, String paymentProvider, String country) throws Exception {
 
-        resultActions = mockMvc.perform(get("/v1/voucher-type/" + merchant + "/available")
+        resultActions = mockMvc.perform(get("/v1/voucher-type/available")
             .accept(MediaType.APPLICATION_JSON)
+            .param("merchant", merchant)
             .param("paymentProvider", paymentProvider)
             .param("country", country)
         );
 
+    }
+
+    @When("the operator requires the voucher with {string} {string}")
+    public void theOperatorRequiresTheVoucherWithParameterValue(String parameterName, String value) throws Exception {
+        if (StringUtils.isNotBlank(parameterName)) {
+            resultActions = mockMvc.perform(get("/v1/voucher-type")
+                .accept(MediaType.APPLICATION_JSON)
+                .param(parameterName, value));
+        } else {
+            resultActions = mockMvc.perform(get("/v1/voucher-type")
+                .accept(MediaType.APPLICATION_JSON));
+        }
     }
 
     @Then("the user retrieve the list:")
@@ -78,6 +94,17 @@ public class VoucherTypeStepDef extends StepDefs {
 
         this.checkResultList(datatable, resultList);
 
+    }
+
+    @Then("the user receive the error 'No Vouchers available, try later'")
+    public void theUserReceiveTheErrorNoVouchersAvailableTryLater() throws Exception {
+        resultActions.andExpect(status().isNotFound());
+    }
+
+    @Then("the user retrieve the list with {int} Element")
+    public void theUserRetrieveTheListWithResultElement(int size) throws Exception {
+        resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$.[*]", hasSize(size)));
     }
 
     private void checkResultList(List<Map<String, String>> expectedList, List<AvailableVoucherTypes> resultList) {
@@ -111,25 +138,24 @@ public class VoucherTypeStepDef extends StepDefs {
             amount.setCurrency(row.get("currency"));
             voucherType.setAmount(amount);
             voucherType.setMerchantId(row.get("merchant"));
-            voucherType.setPaymentProvider(row.get("payment provider"));
+            voucherType.setPaymentProvider(row.get("paymentProvider"));
             voucherType.setCountry(row.get("country"));
             voucherType.setShopId(row.get("shop"));
             voucherType.setEnabled(row.get("enabled").equals("true"));
             voucherType.setStartDate(LocalDate.parse(row.get("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             voucherType.setEndDate(LocalDate.parse(row.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
+
+            int voucherPurchased = StringUtils.isBlank(row.get("Voucher Purchased")) ? 0 : Integer.parseInt(row.get("Voucher Purchased"));
+            int voucherActive = StringUtils.isBlank(row.get("Voucher Active")) ? 0 : Integer.parseInt(row.get("Voucher Active"));
+
             List<Voucher> listVouchersToSave = buildListVouchers(voucherType,
-                Integer.parseInt(row.get("Voucher Purchased")),
-                Integer.parseInt(row.get("Voucher Active")));
+                voucherPurchased,
+                voucherActive);
             returnValue.put(voucherType, listVouchersToSave);
         });
 
         return returnValue;
-    }
-
-    @Then("the user receive the error 'No Vouchers available, try later'")
-    public void theUserReceiveTheErrorNoVouchersAvailableTryLater() throws Exception {
-        resultActions.andExpect(status().isNotFound());
     }
 
     private List<Voucher> buildListVouchers(VoucherType voucherType, int voucherPurchased, int voucherActive) {
@@ -155,6 +181,4 @@ public class VoucherTypeStepDef extends StepDefs {
 
         return voucher;
     }
-
-
 }

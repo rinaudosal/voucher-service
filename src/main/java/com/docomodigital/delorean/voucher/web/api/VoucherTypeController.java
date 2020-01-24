@@ -1,10 +1,17 @@
 package com.docomodigital.delorean.voucher.web.api;
 
+import com.docomodigital.delorean.voucher.domain.Amount;
+import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.service.VoucherService;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Example;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.validation.Valid;
 
 import java.util.List;
 
@@ -33,5 +40,33 @@ public class VoucherTypeController implements VoucherTypeApi {
         }
 
         return ResponseEntity.ok(availableVoucherTypes);
+    }
+
+    @Override
+    public ResponseEntity<List<VoucherTypes>> getVoucherTypes(@Valid String merchant,
+                                                              @Valid String country,
+                                                              @Valid String paymentProvider,
+                                                              @Valid String currency,
+                                                              @Valid String shop,
+                                                              @Valid Boolean enabled) {
+        VoucherType voucherType = new VoucherType();
+        if(StringUtils.isNotBlank(currency)) {
+            Amount amount = new Amount();
+            amount.setCurrency(currency);
+            voucherType.setAmount(amount);
+        }
+
+        voucherType.setMerchantId(merchant);
+        voucherType.setPaymentProvider(paymentProvider);
+        voucherType.setCountry(country);
+        voucherType.setShopId(shop);
+        voucherType.setEnabled(enabled);
+
+        voucherType.setCreatedDate(null);
+        voucherType.setLastModifiedDate(null);
+        Example<VoucherType> example = Example.of(voucherType);
+        List<VoucherTypes> voucherTypes = voucherService.getVoucherTypes(example);
+
+        return ResponseEntity.ok(voucherTypes);
     }
 }

@@ -108,7 +108,6 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
     public void voucherDataMustBeFilledCorrectlyWithAllData() {
         voucher.setId("vvdvfdv");
         voucher.setTransactionDate(LocalDate.now());
-        voucher.setPaymentProvider("paytm");
         voucher.setPurchaseDate(LocalDate.now());
         voucher.setRedeemDate(LocalDate.now());
         voucher.setActivationUrl("www.test.com");
@@ -135,7 +134,6 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThat(returnValue.getUserId()).isEqualTo("my_user_id");
         Assertions.assertThat(returnValue.getTransactionId()).isEqualTo("my_trans_id");
         Assertions.assertThat(returnValue.getTransactionDate()).isNotNull();
-        Assertions.assertThat(returnValue.getPaymentProvider()).isNotNull();
         Assertions.assertThat(returnValue.getPurchaseDate()).isNotNull();
         Assertions.assertThat(returnValue.getRedeemDate()).isNotNull();
         Assertions.assertThat(returnValue.getActivationUrl()).isNotNull();
@@ -168,7 +166,6 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThat(returnValue.getUserId()).isEqualTo("my_user_id");
         Assertions.assertThat(returnValue.getTransactionId()).isEqualTo("my_trans_id");
         Assertions.assertThat(returnValue.getTransactionDate()).isNull();
-        Assertions.assertThat(returnValue.getPaymentProvider()).isNull();
         Assertions.assertThat(returnValue.getPurchaseDate()).isNull();
         Assertions.assertThat(returnValue.getRedeemDate()).isNull();
         Assertions.assertThat(returnValue.getActivationUrl()).isNull();

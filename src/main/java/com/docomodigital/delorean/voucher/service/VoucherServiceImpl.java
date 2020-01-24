@@ -3,9 +3,11 @@ package com.docomodigital.delorean.voucher.service;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
+import com.docomodigital.delorean.voucher.mapper.VoucherTypeMapper;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +28,13 @@ public class VoucherServiceImpl implements VoucherService {
     private final VoucherTypeRepository voucherTypeRepository;
     private final VoucherRepository voucherRepository;
     private final Clock clock;
+    private final VoucherTypeMapper voucherTypeMapper;
 
-    public VoucherServiceImpl(VoucherTypeRepository voucherTypeRepository, VoucherRepository voucherRepository, Clock clock) {
+    public VoucherServiceImpl(VoucherTypeRepository voucherTypeRepository, VoucherRepository voucherRepository, Clock clock, VoucherTypeMapper voucherTypeMapper) {
         this.voucherTypeRepository = voucherTypeRepository;
         this.voucherRepository = voucherRepository;
         this.clock = clock;
+        this.voucherTypeMapper = voucherTypeMapper;
     }
 
     @Override
@@ -71,5 +75,11 @@ public class VoucherServiceImpl implements VoucherService {
             .filter(v -> v.getVoucherAvailable() > 0)
             .sorted(Comparator.comparing(AvailableVoucherTypes::getCode))//only voucher available
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VoucherTypes> getVoucherTypes(Example<VoucherType> example) {
+        List<VoucherType> domainList = voucherTypeRepository.findAll(example);
+        return voucherTypeMapper.toDto(domainList);
     }
 }

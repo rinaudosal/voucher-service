@@ -12,7 +12,7 @@ servers:
   - url: /v1
     description: Development server
 paths:
-  /voucher-type/{merchant}/available:
+  /voucher-type/available:
     get:
       tags:
         - voucher-types
@@ -20,7 +20,7 @@ paths:
       operationId: getAvailableVoucherTypes
       description: list of voucher types for specific merchant
       parameters:
-        - in: path
+        - in: query
           name: merchant
           description: merchant identifier
           required: true
@@ -49,6 +49,59 @@ paths:
                   $ref: '#/components/schemas/AvailableVoucherTypes'
         '404':
           description: voucher types not available
+  /voucher-type:
+    get:
+      tags:
+        - voucher-types
+      summary: search the voucher type
+      operationId: getVoucherTypes
+      description: list of voucher types with optional filters
+      parameters:
+        - in: query
+          name: merchant
+          description: merchant identifier
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: country
+          description: country where the vouchers are distributed
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: paymentProvider
+          description: payment provider that can be consume the vouchers
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: currency
+          description: currency how the voucher can be purchased
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: shop
+          description: distributor of the vouchers
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: enabled
+          description: distributor of the vouchers
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: resulting Voucher types list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VoucherTypes'
 
 components:
   schemas:
@@ -70,3 +123,41 @@ components:
         voucherAvailable:
           type: integer
           example: 42
+    VoucherTypes:
+      type: object
+      properties:
+        code:
+          type: string
+          example: VOU1MONTH
+        description:
+          type: string
+          example: 1 Month Voucher
+        amount:
+          type: number
+          example: 19.99
+        currency:
+          type: string
+          example: USD
+        merchant:
+          type: string
+          example: tinder
+        country:
+          type: string
+          example: IT
+        paymentProvider:
+          type: string
+          example: PAYTM
+        shop:
+          type: string
+          example: MNO1234
+        enabled:
+          type: boolean
+          example: IT
+        startDate:
+          type: string
+          format: date
+          example: 02/02/2018
+        endDate:
+          type: string
+          format: date
+          example: 02/02/2018

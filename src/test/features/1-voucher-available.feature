@@ -5,7 +5,7 @@ Feature: Retrieve the List of Voucher types available
 
   Background:
     Given exist the voucher types:
-      |code           |description           |amount|currency|merchant|country|payment provider |shop |enabled|startDate |endDate    | Voucher Purchased | Voucher Active |
+      |code           |description           |amount|currency|merchant|country|paymentProvider |shop |enabled|startDate |endDate    | Voucher Purchased | Voucher Active |
       |BVOUCHER1MONTHS| 1 Months             |  9.99|INR     |tinder  |IN     |PAYTM            |shop1|true   |01/01/2020|21/06/2020 | 3                 | 3              |
       |BVOUCHER1MONTHS| 1 Months VDFAU       |  9.99|INR     |tinder  |IN     |VDFAU            |shop1|true   |01/01/2020|21/06/2020 | 3                 | 3              |
       |BVOUCHER1MONTHS| 1 Months US          |  9.99|INR     |tinder  |US     |PAYTM            |shop1|true   |01/01/2020|21/06/2020 | 3                 | 3              |

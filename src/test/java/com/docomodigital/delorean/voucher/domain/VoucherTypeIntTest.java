@@ -97,7 +97,7 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThat(returnValue.getPaymentProvider()).isEqualTo("PAYTM BUUUU");
         Assertions.assertThat(returnValue.getCountry()).isEqualTo("INDIA");
         Assertions.assertThat(returnValue.getShopId()).isEqualTo("my_shop");
-        Assertions.assertThat(returnValue.isEnabled()).isTrue();
+        Assertions.assertThat(returnValue.getEnabled()).isTrue();
         Assertions.assertThat(returnValue.getStartDate()).isEqualTo(LocalDate.of(2020, 1, 1));
         Assertions.assertThat(returnValue.getEndDate()).isEqualTo(LocalDate.of(2020, 11, 8));
     }

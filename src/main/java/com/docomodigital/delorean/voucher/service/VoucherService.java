@@ -1,6 +1,9 @@
 package com.docomodigital.delorean.voucher.service;
 
+import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
+import org.springframework.data.domain.Example;
 
 import java.util.List;
 
@@ -22,4 +25,12 @@ public interface VoucherService {
      * @return the List of {@link AvailableVoucherTypes} if founds, empty otherwise
      */
     List<AvailableVoucherTypes> getAvailableVoucherTypes(String merchant, String paymentProvider, String country);
+
+    /**
+     * Restrieve a {@link List} of VoucherTypes by example request
+     *
+     * @param example {@link Example} voucher data model
+     * @return List of result filtered
+     */
+    List<VoucherTypes> getVoucherTypes(Example<VoucherType> example);
 }

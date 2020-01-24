@@ -55,11 +55,5 @@ public abstract class StepDefs {
         BDDMockito.when(clock.getZone()).thenReturn(TimeZone.getTimeZone(ZoneOffset.UTC).toZoneId());
     }
 
-    @After
-    public void tearDown() {
-        setupClockMock(LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC));
 
-        voucherRepository.deleteAll();
-        voucherTypeRepository.deleteAll();
-    }
 }
