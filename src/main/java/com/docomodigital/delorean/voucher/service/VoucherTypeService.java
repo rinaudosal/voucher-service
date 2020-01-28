@@ -42,4 +42,21 @@ public interface VoucherTypeService {
      * @return the voucher type if found, false otherwise
      */
     Optional<VoucherTypes> getVoucherType(String code);
+
+    /**
+     * Create a single voucher type by input parameters
+     *
+     * @param voucherTypes the voucher type to create
+     * @return the voucher type created
+     */
+    VoucherTypes createVoucherType(VoucherTypes voucherTypes);
+
+    /**
+     * Update the voucher type by input parameters
+     *
+     * @param code         logical id of the voucher type to update
+     * @param voucherTypes the voucher type to update
+     * @return the voucher type updated
+     */
+    Optional<VoucherTypes> updateVoucherType(String code, VoucherTypes voucherTypes);
 }

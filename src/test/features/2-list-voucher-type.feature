@@ -1,6 +1,6 @@
 # language: en
 
-@PI-1420 @voucher-available
+@PI-1420 @list-voucher-type
 Feature: Retrieve the List of Voucher types available
 
   Background:

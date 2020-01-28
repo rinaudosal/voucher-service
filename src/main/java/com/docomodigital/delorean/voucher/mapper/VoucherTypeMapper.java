@@ -5,6 +5,7 @@ import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 /**
  * 2020/01/24
@@ -22,6 +23,13 @@ public interface VoucherTypeMapper extends EntityMapper<VoucherTypes, VoucherTyp
     VoucherType toEntity(VoucherTypes dto);
 
     @Override
-    @InheritInverseConfiguration
+    @InheritInverseConfiguration(name = "toEntity")
     VoucherTypes toDto(VoucherType entity);
+
+    @Mapping(source = "amount", target = "amount.value")
+    @Mapping(source = "currency", target = "amount.currency")
+    @Mapping(source = "merchant", target = "merchantId")
+    @Mapping(source = "shop", target = "shopId")
+    void updateFromDto(VoucherTypes voucherTypes, @MappingTarget VoucherType car);
+
 }

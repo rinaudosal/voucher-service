@@ -6,8 +6,10 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.mapper.VoucherTypeMapper;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
+import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
@@ -87,6 +89,31 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
     @Override
     public Optional<VoucherTypes> getVoucherType(String code) {
         return voucherTypeRepository.findByCode(code)
+            .map(voucherTypeMapper::toDto);
+    }
+
+    @Override
+    public VoucherTypes createVoucherType(VoucherTypes voucherTypes) {
+        if (StringUtils.isBlank(voucherTypes.getCode())) {
+            throw new BadRequestException("MISSING_FIELD", "Invalid voucherTypes, code is mandatory");
+        }
+
+        if (voucherTypeRepository.findByCode(voucherTypes.getCode()).isPresent()) {
+            throw new BadRequestException("ALREADY_EXIST", "Voucher Type already exist");
+        }
+        return voucherTypeMapper.toDto(
+            voucherTypeRepository.save(
+                voucherTypeMapper.toEntity(voucherTypes)));
+    }
+
+    @Override
+    public Optional<VoucherTypes> updateVoucherType(String code, VoucherTypes voucherTypes) {
+        return voucherTypeRepository.findByCode(code)
+            .map(v -> {
+                voucherTypeMapper.updateFromDto(voucherTypes, v);
+                voucherTypeRepository.save(v);
+                return v;
+            })
             .map(voucherTypeMapper::toDto);
     }
 }

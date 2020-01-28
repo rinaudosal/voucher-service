@@ -29,9 +29,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.hasValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -103,9 +101,40 @@ public class VoucherTypeStepDef extends StepDefs {
 
     @When("the operator wants to create the voucher type:")
     public void theOperatorWantsToCreateTheVoucherType(List<Map<String, String>> datatable) throws Exception {
-        VoucherTypes voucherTypes = buildVoucherTypes(datatable);
+        VoucherTypes voucherTypes = buildVoucherTypes(datatable, null);
 
         resultActions = mockMvc.perform(post("/v1/voucher-type")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(objectMapper.writeValueAsString(voucherTypes))
+            .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("the operator wants to update the voucher type {string}:")
+    public void theOperatorWantsToUpdateTheVoucherType(String code, List<Map<String, String>> datatable) throws Exception {
+        VoucherTypes voucherTypes = buildVoucherTypes(datatable, null);
+
+        resultActions = mockMvc.perform(put("/v1/voucher-type/" + code)
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(objectMapper.writeValueAsString(voucherTypes))
+            .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("the operator wants to create the voucher type without field {string}:")
+    public void theOperatorWantsToCreateTheVoucherTypeWithoutFieldField(String missingField, List<Map<String, String>> datatable) throws Exception {
+        VoucherTypes voucherTypes = buildVoucherTypes(datatable, missingField);
+
+        resultActions = mockMvc.perform(post("/v1/voucher-type")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(objectMapper.writeValueAsString(voucherTypes))
+            .accept(MediaType.APPLICATION_JSON));
+
+    }
+
+    @When("the operator wants to update the voucher type {string} without field {string}:")
+    public void theOperatorWantsToUpdateTheVoucherTypeWithoutField(String code, String missingField, List<Map<String, String>> datatable) throws Exception {
+        VoucherTypes voucherTypes = buildVoucherTypes(datatable, missingField);
+
+        resultActions = mockMvc.perform(put("/v1/voucher-type/" + code)
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(objectMapper.writeValueAsString(voucherTypes))
             .accept(MediaType.APPLICATION_JSON));
@@ -152,11 +181,23 @@ public class VoucherTypeStepDef extends StepDefs {
         resultActions.andExpect(status().isCreated());
     }
 
+    @Then("the operator update the voucher type correctly")
+    public void theOperatorUpdateTheVoucherTypeCorrectly() throws Exception {
+        resultActions.andExpect(status().isOk());
+    }
+
     @Then("the operator receive the error 'Voucher Type already exist'")
     public void theOperatorReceiveTheErrorVoucherTypeAlreadyExist() throws Exception {
         resultActions.andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.errorCode", hasValue("ALREADY_EXIST")))
-        .andExpect(jsonPath("$.errorDescription", hasValue("Voucher Type already exist")));
+            .andExpect(jsonPath("$.errorCode").value("ALREADY_EXIST"))
+            .andExpect(jsonPath("$.errorMessage").value("Voucher Type already exist"));
+    }
+
+    @Then("the operator receive the error 'Invalid Voucher Type, {string} is mandatory'")
+    public void theOperatorReceiveTheErrorInvalidVoucherTypeFieldIsMandatory(String missingField) throws Exception {
+        resultActions.andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorCode").value("MISSING_FIELD"))
+            .andExpect(jsonPath("$.errorMessage").value("Invalid voucherTypes, " + missingField + " is mandatory"));
     }
 
     private void checkResultList(List<Map<String, String>> expectedList, List<AvailableVoucherTypes> resultList) {
@@ -177,21 +218,43 @@ public class VoucherTypeStepDef extends StepDefs {
         }
     }
 
-    private VoucherTypes buildVoucherTypes(List<Map<String, String>> datatable) {
+    private VoucherTypes buildVoucherTypes(List<Map<String, String>> datatable, String missingField) {
         Map<String, String> firstRow = datatable.get(0);
 
         VoucherTypes voucherType = new VoucherTypes();
-        voucherType.setCode(firstRow.get("code"));
-        voucherType.setDescription(firstRow.get("description"));
-        voucherType.setCurrency(firstRow.get("currency"));
-        voucherType.setAmount(new BigDecimal(firstRow.get("amount")));
-        voucherType.setMerchant(firstRow.get("merchant"));
-        voucherType.setPaymentProvider(firstRow.get("paymentProvider"));
-        voucherType.setCountry(firstRow.get("country"));
-        voucherType.setShop(firstRow.get("shop"));
-        voucherType.setEnabled(firstRow.get("enabled").equals("true"));
-        voucherType.setStartDate(LocalDate.parse(firstRow.get("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        voucherType.setEndDate(LocalDate.parse(firstRow.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        if (!StringUtils.equals(missingField, "code")) {
+            voucherType.setCode(firstRow.get("code"));
+        }
+        if (!StringUtils.equals(missingField, "description")) {
+            voucherType.setDescription(firstRow.get("description"));
+        }
+        if (!StringUtils.equals(missingField, "currency")) {
+            voucherType.setCurrency(firstRow.get("currency"));
+        }
+        if (!StringUtils.equals(missingField, "amount")) {
+            voucherType.setAmount(new BigDecimal(firstRow.get("amount")));
+        }
+        if (!StringUtils.equals(missingField, "merchant")) {
+            voucherType.setMerchant(firstRow.get("merchant"));
+        }
+        if (!StringUtils.equals(missingField, "paymentProvider")) {
+            voucherType.setPaymentProvider(firstRow.get("paymentProvider"));
+        }
+        if (!StringUtils.equals(missingField, "country")) {
+            voucherType.setCountry(firstRow.get("country"));
+        }
+        if (!StringUtils.equals(missingField, "shop")) {
+            voucherType.setShop(firstRow.get("shop"));
+        }
+        if (!StringUtils.equals(missingField, "enabled")) {
+            voucherType.setEnabled(firstRow.get("enabled").equals("true"));
+        }
+        if (!StringUtils.equals(missingField, "startDate")) {
+            voucherType.setStartDate(LocalDate.parse(firstRow.get("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        }
+        if (!StringUtils.equals(missingField, "endDate")) {
+            voucherType.setEndDate(LocalDate.parse(firstRow.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        }
 
         return voucherType;
     }

@@ -102,6 +102,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/VoucherTypes'
+    post:
+      tags:
+        - voucher-types
+      summary: create the voucher type
+      operationId: createVoucherType
+      description: voucher type created
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoucherTypes'
+      responses:
+        '201':
+          description: resulting Voucher type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherTypes'
+
   /voucher-type/{code}:
     get:
       tags:
@@ -123,6 +143,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VoucherTypes'
+    put:
+      tags:
+        - voucher-types
+      summary: update the voucher type by code
+      operationId: updateVoucherType
+      description: voucher type with code passed
+      parameters:
+        - in: path
+          name: code
+          description: code of the voucher type
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoucherTypes'
+      responses:
+        '200':
+          description: resulting Voucher type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherTypes'
+
 
 components:
   schemas:
@@ -146,6 +193,14 @@ components:
           example: 42
     VoucherTypes:
       type: object
+      required:
+        - description
+        - amount
+        - currency
+        - merchant
+        - country
+        - paymentProvider
+        - shop
       properties:
         code:
           type: string

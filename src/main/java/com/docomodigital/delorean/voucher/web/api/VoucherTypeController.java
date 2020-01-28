@@ -7,13 +7,17 @@ import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Implementation of voucher-type endpoint to manage the voucher types
@@ -35,7 +39,7 @@ public class VoucherTypeController implements VoucherTypeApi {
     public ResponseEntity<List<AvailableVoucherTypes>> getAvailableVoucherTypes(String merchant, String paymentProvider, String country) {
 
         List<AvailableVoucherTypes> availableVoucherTypes = voucherTypeService.getAvailableVoucherTypes(merchant, paymentProvider, country);
-        if(availableVoucherTypes.isEmpty()) {
+        if (availableVoucherTypes.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -50,7 +54,7 @@ public class VoucherTypeController implements VoucherTypeApi {
                                                               @Valid String shop,
                                                               @Valid Boolean enabled) {
         VoucherType voucherType = new VoucherType();
-        if(StringUtils.isNotBlank(currency)) {
+        if (StringUtils.isNotBlank(currency)) {
             Amount amount = new Amount();
             amount.setCurrency(currency);
             voucherType.setAmount(amount);
@@ -73,5 +77,25 @@ public class VoucherTypeController implements VoucherTypeApi {
     @Override
     public ResponseEntity<VoucherTypes> getVoucherType(String code) {
         return ResponseEntity.of(voucherTypeService.getVoucherType(code));
+    }
+
+    @Override
+    public ResponseEntity<VoucherTypes> createVoucherType(@Valid VoucherTypes voucherTypes) {
+        VoucherTypes voucherType = voucherTypeService.createVoucherType(voucherTypes);
+
+        try {
+            return ResponseEntity.created(new URI("/v1/voucher-type/" + voucherType.getCode()))
+                .body(voucherType);
+        } catch (URISyntaxException e) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(voucherType);
+        }
+    }
+
+    @Override
+    public ResponseEntity<VoucherTypes> updateVoucherType(String code, @Valid VoucherTypes voucherTypes) {
+        Optional<VoucherTypes> voucherType = voucherTypeService.updateVoucherType(code, voucherTypes);
+
+        return ResponseEntity.of(voucherType);
     }
 }
