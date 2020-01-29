@@ -63,6 +63,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
     private VoucherTypes getDto() {
         VoucherTypes voucherType = new VoucherTypes();
         voucherType.setCode("my_code");
+        voucherType.setProduct("Tinder 1 Month Gold");
+        voucherType.setPromo("supersale");
         voucherType.setDescription("my_description");
         voucherType.setCurrency("GHJ");
         voucherType.setAmount(new BigDecimal(42));
@@ -73,6 +75,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setEnabled(true);
         voucherType.setStartDate(LocalDate.of(2016, 1, 1));
         voucherType.setEndDate(LocalDate.of(2016, 1, 2));
+        voucherType.setOrder(5);
         return voucherType;
     }
 
@@ -80,6 +83,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         VoucherType voucherType = new VoucherType();
         voucherType.setId("my_id");
         voucherType.setCode("my_code");
+        voucherType.setProduct("Tinder 1 Month Gold");
+        voucherType.setPromo("supersale");
         voucherType.setDescription("my_description");
         Amount amount = new Amount();
         amount.setValue(new BigDecimal(42));
@@ -93,11 +98,14 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setEnabled(true);
         voucherType.setStartDate(LocalDate.of(2016, 1, 1));
         voucherType.setEndDate(LocalDate.of(2016, 1, 2));
+        voucherType.setOrder(5);
         return voucherType;
     }
 
     private void assertEntity(VoucherType voucherType) {
         Assertions.assertThat(voucherType.getCode()).isEqualTo("my_code");
+        Assertions.assertThat(voucherType.getProduct()).isEqualTo("Tinder 1 Month Gold");
+        Assertions.assertThat(voucherType.getPromo()).isEqualTo("supersale");
         Assertions.assertThat(voucherType.getDescription()).isEqualTo("my_description");
         Assertions.assertThat(voucherType.getAmount().getValue()).isEqualByComparingTo("42");
         Assertions.assertThat(voucherType.getAmount().getCurrency()).isEqualTo("GHJ");
@@ -108,10 +116,13 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherType.getEnabled()).isTrue();
         Assertions.assertThat(voucherType.getStartDate()).isEqualTo(LocalDate.of(2016, 1, 1));
         Assertions.assertThat(voucherType.getEndDate()).isEqualTo(LocalDate.of(2016, 1, 2));
+        Assertions.assertThat(voucherType.getOrder()).isEqualTo(5);
     }
 
     private void assertDto(VoucherTypes voucherTypes) {
         Assertions.assertThat(voucherTypes.getCode()).isEqualTo("my_code");
+        Assertions.assertThat(voucherTypes.getProduct()).isEqualTo("Tinder 1 Month Gold");
+        Assertions.assertThat(voucherTypes.getPromo()).isEqualTo("supersale");
         Assertions.assertThat(voucherTypes.getDescription()).isEqualTo("my_description");
         Assertions.assertThat(voucherTypes.getAmount()).isEqualByComparingTo("42");
         Assertions.assertThat(voucherTypes.getCurrency()).isEqualTo("GHJ");
@@ -122,5 +133,6 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherTypes.getEnabled()).isTrue();
         Assertions.assertThat(voucherTypes.getStartDate()).isEqualTo(LocalDate.of(2016, 1, 1));
         Assertions.assertThat(voucherTypes.getEndDate()).isEqualTo(LocalDate.of(2016, 1, 2));
+        Assertions.assertThat(voucherTypes.getOrder()).isEqualTo(5);
     }
 }

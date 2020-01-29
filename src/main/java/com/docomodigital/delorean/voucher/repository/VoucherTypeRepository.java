@@ -19,4 +19,21 @@ public interface VoucherTypeRepository extends MongoRepository<VoucherType, Stri
      * @return the voucher type if found, false otherwise
      */
     Optional<VoucherType> findByCode(String code);
+
+    /**
+     * Retrieve if the type by code (business id) exist or not
+     *
+     * @param code code of the voucher type
+     * @return true if the voucher type if found, false otherwise
+     */
+    boolean existsVoucherTypeByCode(String code);
+
+    /**
+     * Retrieve if the type by code (business id) exist or not
+     *
+     * @param product product category of the voucher type
+     * @param order the priority of the voucher type
+     * @return true if the voucher type if found, false otherwise
+     */
+    boolean existsVoucherTypeByProductAndOrder(String product, Integer order);
 }

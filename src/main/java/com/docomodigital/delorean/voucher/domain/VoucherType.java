@@ -18,20 +18,38 @@ public class VoucherType extends AbstractAuditingEntity {
 
     @Id
     private String id;
+
     private String code;
+
     private String description;
+
+    @NotNull
+    private String product;
+
+    private String promo;
+
     @NotNull
     private Amount amount;
+
     @NotBlank
     private String merchantId;
+
     @NotBlank
     private String paymentProvider;
+
     private String country;
+
     @NotBlank
     private String shopId;
+
     private Boolean enabled;
+
     private LocalDate startDate;
+
     private LocalDate endDate;
+
+    @NotNull
+    private Integer order;
 
     public String getId() {
         return id;
@@ -55,6 +73,22 @@ public class VoucherType extends AbstractAuditingEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getProduct() {
+        return product;
+    }
+
+    public void setProduct(String product) {
+        this.product = product;
+    }
+
+    public String getPromo() {
+        return promo;
+    }
+
+    public void setPromo(String promo) {
+        this.promo = promo;
     }
 
     public Amount getAmount() {
@@ -119,5 +153,13 @@ public class VoucherType extends AbstractAuditingEntity {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 }

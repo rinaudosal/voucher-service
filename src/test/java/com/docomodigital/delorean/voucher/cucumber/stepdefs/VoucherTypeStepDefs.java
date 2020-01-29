@@ -7,7 +7,6 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -18,9 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-public class VoucherTypeStepDef extends StepDefs {
+public class VoucherTypeStepDefs extends StepDefs {
 
     @Given("exist the voucher types:")
     public void existTheVoucherTypes(List<Map<String, String>> datatable) {
@@ -51,12 +48,6 @@ public class VoucherTypeStepDef extends StepDefs {
             voucherTypeRepository.save(key);
             voucherRepository.saveAll(value);
         });
-    }
-
-    @And("today is {string}")
-    public void todayIs(String today) {
-        Instant instant = LocalDate.parse(today, DateTimeFormatter.ofPattern("dd/MM/yyyy")).atStartOfDay().toInstant(ZoneOffset.UTC);
-        setupClockMock(instant);
     }
 
     @When("the user of the merchant {string} request the product available for the payment provider {string} in country {string}")
@@ -200,6 +191,13 @@ public class VoucherTypeStepDef extends StepDefs {
             .andExpect(jsonPath("$.errorMessage").value("Invalid voucherTypes, " + missingField + " is mandatory"));
     }
 
+    @Then("the operator receive the error 'Voucher Type exist with the same period'")
+    public void theOperatorReceiveTheErrorVoucherTypeExistWithTheSamePeriod() throws Exception {
+        resultActions.andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorCode").value("SAME_PRODUCT_AND_ORDER"))
+            .andExpect(jsonPath("$.errorMessage").value("Voucher Type exist with the same period"));
+    }
+
     private void checkResultList(List<Map<String, String>> expectedList, List<AvailableVoucherTypes> resultList) {
 
         Assertions.assertThat(resultList).hasSize(expectedList.size());
@@ -224,6 +222,12 @@ public class VoucherTypeStepDef extends StepDefs {
         VoucherTypes voucherType = new VoucherTypes();
         if (!StringUtils.equals(missingField, "code")) {
             voucherType.setCode(firstRow.get("code"));
+        }
+        if (!StringUtils.equals(missingField, "promo")) {
+            voucherType.setPromo(firstRow.get("promo"));
+        }
+        if (!StringUtils.equals(missingField, "product")) {
+            voucherType.setProduct(firstRow.get("product"));
         }
         if (!StringUtils.equals(missingField, "description")) {
             voucherType.setDescription(firstRow.get("description"));
@@ -255,6 +259,9 @@ public class VoucherTypeStepDef extends StepDefs {
         if (!StringUtils.equals(missingField, "endDate")) {
             voucherType.setEndDate(LocalDate.parse(firstRow.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         }
+        if (!StringUtils.equals(missingField, "order")) {
+            voucherType.setOrder(Integer.parseInt(firstRow.get("order")));
+        }
 
         return voucherType;
     }
@@ -264,21 +271,23 @@ public class VoucherTypeStepDef extends StepDefs {
 
         datatable.forEach(row -> {
             VoucherType voucherType = new VoucherType();
-            voucherType.setCode(row.get("code"));
-            voucherType.setDescription(row.get("description"));
+            voucherType.setCode(getElementOrDefault(row, "code", "DEFCODE"));
+            voucherType.setProduct(getElementOrDefault(row, "product", "DEFPRODUCT"));
+            voucherType.setPromo(getElementOrDefault(row, "promo", "DEFPROMO"));
+            voucherType.setDescription(getElementOrDefault(row, "description", "DEFDESCRIPTION"));
 
             Amount amount = new Amount();
-            amount.setValue(new BigDecimal(row.get("amount")));
-            amount.setCurrency(row.get("currency"));
+            amount.setValue(new BigDecimal(getElementOrDefault(row, "amount", "10.0")));
+            amount.setCurrency(getElementOrDefault(row, "currency", "INR"));
             voucherType.setAmount(amount);
-            voucherType.setMerchantId(row.get("merchant"));
-            voucherType.setPaymentProvider(row.get("paymentProvider"));
-            voucherType.setCountry(row.get("country"));
-            voucherType.setShopId(row.get("shop"));
-            voucherType.setEnabled(row.get("enabled").equals("true"));
-            voucherType.setStartDate(LocalDate.parse(row.get("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            voucherType.setEndDate(LocalDate.parse(row.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-
+            voucherType.setMerchantId(getElementOrDefault(row, "merchant", "TINDER"));
+            voucherType.setPaymentProvider(getElementOrDefault(row, "paymentProvider", "PAYTM"));
+            voucherType.setCountry(getElementOrDefault(row, "country", "IN"));
+            voucherType.setShopId(getElementOrDefault(row, "shop", "shop2"));
+            voucherType.setEnabled(getElementOrDefault(row, "enabled", "true").equals("true"));
+            voucherType.setStartDate(LocalDate.parse(getElementOrDefault(row, "startDate", "01/01/2020"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            voucherType.setEndDate(LocalDate.parse(getElementOrDefault(row, "endDate", "31/12/2020"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            voucherType.setOrder(Integer.parseInt(getElementOrDefault(row, "order", "5")));
 
             int voucherPurchased = StringUtils.isBlank(row.get("Voucher Purchased")) ? 0 : Integer.parseInt(row.get("Voucher Purchased"));
             int voucherActive = StringUtils.isBlank(row.get("Voucher Active")) ? 0 : Integer.parseInt(row.get("Voucher Active"));

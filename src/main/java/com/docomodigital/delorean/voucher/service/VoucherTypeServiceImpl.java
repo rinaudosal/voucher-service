@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,29 +50,40 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
         voucherType.setCreatedDate(null);
         voucherType.setLastModifiedDate(null);
 
+        // retrieve one type for each product, convert to dto and collect
         Example<VoucherType> voucherTypeExample = Example.of(voucherType);
-        return voucherTypeRepository.findAll(voucherTypeExample)
+        Map<String, List<VoucherType>> notGrouped = voucherTypeRepository.findAll(voucherTypeExample)
             .stream()
             .filter(vou -> {
                 LocalDate now = LocalDate.now(clock);
                 return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate());
-            })
-            .map(v -> {
-                AvailableVoucherTypes availableVoucherTypes = new AvailableVoucherTypes();
-                availableVoucherTypes.setCode(v.getCode());
-                availableVoucherTypes.setDescription(v.getDescription());
-                availableVoucherTypes.setAmount(v.getAmount().getValue());
-                availableVoucherTypes.setCurrency(v.getAmount().getCurrency());
+            }).collect(Collectors.groupingBy(VoucherType::getProduct));
 
-                // count the voucher ACTIVE
-                Voucher voucher = new Voucher();
-                voucher.setStatus(VoucherStatus.ACTIVE);
-                voucher.setType(v);
-                voucher.setCreatedDate(null);
-                voucher.setLastModifiedDate(null);
-                availableVoucherTypes.setVoucherAvailable((int) voucherRepository.count(Example.of(voucher)));
-                return availableVoucherTypes;
-            })
+        List<VoucherType> voucherTypes = new ArrayList<>();
+        notGrouped.forEach((product, types) -> {
+            VoucherType voucherTypeGrouped = types.stream().max(Comparator.comparing(VoucherType::getOrder))
+                .orElseThrow(NoSuchElementException::new);
+
+            voucherTypes.add(voucherTypeGrouped);
+        });
+
+
+        return voucherTypes.stream().map(v -> {
+            AvailableVoucherTypes availableVoucherTypes = new AvailableVoucherTypes();
+            availableVoucherTypes.setCode(v.getCode());
+            availableVoucherTypes.setDescription(v.getDescription());
+            availableVoucherTypes.setAmount(v.getAmount().getValue());
+            availableVoucherTypes.setCurrency(v.getAmount().getCurrency());
+
+            // count the voucher ACTIVE
+            Voucher voucher = new Voucher();
+            voucher.setStatus(VoucherStatus.ACTIVE);
+            voucher.setType(v);
+            voucher.setCreatedDate(null);
+            voucher.setLastModifiedDate(null);
+            availableVoucherTypes.setVoucherAvailable((int) voucherRepository.count(Example.of(voucher)));
+            return availableVoucherTypes;
+        })
             .filter(v -> v.getVoucherAvailable() > 0)
             .sorted(Comparator.comparing(AvailableVoucherTypes::getCode))//only voucher available
             .collect(Collectors.toList());
@@ -98,9 +107,14 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             throw new BadRequestException("MISSING_FIELD", "Invalid voucherTypes, code is mandatory");
         }
 
-        if (voucherTypeRepository.findByCode(voucherTypes.getCode()).isPresent()) {
+        if (voucherTypeRepository.existsVoucherTypeByCode(voucherTypes.getCode())) {
             throw new BadRequestException("ALREADY_EXIST", "Voucher Type already exist");
         }
+
+        if (voucherTypeRepository.existsVoucherTypeByProductAndOrder(voucherTypes.getProduct(), voucherTypes.getOrder())) {
+            throw new BadRequestException("SAME_PRODUCT_AND_ORDER", "Voucher Type exist with the same period");
+        }
+
         return voucherTypeMapper.toDto(
             voucherTypeRepository.save(
                 voucherTypeMapper.toEntity(voucherTypes)));
@@ -108,6 +122,10 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
 
     @Override
     public Optional<VoucherTypes> updateVoucherType(String code, VoucherTypes voucherTypes) {
+        if (StringUtils.isNotBlank(voucherTypes.getCode())) {
+            throw new BadRequestException("WRONG_FIELD", "Cannot pass Voucher Type code in body request");
+        }
+
         return voucherTypeRepository.findByCode(code)
             .map(v -> {
                 voucherTypeMapper.updateFromDto(voucherTypes, v);

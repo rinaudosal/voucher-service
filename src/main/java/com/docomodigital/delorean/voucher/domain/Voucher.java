@@ -3,7 +3,6 @@ package com.docomodigital.delorean.voucher.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -11,7 +10,7 @@ import java.time.LocalDate;
 
 /**
  * Voucher collection
- *
+ * <p>
  * 2020/01/21
  *
  * @author salvatore.rinaudo@docomodigital.com
@@ -27,9 +26,7 @@ public class Voucher extends AbstractAuditingEntity {
     private VoucherStatus status;
     @NotNull
     private VoucherType type;
-    @NotBlank
     private String userId;
-    @NotBlank
     private String transactionId;
     private LocalDate transactionDate;
     private LocalDate purchaseDate;
