@@ -3,6 +3,7 @@ package com.docomodigital.delorean.voucher.web.api.error;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,6 +28,15 @@ public class GlobalExceptionHandler {
             .body(new ErrorDetails(
                 "MISSING_FIELD",
                 "Invalid " + exception.getBindingResult().getObjectName() + ", " + exception.getBindingResult().getFieldError().getField() + " is mandatory"));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorDetails> handleConstraintViolationException(MissingServletRequestParameterException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new ErrorDetails(
+                "MISSING_REQUEST_PARAM",
+                "Invalid request, parameter " + exception.getParameterName() + " is mandatory"));
     }
 
 

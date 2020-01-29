@@ -41,8 +41,6 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         type.setShopId("dvsd");
         voucher.setType(type);
 
-        voucher.setUserId("my_user_id");
-        voucher.setTransactionId("my_trans_id");
     }
 
 
@@ -85,28 +83,10 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
     }
 
     @Test
-    public void userIdConstraint() {
-        voucher.setUserId(" ");
-
-        // when save the voucher thrown an exception
-        Assertions.assertThatThrownBy(() -> voucherRepository.save(voucher))
-            .isInstanceOf(ConstraintViolationException.class)
-            .hasMessage("userId: must not be blank");
-    }
-
-    @Test
-    public void transactionIdConstraint() {
-        voucher.setTransactionId(" ");
-
-        // when save the voucher thrown an exception
-        Assertions.assertThatThrownBy(() -> voucherRepository.save(voucher))
-            .isInstanceOf(ConstraintViolationException.class)
-            .hasMessage("transactionId: must not be blank");
-    }
-
-    @Test
     public void voucherDataMustBeFilledCorrectlyWithAllData() {
         voucher.setId("vvdvfdv");
+        voucher.setUserId("my_user_id");
+        voucher.setTransactionId("my_trans_id");
         voucher.setTransactionDate(LocalDate.now());
         voucher.setPurchaseDate(LocalDate.now());
         voucher.setRedeemDate(LocalDate.now());
@@ -163,8 +143,8 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThat(returnValue.getCode()).isEqualTo("my_voucher_code");
         Assertions.assertThat(returnValue.getStatus()).isEqualTo(VoucherStatus.PURCHASED);
         Assertions.assertThat(returnValue.getType()).isNotNull();
-        Assertions.assertThat(returnValue.getUserId()).isEqualTo("my_user_id");
-        Assertions.assertThat(returnValue.getTransactionId()).isEqualTo("my_trans_id");
+        Assertions.assertThat(returnValue.getUserId()).isNull();
+        Assertions.assertThat(returnValue.getTransactionId()).isNull();
         Assertions.assertThat(returnValue.getTransactionDate()).isNull();
         Assertions.assertThat(returnValue.getPurchaseDate()).isNull();
         Assertions.assertThat(returnValue.getRedeemDate()).isNull();

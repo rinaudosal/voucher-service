@@ -170,6 +170,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/VoucherTypes'
 
+  /voucher:
+    post:
+      tags:
+        - voucher
+      summary: create
+      operationId: createVoucher
+      description: create the voucher
+      parameters:
+        - in: query
+          name: code
+          description: the vouchers code
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: type
+          description: the voucher type configured
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: resulting Voucher type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vouchers'
+
+
   /voucher/upload:
     post:
       requestBody:
@@ -262,3 +291,37 @@ components:
         order:
           type: integer
           example: 3
+
+    Vouchers:
+      type: object
+      properties:
+        code:
+          type: string
+          example: VOU1MONTH
+        type:
+          type: string
+          example: TND1MGLD
+        status:
+          type: string
+          enum: [ ACTIVE, PURCHASED, REDEEMED, INACTIVE]
+        userId:
+          type: string
+          example: MARIO
+        transactionId:
+          type: string
+          example: TXN123445
+        transactionDate:
+          type: string
+          format: date
+          example: 02/02/2018
+        purchaseDate:
+          type: string
+          format: date
+          example: 02/02/2018
+        redeemDate:
+          type: string
+          format: date
+          example: 02/02/2018
+        activationUrl:
+          type: string
+          example: www.test.com/redeem

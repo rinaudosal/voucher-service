@@ -41,17 +41,9 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
     @Override
     public List<AvailableVoucherTypes> getAvailableVoucherTypes(String merchant, String paymentProvider, String country) {
 
-        // fina all voucher type for the merchant, enabled and in correct range date
-        VoucherType voucherType = new VoucherType();
-        voucherType.setMerchantId(merchant);
-        voucherType.setPaymentProvider(paymentProvider);
-        voucherType.setCountry(country);
-        voucherType.setEnabled(true);
-        voucherType.setCreatedDate(null);
-        voucherType.setLastModifiedDate(null);
+        // find all voucher type for the merchant, enabled and in correct range date
+        Example<VoucherType> voucherTypeExample = getVoucherTypeExample(merchant, paymentProvider, country);
 
-        // retrieve one type for each product, convert to dto and collect
-        Example<VoucherType> voucherTypeExample = Example.of(voucherType);
         Map<String, List<VoucherType>> notGrouped = voucherTypeRepository.findAll(voucherTypeExample)
             .stream()
             .filter(vou -> {
@@ -133,5 +125,18 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
                 return v;
             })
             .map(voucherTypeMapper::toDto);
+    }
+
+    private Example<VoucherType> getVoucherTypeExample(String merchant, String paymentProvider, String country) {
+        VoucherType voucherType = new VoucherType();
+        voucherType.setMerchantId(merchant);
+        voucherType.setPaymentProvider(paymentProvider);
+        voucherType.setCountry(country);
+        voucherType.setEnabled(true);
+        voucherType.setCreatedDate(null);
+        voucherType.setLastModifiedDate(null);
+
+        // retrieve one type for each product, convert to dto and collect
+        return Example.of(voucherType);
     }
 }

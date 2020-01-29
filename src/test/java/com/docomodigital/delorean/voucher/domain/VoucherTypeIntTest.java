@@ -31,6 +31,8 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         amount.setValue(BigDecimal.valueOf(32));
         amount.setCurrency("USD");
 
+        voucherType.setProduct("my_product_name");
+        voucherType.setPromo("my_promo");
         voucherType.setAmount(amount);
         voucherType.setMerchantId("my_merchant_id");
         voucherType.setPaymentProvider("PAYTM BUUUU");
@@ -39,7 +41,7 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         voucherType.setEnabled(true);
         voucherType.setStartDate(LocalDate.of(2020, 1, 1));
         voucherType.setEndDate(LocalDate.of(2020, 11, 8));
-
+        voucherType.setOrder(5);
     }
 
     @Test
@@ -50,6 +52,26 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThatThrownBy(() -> voucherTypeRepository.save(voucherType))
             .isInstanceOf(ConstraintViolationException.class)
             .hasMessage("amount: must not be null");
+    }
+
+    @Test
+    public void productMandatory() {
+        voucherType.setProduct(null);
+
+        // when save the voucher thrown an exception
+        Assertions.assertThatThrownBy(() -> voucherTypeRepository.save(voucherType))
+            .isInstanceOf(ConstraintViolationException.class)
+            .hasMessage("product: must not be blank");
+    }
+
+    @Test
+    public void orderMandatory() {
+        voucherType.setOrder(null);
+
+        // when save the voucher thrown an exception
+        Assertions.assertThatThrownBy(() -> voucherTypeRepository.save(voucherType))
+            .isInstanceOf(ConstraintViolationException.class)
+            .hasMessage("order: must not be null");
     }
 
     @Test

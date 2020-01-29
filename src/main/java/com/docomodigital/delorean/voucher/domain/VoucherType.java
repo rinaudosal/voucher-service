@@ -23,7 +23,7 @@ public class VoucherType extends AbstractAuditingEntity {
 
     private String description;
 
-    @NotNull
+    @NotBlank
     private String product;
 
     private String promo;

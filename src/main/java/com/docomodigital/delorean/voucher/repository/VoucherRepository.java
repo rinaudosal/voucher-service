@@ -4,12 +4,13 @@ import com.docomodigital.delorean.voucher.domain.Voucher;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- *
  * Repository management for Voucher Collection
  * 2020/01/21
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
 public interface VoucherRepository extends MongoRepository<Voucher, String> {
+
+    boolean existsVoucherByCodeAndType_MerchantId(String code, String type);
 
 }
