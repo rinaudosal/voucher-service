@@ -7,6 +7,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -39,5 +40,12 @@ public class GlobalExceptionHandler {
                 "Invalid request, parameter " + exception.getParameterName() + " is mandatory"));
     }
 
-
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorDetails> handleConstraintViolationException(MissingServletRequestPartException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new ErrorDetails(
+                "MISSING_REQUEST_PARAM",
+                "Invalid request, parameter " + exception.getRequestPartName() + " is mandatory"));
+    }
 }

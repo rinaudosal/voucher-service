@@ -48,6 +48,8 @@ public class VoucherType extends AbstractAuditingEntity {
 
     private LocalDate endDate;
 
+    private String baseUrl;
+
     @NotNull
     private Integer order;
 
@@ -153,6 +155,14 @@ public class VoucherType extends AbstractAuditingEntity {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
     public Integer getOrder() {

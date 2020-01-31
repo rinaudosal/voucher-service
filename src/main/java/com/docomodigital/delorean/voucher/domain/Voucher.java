@@ -32,6 +32,7 @@ public class Voucher extends AbstractAuditingEntity {
     private LocalDate purchaseDate;
     private LocalDate redeemDate;
     private String activationUrl;
+    private String uploadId;
 
     public String getId() {
         return id;
@@ -111,5 +112,13 @@ public class Voucher extends AbstractAuditingEntity {
 
     public void setActivationUrl(String activationUrl) {
         this.activationUrl = activationUrl;
+    }
+
+    public String getUploadId() {
+        return uploadId;
+    }
+
+    public void setUploadId(String uploadId) {
+        this.uploadId = uploadId;
     }
 }

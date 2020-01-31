@@ -42,6 +42,7 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         voucherType.setStartDate(LocalDate.of(2020, 1, 1));
         voucherType.setEndDate(LocalDate.of(2020, 11, 8));
         voucherType.setOrder(5);
+        voucherType.setBaseUrl("www.test.com");
     }
 
     @Test
@@ -122,6 +123,7 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThat(returnValue.getEnabled()).isTrue();
         Assertions.assertThat(returnValue.getStartDate()).isEqualTo(LocalDate.of(2020, 1, 1));
         Assertions.assertThat(returnValue.getEndDate()).isEqualTo(LocalDate.of(2020, 11, 8));
+        Assertions.assertThat(returnValue.getBaseUrl()).isEqualTo("www.test.com");
     }
 
 }

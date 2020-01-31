@@ -1,6 +1,8 @@
 package com.docomodigital.delorean.voucher.service;
 
+import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * * Business class that manage the vouchers
@@ -18,4 +20,13 @@ public interface VoucherService {
      * @return the voucher type created
      */
     Vouchers createVoucher(String code, String type);
+
+    /**
+     * Upload a file containing list of files
+     *
+     * @param file file to upload
+     * @param type the type for the vouchers
+     * @return the stats of the file uploaded
+     */
+    VoucherUpload uploadVouchers(MultipartFile file, String type);
 }

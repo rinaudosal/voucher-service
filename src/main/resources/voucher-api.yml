@@ -201,19 +201,33 @@ paths:
 
   /voucher/upload:
     post:
+      tags:
+        - voucher
+      summary: upload
+      operationId: uploadVoucher
+      description: upload the voucher
       requestBody:
         content:
           multipart/form-data:
             schema:
               type: object
               properties:
-                fileName:
+                file:
                   type: string
                   format: binary
+                type:
+                  type: string
+                  example: VOU1M
+              required:
+                - file
+                - type
       responses:
         '200':      # Response
           description: OK
-
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherUpload'
 components:
   schemas:
     AvailableVoucherTypes:
@@ -325,3 +339,24 @@ components:
         activationUrl:
           type: string
           example: www.test.com/redeem
+    VoucherUpload:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UPLOADED, ERROR]
+        filename:
+          type: string
+          example: file.csv
+        type:
+          type: string
+          example: TIN1M
+        total:
+          type: integer
+          example: 42
+        uploaded:
+          type: integer
+          example: 42
+        errors:
+          type: integer
+          example: 42

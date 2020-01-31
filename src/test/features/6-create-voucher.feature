@@ -33,8 +33,8 @@ Feature: Create Voucher
       | code            | type  | errorCode     | errorDescription                                |
       | EXISTINGVOUCHER | TIN1M | ALREADY_EXIST | Voucher with code EXISTINGVOUCHER already exist |
       | EXISTINGVOUCHER | TIN3M | ALREADY_EXIST | Voucher with code EXISTINGVOUCHER already exist |
-      | EXISTINGVOUCHER | TIN6M | ALREADY_EXIST | Voucher with code EXISTINGVOUCHER already exist |
-      | EXISTINGVOUCHER | TIN9M | ALREADY_EXIST | Voucher with code EXISTINGVOUCHER already exist |
+      | EXISTINGVOUCHER | TIN6M | TYPE_DISABLED | Voucher Type TIN6M is disabled                  |
+      | EXISTINGVOUCHER | TIN9M | TYPE_EXPIRED  | Voucher Type TIN9M is expired                   |
       | NEWVOUCHERCODE  | TIN6M | TYPE_DISABLED | Voucher Type TIN6M is disabled                  |
       | NEWVOUCHERCODE  | TIN9M | TYPE_EXPIRED  | Voucher Type TIN9M is expired                   |
 
