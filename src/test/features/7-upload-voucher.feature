@@ -1,6 +1,6 @@
 # language: en
 
-@PI-1436
+@PI-1436 @upload-voucher
 Feature: Upload Voucher
 
   Background:
@@ -16,13 +16,17 @@ Feature: Upload Voucher
       | EXISTINGVOUCHER | TIN1M |
     And today is '01/02/2020'
 
-  @upload-voucher
   Scenario Outline: Voucher file uploaded
     When the operator wants to upload the voucher file with <size> vouchers for type '<type>'
     Then the operator upload the <size> vouchers correctly for type '<type>'
     Examples:
       | type  | size |
-      | TIN1M | 100000  |
+      | TIN1M | 100  |
+      | TIN3M | 100  |
+      | BUM9M | 100  |
+      | TIN1M | 0    |
+      | TIN3M | 0    |
+      | BUM9M | 0    |
 
   Scenario Outline: Voucher upload in error
     When the operator wants to upload the voucher file with 100 vouchers for type '<type>'
