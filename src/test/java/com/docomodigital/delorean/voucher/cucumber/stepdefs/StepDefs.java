@@ -25,6 +25,9 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 public abstract class StepDefs {
 
     protected MockMvc mockMvc;
@@ -62,6 +65,12 @@ public abstract class StepDefs {
 
     protected String getElementOrDefault(Map<String, String> row, String field, String defaultValue) {
         return row.get(field) != null ? row.get(field) : defaultValue;
+    }
+
+    protected void checkBadRequest(String errorCode, String errorMessage) throws Exception {
+        resultActions.andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorCode").value(errorCode))
+            .andExpect(jsonPath("$.errorMessage").value(errorMessage));
     }
 
     protected static void writeVoucherFile(int size,String fileName,  String code) throws Exception {

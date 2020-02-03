@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
 
 /**
  * Implementation of voucher-type endpoint to manage the voucher types
@@ -32,7 +33,7 @@ public class VoucherController implements VoucherApi {
     }
 
     @Override
-    public ResponseEntity<Vouchers> createVoucher(@NotNull @Valid String code, @NotNull @Valid String type) {
+    public ResponseEntity<Vouchers> createVoucher(String code, @NotNull @Valid String type) {
         Vouchers voucher = voucherService.createVoucher(code, type);
 
         try {
@@ -50,4 +51,12 @@ public class VoucherController implements VoucherApi {
 
         return ResponseEntity.ok(vouchersUploaded);
     }
+
+    @Override
+    public ResponseEntity<Vouchers> purchaseVoucher(String code, @NotNull @Valid String transactionId, @Valid OffsetDateTime transactionDate, @Valid String userId) {
+        Vouchers voucher = voucherService.purchaseVoucher(code, transactionId, transactionDate, userId);
+
+        return ResponseEntity.ok(voucher);
+    }
+
 }

@@ -181,23 +181,17 @@ public class VoucherTypeStepDefs extends StepDefs {
 
     @Then("the operator receive the error 'Voucher Type already exist'")
     public void theOperatorReceiveTheErrorVoucherTypeAlreadyExist() throws Exception {
-        resultActions.andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.errorCode").value("ALREADY_EXIST"))
-            .andExpect(jsonPath("$.errorMessage").value("Voucher Type already exist"));
+        checkBadRequest("ALREADY_EXIST", "Voucher Type already exist");
     }
 
     @Then("the operator receive the error 'Invalid Voucher Type, {string} is mandatory'")
     public void theOperatorReceiveTheErrorInvalidVoucherTypeFieldIsMandatory(String missingField) throws Exception {
-        resultActions.andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.errorCode").value("MISSING_FIELD"))
-            .andExpect(jsonPath("$.errorMessage").value("Invalid voucherTypes, " + missingField + " is mandatory"));
+        checkBadRequest("MISSING_FIELD", "Invalid voucherTypes, " + missingField + " is mandatory");
     }
 
     @Then("the operator receive the error 'Voucher Type exist with the same period'")
     public void theOperatorReceiveTheErrorVoucherTypeExistWithTheSamePeriod() throws Exception {
-        resultActions.andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.errorCode").value("SAME_PRODUCT_AND_ORDER"))
-            .andExpect(jsonPath("$.errorMessage").value("Voucher Type exist with the same period"));
+        checkBadRequest("SAME_PRODUCT_AND_ORDER", "Voucher Type exist with the same period");
     }
 
     private void checkResultList(List<Map<String, String>> expectedList, List<AvailableVoucherTypes> resultList) {
@@ -288,6 +282,7 @@ public class VoucherTypeStepDefs extends StepDefs {
             voucherType.setStartDate(LocalDate.parse(getElementOrDefault(row, "startDate", "01/01/2020"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             voucherType.setEndDate(LocalDate.parse(getElementOrDefault(row, "endDate", "31/12/2020"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             voucherType.setPriority(Integer.parseInt(getElementOrDefault(row, "priority", "5")));
+            voucherType.setBaseUrl("https://www.tinder.com/redeem/");
 
             int voucherPurchased = StringUtils.isBlank(row.get("Voucher Purchased")) ? 0 : Integer.parseInt(row.get("Voucher Purchased"));
             int voucherActive = StringUtils.isBlank(row.get("Voucher Active")) ? 0 : Integer.parseInt(row.get("Voucher Active"));

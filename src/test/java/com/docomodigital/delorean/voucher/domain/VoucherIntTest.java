@@ -10,6 +10,7 @@ import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -90,7 +91,7 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         voucher.setId("vvdvfdv");
         voucher.setUserId("my_user_id");
         voucher.setTransactionId("my_trans_id");
-        voucher.setTransactionDate(LocalDate.now());
+        voucher.setTransactionDate(LocalDateTime.now());
         voucher.setPurchaseDate(LocalDate.now());
         voucher.setRedeemDate(LocalDate.now());
         voucher.setActivationUrl("www.test.com");

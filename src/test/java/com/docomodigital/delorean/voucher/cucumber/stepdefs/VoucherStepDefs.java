@@ -6,7 +6,6 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.micrometer.core.annotation.Timed;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -16,7 +15,6 @@ import org.springframework.util.MultiValueMap;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -40,10 +38,9 @@ public class VoucherStepDefs extends StepDefs {
 
     @When("the operator wants to create the voucher {string} with type {string}")
     public void theOperatorWantsToCreateTheVoucherCodeWithTypeType(String code, String type) throws Exception {
-        resultActions = mockMvc.perform(post("/v1/voucher")
+        resultActions = mockMvc.perform(post("/v1/voucher/" + code + "/upload")
             .accept(MediaType.APPLICATION_JSON)
-            .param("type", type)
-            .param("code", code));
+            .param("type", type));
     }
 
     @When("the operator wants to upload the voucher without field {string}")
@@ -61,37 +58,36 @@ public class VoucherStepDefs extends StepDefs {
         }
     }
 
+    @When("the operator wants to purchase the voucher without field {string}")
+    public void theOperatorWantsToPurchaseTheVoucherWithoutFieldField(String missingField) {
+
+    }
+
     @When("the operator wants to create the voucher without field {string}")
     public void theOperatorWantsToCreateTheVoucherWithoutField(String missingField) throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         if (!missingField.equals("code")) {
-            params.put("code", Collections.singletonList("VHUSHUSH"));
-        }
-        if (!missingField.equals("type")) {
-            params.put("type", Collections.singletonList("TIN1M"));
+            resultActions = mockMvc.perform(post("/v1/voucher/VOUCHER21/upload")
+                .accept(MediaType.APPLICATION_JSON));
         }
 
-        resultActions = mockMvc.perform(post("/v1/voucher")
-            .accept(MediaType.APPLICATION_JSON)
-            .params(params));
+        if (!missingField.equals("type")) {
+            resultActions = mockMvc.perform(post("/v1/voucher/upload")
+                .accept(MediaType.APPLICATION_JSON)
+                .param("type", "TIN1M"));
+        }
+
+
     }
 
-    @Timed
     @When("the operator wants to upload the voucher file with {int} vouchers for type {string}")
     public void theOperatorWantsToUploadTheVoucherFileWithVouchersForType(Integer size, String type) throws Exception {
         MockMultipartFile file = buildVoucherFile(size, null);
-
-        long startTime = System.currentTimeMillis();
 
         resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/upload")
             .file(file)
             .param("type", type)
             .characterEncoding("UTF-8"));
-        long stopTime = System.currentTimeMillis();
-        long elapsedTime = stopTime - startTime;
-
-        System.out.println("Tempo dell'operazione dell'api: " + elapsedTime);
-
     }
 
     @When("the operator wants to upload the voucher file with {int} vouchers for type {string} and the voucher file contain also {string}")
@@ -118,6 +114,15 @@ public class VoucherStepDefs extends StepDefs {
 
     }
 
+    @When("the operator wants to purchase the voucher {string}")
+    public void theOperatorWantsToPurchaseTheVoucherCode(String code) throws Exception {
+        resultActions = mockMvc.perform(post("/v1/voucher/" + code + "/purchase")
+            .accept(MediaType.APPLICATION_JSON)
+            .param("userId", "user_name")
+            .param("transactionId", "txt_123456")
+            .param("transactionDate", "2020-12-12T17:12:14Z"));
+    }
+
     @Then("the operator create the voucher correctly with {string} and type {string}")
     public void theOperatorCreateTheVoucherCorrectlyWithCodeAndType(String code, String type) throws Exception {
         resultActions.andExpect(status().isCreated())
@@ -130,6 +135,21 @@ public class VoucherStepDefs extends StepDefs {
             .andExpect(jsonPath("$.purchaseDate").isEmpty())
             .andExpect(jsonPath("$.redeemDate").isEmpty())
             .andExpect(jsonPath("$.activationUrl").isEmpty());
+    }
+
+    @Then("the operator purchase the voucher {string} correctly")
+    public void theOperatorPurchaseTheVoucherCorrectly(String code) throws Exception {
+        resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(code))
+            .andExpect(jsonPath("$.type").isNotEmpty())
+            .andExpect(jsonPath("$.status").value("PURCHASED"))
+            .andExpect(jsonPath("$.userId").isNotEmpty())
+            .andExpect(jsonPath("$.transactionId").isNotEmpty())
+            .andExpect(jsonPath("$.transactionDate").isNotEmpty())
+            .andExpect(jsonPath("$.purchaseDate").value("2020-02-01"))
+            .andExpect(jsonPath("$.redeemDate").isEmpty())
+            .andExpect(jsonPath("$.activationUrl").value("https://www.tinder.com/redeem/" + code));
+
     }
 
     @Then("the operator upload the {int} vouchers correctly for type {string}")
@@ -146,17 +166,12 @@ public class VoucherStepDefs extends StepDefs {
 
     @Then("the operator receive the error code {string} and description {string}")
     public void theOperatorReceiveTheErrorCodeAndDescription(String errorCode, String errorMessage) throws Exception {
-        resultActions.andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.errorCode").value(errorCode))
-            .andExpect(jsonPath("$.errorMessage").value(errorMessage));
+        checkBadRequest(errorCode, errorMessage);
     }
 
     @Then("the operator receive the error 'Invalid request, parameter {string} is mandatory'")
     public void theOperatorReceiveTheErrorInvalidVoucherFieldIsMandatory(String missingField) throws Exception {
-        resultActions.andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.errorCode").value("MISSING_REQUEST_PARAM"))
-            .andExpect(jsonPath("$.errorMessage").value("Invalid request, parameter " + missingField + " is mandatory"));
-
+        checkBadRequest("MISSING_REQUEST_PARAM", "Invalid request, parameter " + missingField + " is mandatory");
     }
 
     @Then("the operator upload the {int} vouchers correctly and {int} with error 'Voucher with code {string} already exist'")
@@ -186,18 +201,19 @@ public class VoucherStepDefs extends StepDefs {
 
     private void saveVouchersFromDatatableData(List<Map<String, String>> datatable) {
         datatable.forEach(row -> {
-            Voucher voucher = getVoucher(row.get("code"), row.get("type"));
+            VoucherStatus voucherStatus = row.get("status") != null ? VoucherStatus.valueOf(row.get("status")) : VoucherStatus.ACTIVE;
+            Voucher voucher = getVoucher(row.get("code"), row.get("type"), voucherStatus);
 
             voucherRepository.save(voucher);
         });
 
     }
 
-    private Voucher getVoucher(String code, String type) {
+    private Voucher getVoucher(String code, String type, VoucherStatus status) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type).get();
 
         Voucher voucher = new Voucher();
-        voucher.setStatus(VoucherStatus.ACTIVE);
+        voucher.setStatus(status);
         voucher.setCode(code);
         voucher.setTypeId(voucherType.getId());
         return voucher;

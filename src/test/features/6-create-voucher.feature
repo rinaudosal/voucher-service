@@ -43,5 +43,4 @@ Feature: Create Voucher
     Then the operator receive the error 'Invalid request, parameter '<field>' is mandatory'
     Examples:
       | field |
-      | code  |
       | type  |

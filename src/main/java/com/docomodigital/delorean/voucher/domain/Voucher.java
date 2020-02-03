@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Voucher collection
@@ -28,7 +29,7 @@ public class Voucher extends AbstractAuditingEntity {
     private String typeId;
     private String userId;
     private String transactionId;
-    private LocalDate transactionDate;
+    private LocalDateTime transactionDate;
     private LocalDate purchaseDate;
     private LocalDate redeemDate;
     private String activationUrl;
@@ -82,11 +83,11 @@ public class Voucher extends AbstractAuditingEntity {
         this.transactionId = transactionId;
     }
 
-    public LocalDate getTransactionDate() {
+    public LocalDateTime getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(LocalDate transactionDate) {
+    public void setTransactionDate(LocalDateTime transactionDate) {
         this.transactionDate = transactionDate;
     }
 

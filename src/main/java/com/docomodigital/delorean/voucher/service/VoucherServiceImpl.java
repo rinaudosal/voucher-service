@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,10 +87,42 @@ public class VoucherServiceImpl implements VoucherService {
         return null;
     }
 
+    @Override
+    public Vouchers purchaseVoucher(String code, String transactionId, OffsetDateTime transactionDate, String userId) {
+
+        Voucher voucher = voucherRepository.findByCode(code)
+            .orElseThrow(() -> new BadRequestException("VOUCHER_NOT_FOUND", "Voucher " + code + " not found"));
+        if (!VoucherStatus.ACTIVE.equals(voucher.getStatus())) {
+            throw new BadRequestException("VOUCHER_NOT_ACTIVE", "Voucher with code " + code + " is not in ACTIVE state");
+        }
+
+        VoucherType voucherType = voucherTypeRepository.findById(voucher.getTypeId())
+            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", ENTITY_NAME + voucher.getTypeId() + " not found"));
+
+        if (LocalDate.now(clock).isBefore(voucherType.getStartDate())) {
+            throw new BadRequestException("TYPE_NOT_YET_AVAILABLE", "Voucher Type " + voucherType.getCode() + " is not yet available");
+        }
+
+        if (!voucherType.getEnabled()) {
+            throw new BadRequestException("TYPE_DISABLED", ENTITY_NAME + voucherType.getCode() + " is disabled");
+        }
+
+        voucher.setActivationUrl(voucherType.getBaseUrl() + voucher.getCode());
+
+
+        voucher.setStatus(VoucherStatus.PURCHASED);
+        voucher.setUserId(userId);
+        voucher.setTransactionId(transactionId);
+        voucher.setTransactionDate(transactionDate.toLocalDateTime());
+        voucher.setPurchaseDate(LocalDate.now(clock));
+
+
+        return voucherMapper.toDto(voucherRepository.save(voucher));
+    }
+
     private VoucherType getValidVoucherType(String type) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type)
             .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", ENTITY_NAME + type + " not found"));
-
 
         if (!voucherType.getEnabled()) {
             throw new BadRequestException("TYPE_DISABLED", ENTITY_NAME + type + " is disabled");

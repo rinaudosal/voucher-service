@@ -175,7 +175,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/VoucherTypes'
 
-  /voucher:
+  /voucher/{code}/upload:
     post:
       tags:
         - voucher
@@ -183,7 +183,7 @@ paths:
       operationId: createVoucher
       description: create the voucher
       parameters:
-        - in: query
+        - in: path
           name: code
           description: the vouchers code
           required: true
@@ -193,6 +193,48 @@ paths:
           name: type
           description: the voucher type configured
           required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: resulting Voucher type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vouchers'
+
+  /voucher/{code}/purchase:
+    post:
+      tags:
+        - voucher
+      summary: purchase
+      operationId: purchaseVoucher
+      description: purchase the voucher
+      parameters:
+        - in: path
+          name: code
+          description: the vouchers code
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: transactionId
+          description: the id of the transaction executed to buy the voucher
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: transactionDate
+          description: the date when the transaction are executed
+          required: false
+          schema:
+            type: string
+            format: 'date-time'
+            example: 2017-07-21T17:32:28Z
+        - in: query
+          name: userId
+          description: who is the user that are buy the voucher
+          required: false
           schema:
             type: string
       responses:
@@ -330,8 +372,8 @@ components:
           example: TXN123445
         transactionDate:
           type: string
-          format: date
-          example: 02/02/2018
+          format: 'date-time'
+          example: 2017-07-21T17:32:28Z
         purchaseDate:
           type: string
           format: date
