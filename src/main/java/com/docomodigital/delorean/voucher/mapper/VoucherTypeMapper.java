@@ -26,6 +26,7 @@ public interface VoucherTypeMapper extends EntityMapper<VoucherTypes, VoucherTyp
     @InheritInverseConfiguration(name = "toEntity")
     VoucherTypes toDto(VoucherType entity);
 
+    @Mapping(target = "code", ignore = true)
     @Mapping(source = "amount", target = "amount.value")
     @Mapping(source = "currency", target = "amount.currency")
     @Mapping(source = "merchant", target = "merchantId")

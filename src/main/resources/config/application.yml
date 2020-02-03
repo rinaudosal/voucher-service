@@ -27,6 +27,10 @@ management:
       enabled: false # When using the MailService, configure an SMTP server and set this to true
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   application:
     name: voucher-service
   data:

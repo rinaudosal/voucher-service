@@ -34,7 +34,7 @@ spring:
       indent-output: true
   data:
     mongodb:
-      uri: mongodb://delorean:ATxT7krK@192.168.124.141:27000/delorean
+      uri: mongodb://localhost:27017/delorean
       database: delorean
 
 server:

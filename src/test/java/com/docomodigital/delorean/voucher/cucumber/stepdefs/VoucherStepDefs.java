@@ -176,7 +176,7 @@ public class VoucherStepDefs extends StepDefs {
 
         byte[] fileContent = readVoucherFile();
 
-        return new MockMultipartFile("file", "voucher_example.csv", "text/plain", fileContent);
+        return new MockMultipartFile("file", "voucher_example.csv", "text/csv", fileContent);
     }
 
     private byte[] readVoucherFile() throws IOException {

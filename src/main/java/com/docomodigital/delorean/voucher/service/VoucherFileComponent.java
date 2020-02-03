@@ -42,7 +42,7 @@ public class VoucherFileComponent {
      */
     public void checkFileToUpload(MultipartFile file) {
         // must to be text/plain
-        if (!Objects.equals(file.getContentType(), "text/plain")) {
+        if (!Objects.equals(file.getContentType(), "text/csv")) {
             throw new BadRequestException("FILE_MALFORMED", "Error, the file is malformed");
         }
     }

@@ -24,16 +24,19 @@ paths:
           name: merchant
           description: merchant identifier
           required: true
+          example: tinder
           schema:
             type: string
         - in: query
           name: paymentProvider
           description: payment provider that can be consume the vouchers
           required: true
+          example: PAYTM
           schema:
             type: string
         - in: query
           name: country
+          example: IN
           description: country when the voucher can be consumed the vouchers
           required: true
           schema:
@@ -134,6 +137,7 @@ paths:
           name: code
           description: code of the voucher type
           required: true
+          example: VOU1MONTH
           schema:
             type: string
       responses:
@@ -154,6 +158,7 @@ paths:
           name: code
           description: code of the voucher type
           required: true
+          example: VOU1MONTH
           schema:
             type: string
       requestBody:
@@ -197,7 +202,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Vouchers'
-
 
   /voucher/upload:
     post:
@@ -275,7 +279,7 @@ components:
           example: 19.99
         currency:
           type: string
-          example: USD
+          example: EUR
         promo:
           type: string
           example: sale
@@ -297,11 +301,11 @@ components:
         startDate:
           type: string
           format: date
-          example: 02/02/2018
+          example: 2020-01-01
         endDate:
           type: string
           format: date
-          example: 02/02/2018
+          example: 2020-12-31
         order:
           type: integer
           example: 3
