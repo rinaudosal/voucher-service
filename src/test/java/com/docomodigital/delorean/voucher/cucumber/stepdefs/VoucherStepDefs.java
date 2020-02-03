@@ -199,7 +199,7 @@ public class VoucherStepDefs extends StepDefs {
         Voucher voucher = new Voucher();
         voucher.setStatus(VoucherStatus.ACTIVE);
         voucher.setCode(code);
-        voucher.setType(voucherType);
+        voucher.setTypeId(voucherType.getId());
         return voucher;
     }
 }

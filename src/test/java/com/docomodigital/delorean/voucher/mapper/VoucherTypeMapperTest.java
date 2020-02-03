@@ -1,7 +1,6 @@
 package com.docomodigital.delorean.voucher.mapper;
 
 import com.docomodigital.delorean.voucher.BaseUnitTest;
-import com.docomodigital.delorean.voucher.domain.Amount;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import org.assertj.core.api.Assertions;
@@ -75,7 +74,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setEnabled(true);
         voucherType.setStartDate(LocalDate.of(2016, 1, 1));
         voucherType.setEndDate(LocalDate.of(2016, 1, 2));
-        voucherType.setOrder(5);
+        voucherType.setPriority(5);
         return voucherType;
     }
 
@@ -86,10 +85,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setProduct("Tinder 1 Month Gold");
         voucherType.setPromo("supersale");
         voucherType.setDescription("my_description");
-        Amount amount = new Amount();
-        amount.setValue(new BigDecimal(42));
-        amount.setCurrency("GHJ");
-        voucherType.setAmount(amount);
+        voucherType.setAmount(new BigDecimal(42));
+        voucherType.setCurrency("GHJ");
 
         voucherType.setMerchantId("my_merchant");
         voucherType.setPaymentProvider("my_payment");
@@ -98,7 +95,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setEnabled(true);
         voucherType.setStartDate(LocalDate.of(2016, 1, 1));
         voucherType.setEndDate(LocalDate.of(2016, 1, 2));
-        voucherType.setOrder(5);
+        voucherType.setPriority(5);
         return voucherType;
     }
 
@@ -107,8 +104,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherType.getProduct()).isEqualTo("Tinder 1 Month Gold");
         Assertions.assertThat(voucherType.getPromo()).isEqualTo("supersale");
         Assertions.assertThat(voucherType.getDescription()).isEqualTo("my_description");
-        Assertions.assertThat(voucherType.getAmount().getValue()).isEqualByComparingTo("42");
-        Assertions.assertThat(voucherType.getAmount().getCurrency()).isEqualTo("GHJ");
+        Assertions.assertThat(voucherType.getAmount()).isEqualByComparingTo("42");
+        Assertions.assertThat(voucherType.getCurrency()).isEqualTo("GHJ");
         Assertions.assertThat(voucherType.getMerchantId()).isEqualTo("my_merchant");
         Assertions.assertThat(voucherType.getCountry()).isEqualTo("my_country");
         Assertions.assertThat(voucherType.getPaymentProvider()).isEqualTo("my_payment");
@@ -116,7 +113,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherType.getEnabled()).isTrue();
         Assertions.assertThat(voucherType.getStartDate()).isEqualTo(LocalDate.of(2016, 1, 1));
         Assertions.assertThat(voucherType.getEndDate()).isEqualTo(LocalDate.of(2016, 1, 2));
-        Assertions.assertThat(voucherType.getOrder()).isEqualTo(5);
+        Assertions.assertThat(voucherType.getPriority()).isEqualTo(5);
     }
 
     private void assertDto(VoucherTypes voucherTypes) {
@@ -133,6 +130,6 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherTypes.getEnabled()).isTrue();
         Assertions.assertThat(voucherTypes.getStartDate()).isEqualTo(LocalDate.of(2016, 1, 1));
         Assertions.assertThat(voucherTypes.getEndDate()).isEqualTo(LocalDate.of(2016, 1, 2));
-        Assertions.assertThat(voucherTypes.getOrder()).isEqualTo(5);
+        Assertions.assertThat(voucherTypes.getPriority()).isEqualTo(5);
     }
 }

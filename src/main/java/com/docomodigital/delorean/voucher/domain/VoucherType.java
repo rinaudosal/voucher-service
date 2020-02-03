@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -29,7 +30,10 @@ public class VoucherType extends AbstractAuditingEntity {
     private String promo;
 
     @NotNull
-    private Amount amount;
+    private BigDecimal amount;
+
+    @NotNull
+    private String currency;
 
     @NotBlank
     private String merchantId;
@@ -51,7 +55,7 @@ public class VoucherType extends AbstractAuditingEntity {
     private String baseUrl;
 
     @NotNull
-    private Integer order;
+    private Integer priority;
 
     public String getId() {
         return id;
@@ -93,12 +97,20 @@ public class VoucherType extends AbstractAuditingEntity {
         this.promo = promo;
     }
 
-    public Amount getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Amount amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     public String getMerchantId() {
@@ -165,11 +177,11 @@ public class VoucherType extends AbstractAuditingEntity {
         this.baseUrl = baseUrl;
     }
 
-    public Integer getOrder() {
-        return order;
+    public Integer getPriority() {
+        return priority;
     }
 
-    public void setOrder(Integer order) {
-        this.order = order;
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 }

@@ -53,7 +53,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
 
         List<VoucherType> voucherTypes = new ArrayList<>();
         notGrouped.forEach((product, types) -> {
-            VoucherType voucherTypeGrouped = types.stream().max(Comparator.comparing(VoucherType::getOrder))
+            VoucherType voucherTypeGrouped = types.stream().max(Comparator.comparing(VoucherType::getPriority))
                 .orElseThrow(NoSuchElementException::new);
 
             voucherTypes.add(voucherTypeGrouped);
@@ -64,13 +64,13 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             AvailableVoucherTypes availableVoucherTypes = new AvailableVoucherTypes();
             availableVoucherTypes.setCode(v.getCode());
             availableVoucherTypes.setDescription(v.getDescription());
-            availableVoucherTypes.setAmount(v.getAmount().getValue());
-            availableVoucherTypes.setCurrency(v.getAmount().getCurrency());
+            availableVoucherTypes.setAmount(v.getAmount());
+            availableVoucherTypes.setCurrency(v.getCurrency());
 
             // count the voucher ACTIVE
             Voucher voucher = new Voucher();
             voucher.setStatus(VoucherStatus.ACTIVE);
-            voucher.setType(v);
+            voucher.setTypeId(v.getId());
             voucher.setCreatedDate(null);
             voucher.setLastModifiedDate(null);
             availableVoucherTypes.setVoucherAvailable((int) voucherRepository.count(Example.of(voucher)));
@@ -103,7 +103,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             throw new BadRequestException("ALREADY_EXIST", "Voucher Type already exist");
         }
 
-        if (voucherTypeRepository.existsVoucherTypeByProductAndOrder(voucherTypes.getProduct(), voucherTypes.getOrder())) {
+        if (voucherTypeRepository.existsVoucherTypeByProductAndPriority(voucherTypes.getProduct(), voucherTypes.getPriority())) {
             throw new BadRequestException("SAME_PRODUCT_AND_ORDER", "Voucher Type exist with the same period");
         }
 

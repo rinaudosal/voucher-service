@@ -32,14 +32,17 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         VoucherType type = new VoucherType();
         type.setId("my_id");
         type.setCode("dcds");
-        Amount amount = new Amount();
-        amount.setValue(BigDecimal.TEN);
-        amount.setCurrency("cd");
-        type.setAmount(amount);
+        type.setAmount(BigDecimal.TEN);
+        type.setCurrency("cd");
+        type.setProduct("vdsv");
+        type.setPaymentProvider("bfcdbfd");
         type.setMerchantId("vdsv");
         type.setCountry("fdvfd");
         type.setShopId("dvsd");
-        voucher.setType(type);
+        type.setPriority(3);
+        voucherTypeRepository.save(type);
+
+        voucher.setTypeId(type.getId());
 
     }
 
@@ -74,12 +77,12 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
 
     @Test
     public void typeConstraint() {
-        voucher.setType(null);
+        voucher.setTypeId(null);
 
         // when save the voucher thrown an exception
         Assertions.assertThatThrownBy(() -> voucherRepository.save(voucher))
             .isInstanceOf(ConstraintViolationException.class)
-            .hasMessage("type: must not be null");
+            .hasMessage("typeId: must not be null");
     }
 
     @Test
@@ -95,14 +98,14 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         voucher.setCreatedDate(Instant.now());
         voucher.setLastModifiedBy("you");
         voucher.setLastModifiedDate(Instant.now());
-        voucher.setUploadId("123d546d");
+        voucher.setVoucherFileId("123d546d");
 
         // when save the voucher
         voucherRepository.save(voucher);
 
         // then i save the voucher no voucher type must be saved
         List<VoucherType> voucherTypes = voucherTypeRepository.findAll();
-        Assertions.assertThat(voucherTypes).hasSize(0);
+        Assertions.assertThat(voucherTypes).hasSize(1);
 
         List<Voucher> vouchers = voucherRepository.findAll();
         Assertions.assertThat(vouchers).hasSize(1);
@@ -111,7 +114,7 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
 
         Assertions.assertThat(returnValue.getCode()).isEqualTo("my_voucher_code");
         Assertions.assertThat(returnValue.getStatus()).isEqualTo(VoucherStatus.PURCHASED);
-        Assertions.assertThat(returnValue.getType()).isNotNull();
+        Assertions.assertThat(returnValue.getTypeId()).isNotNull();
         Assertions.assertThat(returnValue.getUserId()).isEqualTo("my_user_id");
         Assertions.assertThat(returnValue.getTransactionId()).isEqualTo("my_trans_id");
         Assertions.assertThat(returnValue.getTransactionDate()).isNotNull();
@@ -124,7 +127,7 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThat(returnValue.getCreatedDate()).isNotNull();
         Assertions.assertThat(returnValue.getLastModifiedBy()).isNotNull();
         Assertions.assertThat(returnValue.getLastModifiedDate()).isNotNull();
-        Assertions.assertThat(returnValue.getUploadId()).isEqualTo("123d546d");
+        Assertions.assertThat(returnValue.getVoucherFileId()).isEqualTo("123d546d");
 
     }
 
@@ -135,7 +138,7 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
 
         // then i save the voucher no voucher type must be saved
         List<VoucherType> voucherTypes = voucherTypeRepository.findAll();
-        Assertions.assertThat(voucherTypes).hasSize(0);
+        Assertions.assertThat(voucherTypes).hasSize(1);
 
         List<Voucher> vouchers = voucherRepository.findAll();
         Assertions.assertThat(vouchers).hasSize(1);
@@ -144,14 +147,14 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
 
         Assertions.assertThat(returnValue.getCode()).isEqualTo("my_voucher_code");
         Assertions.assertThat(returnValue.getStatus()).isEqualTo(VoucherStatus.PURCHASED);
-        Assertions.assertThat(returnValue.getType()).isNotNull();
+        Assertions.assertThat(returnValue.getTypeId()).isNotNull();
         Assertions.assertThat(returnValue.getUserId()).isNull();
         Assertions.assertThat(returnValue.getTransactionId()).isNull();
         Assertions.assertThat(returnValue.getTransactionDate()).isNull();
         Assertions.assertThat(returnValue.getPurchaseDate()).isNull();
         Assertions.assertThat(returnValue.getRedeemDate()).isNull();
         Assertions.assertThat(returnValue.getActivationUrl()).isNull();
-        Assertions.assertThat(returnValue.getUploadId()).isNull();
+        Assertions.assertThat(returnValue.getVoucherFileId()).isNull();
 
         Assertions.assertThat(returnValue.getId()).isNotNull();
         Assertions.assertThat(returnValue.getCreatedBy()).isNull();

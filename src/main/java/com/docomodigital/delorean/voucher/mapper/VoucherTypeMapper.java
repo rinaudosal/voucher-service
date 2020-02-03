@@ -16,8 +16,6 @@ import org.mapstruct.MappingTarget;
 public interface VoucherTypeMapper extends EntityMapper<VoucherTypes, VoucherType> {
 
     @Override
-    @Mapping(source = "amount", target = "amount.value")
-    @Mapping(source = "currency", target = "amount.currency")
     @Mapping(source = "merchant", target = "merchantId")
     @Mapping(source = "shop", target = "shopId")
     VoucherType toEntity(VoucherTypes dto);
@@ -27,8 +25,6 @@ public interface VoucherTypeMapper extends EntityMapper<VoucherTypes, VoucherTyp
     VoucherTypes toDto(VoucherType entity);
 
     @Mapping(target = "code", ignore = true)
-    @Mapping(source = "amount", target = "amount.value")
-    @Mapping(source = "currency", target = "amount.currency")
     @Mapping(source = "merchant", target = "merchantId")
     @Mapping(source = "shop", target = "shopId")
     void updateFromDto(VoucherTypes voucherTypes, @MappingTarget VoucherType car);

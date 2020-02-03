@@ -27,13 +27,11 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         voucherType = new VoucherType();
         voucherType.setCode("my_voucher_type_code");
         voucherType.setDescription("my_voucher_type_description");
-        Amount amount = new Amount();
-        amount.setValue(BigDecimal.valueOf(32));
-        amount.setCurrency("USD");
+        voucherType.setAmount(BigDecimal.valueOf(32));
+        voucherType.setCurrency("USD");
 
         voucherType.setProduct("my_product_name");
         voucherType.setPromo("my_promo");
-        voucherType.setAmount(amount);
         voucherType.setMerchantId("my_merchant_id");
         voucherType.setPaymentProvider("PAYTM BUUUU");
         voucherType.setCountry("INDIA");
@@ -41,7 +39,7 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         voucherType.setEnabled(true);
         voucherType.setStartDate(LocalDate.of(2020, 1, 1));
         voucherType.setEndDate(LocalDate.of(2020, 11, 8));
-        voucherType.setOrder(5);
+        voucherType.setPriority(5);
         voucherType.setBaseUrl("www.test.com");
     }
 
@@ -66,13 +64,13 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
     }
 
     @Test
-    public void orderMandatory() {
-        voucherType.setOrder(null);
+    public void priorityMandatory() {
+        voucherType.setPriority(null);
 
         // when save the voucher thrown an exception
         Assertions.assertThatThrownBy(() -> voucherTypeRepository.save(voucherType))
             .isInstanceOf(ConstraintViolationException.class)
-            .hasMessage("order: must not be null");
+            .hasMessage("priority: must not be null");
     }
 
     @Test
@@ -114,8 +112,8 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
 
         Assertions.assertThat(returnValue.getCode()).isEqualTo("my_voucher_type_code");
         Assertions.assertThat(returnValue.getDescription()).isEqualTo("my_voucher_type_description");
-        Assertions.assertThat(returnValue.getAmount().getValue()).isEqualByComparingTo("32");
-        Assertions.assertThat(returnValue.getAmount().getCurrency()).isEqualTo("USD");
+        Assertions.assertThat(returnValue.getAmount()).isEqualByComparingTo("32");
+        Assertions.assertThat(returnValue.getCurrency()).isEqualTo("USD");
         Assertions.assertThat(returnValue.getMerchantId()).isEqualTo("my_merchant_id");
         Assertions.assertThat(returnValue.getPaymentProvider()).isEqualTo("PAYTM BUUUU");
         Assertions.assertThat(returnValue.getCountry()).isEqualTo("INDIA");

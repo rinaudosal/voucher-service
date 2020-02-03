@@ -84,8 +84,8 @@ public class VoucherFileComponent {
         Voucher voucher = new Voucher();
         voucher.setCode(code);
         voucher.setStatus(VoucherStatus.ACTIVE);
-        voucher.setType(voucherType);
-        voucher.setUploadId(uploadId);
+        voucher.setTypeId(voucherType.getId());
+        voucher.setVoucherFileId(uploadId);
 
         return voucher;
     }

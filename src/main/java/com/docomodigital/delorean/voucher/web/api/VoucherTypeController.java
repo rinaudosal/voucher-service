@@ -1,11 +1,9 @@
 package com.docomodigital.delorean.voucher.web.api;
 
-import com.docomodigital.delorean.voucher.domain.Amount;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,12 +52,7 @@ public class VoucherTypeController implements VoucherTypeApi {
                                                               @Valid String shop,
                                                               @Valid Boolean enabled) {
         VoucherType voucherType = new VoucherType();
-        if (StringUtils.isNotBlank(currency)) {
-            Amount amount = new Amount();
-            amount.setCurrency(currency);
-            voucherType.setAmount(amount);
-        }
-
+        voucherType.setCurrency(currency);
         voucherType.setMerchantId(merchant);
         voucherType.setPaymentProvider(paymentProvider);
         voucherType.setCountry(country);

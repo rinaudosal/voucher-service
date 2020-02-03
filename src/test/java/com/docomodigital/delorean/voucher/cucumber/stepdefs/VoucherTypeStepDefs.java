@@ -1,6 +1,5 @@
 package com.docomodigital.delorean.voucher.cucumber.stepdefs;
 
-import com.docomodigital.delorean.voucher.domain.Amount;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
@@ -46,6 +45,9 @@ public class VoucherTypeStepDefs extends StepDefs {
         //save all
         voucherTypes.forEach((key, value) -> {
             voucherTypeRepository.save(key);
+
+            value.forEach(voucher -> voucher.setTypeId(key.getId()));
+
             voucherRepository.saveAll(value);
         });
     }
@@ -259,8 +261,8 @@ public class VoucherTypeStepDefs extends StepDefs {
         if (!StringUtils.equals(missingField, "endDate")) {
             voucherType.setEndDate(LocalDate.parse(firstRow.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         }
-        if (!StringUtils.equals(missingField, "order")) {
-            voucherType.setOrder(Integer.parseInt(firstRow.get("order")));
+        if (!StringUtils.equals(missingField, "priority")) {
+            voucherType.setPriority(Integer.parseInt(firstRow.get("priority")));
         }
 
         return voucherType;
@@ -276,10 +278,8 @@ public class VoucherTypeStepDefs extends StepDefs {
             voucherType.setPromo(getElementOrDefault(row, "promo", "DEFPROMO"));
             voucherType.setDescription(getElementOrDefault(row, "description", "DEFDESCRIPTION"));
 
-            Amount amount = new Amount();
-            amount.setValue(new BigDecimal(getElementOrDefault(row, "amount", "10.0")));
-            amount.setCurrency(getElementOrDefault(row, "currency", "INR"));
-            voucherType.setAmount(amount);
+            voucherType.setAmount(new BigDecimal(getElementOrDefault(row, "amount", "10.0")));
+            voucherType.setCurrency(getElementOrDefault(row, "currency", "INR"));
             voucherType.setMerchantId(getElementOrDefault(row, "merchant", "TINDER"));
             voucherType.setPaymentProvider(getElementOrDefault(row, "paymentProvider", "PAYTM"));
             voucherType.setCountry(getElementOrDefault(row, "country", "IN"));
@@ -287,7 +287,7 @@ public class VoucherTypeStepDefs extends StepDefs {
             voucherType.setEnabled(getElementOrDefault(row, "enabled", "true").equals("true"));
             voucherType.setStartDate(LocalDate.parse(getElementOrDefault(row, "startDate", "01/01/2020"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             voucherType.setEndDate(LocalDate.parse(getElementOrDefault(row, "endDate", "31/12/2020"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            voucherType.setOrder(Integer.parseInt(getElementOrDefault(row, "order", "5")));
+            voucherType.setPriority(Integer.parseInt(getElementOrDefault(row, "priority", "5")));
 
             int voucherPurchased = StringUtils.isBlank(row.get("Voucher Purchased")) ? 0 : Integer.parseInt(row.get("Voucher Purchased"));
             int voucherActive = StringUtils.isBlank(row.get("Voucher Active")) ? 0 : Integer.parseInt(row.get("Voucher Active"));
@@ -318,7 +318,7 @@ public class VoucherTypeStepDefs extends StepDefs {
 
         voucher.setCode(RandomStringUtils.random(15, true, true));
         voucher.setStatus(status);
-        voucher.setType(voucherType);
+        voucher.setTypeId(voucherType.getId());
         voucher.setUserId(RandomStringUtils.random(30, true, true));
         voucher.setTransactionId(RandomStringUtils.random(30, true, true));
 

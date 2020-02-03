@@ -25,14 +25,14 @@ public class Voucher extends AbstractAuditingEntity {
     @NotNull
     private VoucherStatus status;
     @NotNull
-    private VoucherType type;
+    private String typeId;
     private String userId;
     private String transactionId;
     private LocalDate transactionDate;
     private LocalDate purchaseDate;
     private LocalDate redeemDate;
     private String activationUrl;
-    private String uploadId;
+    private String voucherFileId;
 
     public String getId() {
         return id;
@@ -58,12 +58,12 @@ public class Voucher extends AbstractAuditingEntity {
         this.status = status;
     }
 
-    public VoucherType getType() {
-        return type;
+    public String getTypeId() {
+        return typeId;
     }
 
-    public void setType(VoucherType type) {
-        this.type = type;
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
     }
 
     public String getUserId() {
@@ -114,11 +114,11 @@ public class Voucher extends AbstractAuditingEntity {
         this.activationUrl = activationUrl;
     }
 
-    public String getUploadId() {
-        return uploadId;
+    public String getVoucherFileId() {
+        return voucherFileId;
     }
 
-    public void setUploadId(String uploadId) {
-        this.uploadId = uploadId;
+    public void setVoucherFileId(String voucherFileId) {
+        this.voucherFileId = voucherFileId;
     }
 }

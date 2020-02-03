@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 2020/01/29
@@ -51,18 +53,21 @@ public class VoucherServiceImpl implements VoucherService {
         VoucherType voucherType = getValidVoucherType(type);
 
         // check existing voucher code with the same merchant
-        if (voucherRepository.existsVoucherByCodeAndType_MerchantId(code, voucherType.getMerchantId())) {
+        List<String> typeIds = voucherTypeRepository.findAllByMerchantId(voucherType.getMerchantId()).stream()
+            .map(VoucherType::getId)
+            .collect(Collectors.toList());
+        if (voucherRepository.existsVoucherByCodeAndTypeIdIn(code, typeIds)) {
             throw new BadRequestException("ALREADY_EXIST", "Voucher with code " + code + " already exist");
         }
-
 
         Voucher voucher = new Voucher();
         voucher.setCode(code);
         voucher.setStatus(VoucherStatus.ACTIVE);
-        voucher.setType(voucherType);
+        voucher.setTypeId(voucherType.getId());
 
-        return voucherMapper.toDto(
-            voucherRepository.save(voucher));
+        Vouchers vouchers = voucherMapper.toDto(voucherRepository.save(voucher));
+        vouchers.setType(type);
+        return vouchers;
     }
 
     @Override

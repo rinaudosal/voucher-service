@@ -263,7 +263,7 @@ components:
         - country
         - paymentProvider
         - shop
-        - order
+        - priority
       properties:
         code:
           type: string
@@ -306,7 +306,7 @@ components:
           type: string
           format: date
           example: 2020-12-31
-        order:
+        priority:
           type: integer
           example: 3
 
