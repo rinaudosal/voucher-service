@@ -31,4 +31,13 @@ public interface VoucherRepository extends MongoRepository<Voucher, String> {
      */
     Optional<Voucher> findByCode(String code);
 
+    /**
+     * Method to find by code and type
+     *
+     * @param code the voucher code
+     * @param type the voucher type id
+     * @return The voucher if found
+     */
+    Optional<Voucher> findByCodeAndTypeId(String code, String type);
+
 }

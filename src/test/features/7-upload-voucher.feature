@@ -38,7 +38,7 @@ Feature: Upload Voucher
       | TIN9M | TYPE_EXPIRED   | Voucher Type TIN9M is expired  |
 
   Scenario: Voucher upload file malformed
-    When the operator wants to upload the voucher file malformed for type 'TIN1M'
+    When the operator wants to 'upload' the voucher file malformed for type 'TIN1M'
     Then the operator receive the error code 'FILE_MALFORMED' and description 'Error, the file is malformed'
 
 #  Scenario: Voucher upload partial in error
@@ -46,7 +46,7 @@ Feature: Upload Voucher
 #    Then the operator upload the 3 vouchers correctly and 1 with error 'Voucher with code 'EXISTINGVOUCHER' already exist'
 
   Scenario Outline: Voucher upload without mandatory fields
-    When the operator wants to upload the voucher without field '<field>'
+    When the operator wants to 'upload' the voucher without field '<field>'
     Then the operator receive the error 'Invalid request, parameter '<field>' is mandatory'
     Examples:
       | field |

@@ -43,29 +43,24 @@ public class VoucherStepDefs extends StepDefs {
             .param("type", type));
     }
 
-    @When("the operator wants to upload the voucher without field {string}")
-    public void theOperatorWantsToUpdateTheVoucherWithoutField(String missingField) throws Exception {
+    @When("the operator wants to {string} the voucher without field {string}")
+    public void theOperatorWantsToUpdateTheVoucherWithoutField(String operation, String missingField) throws Exception {
         MockMultipartFile file = buildVoucherFile(2, null);
 
         if (missingField.equals("type")) {
-            resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/upload")
+            resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
                 .file(file)
                 .characterEncoding("UTF-8"));
         } else {
-            resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/upload")
+            resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
                 .param("type", "TIN1M")
                 .characterEncoding("UTF-8"));
         }
     }
 
-    @When("the operator wants to purchase the voucher without field {string}")
-    public void theOperatorWantsToPurchaseTheVoucherWithoutFieldField(String missingField) {
-
-    }
 
     @When("the operator wants to create the voucher without field {string}")
     public void theOperatorWantsToCreateTheVoucherWithoutField(String missingField) throws Exception {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         if (!missingField.equals("code")) {
             resultActions = mockMvc.perform(post("/v1/voucher/VOUCHER21/upload")
                 .accept(MediaType.APPLICATION_JSON));
@@ -90,6 +85,11 @@ public class VoucherStepDefs extends StepDefs {
             .characterEncoding("UTF-8"));
     }
 
+
+//    @When("the operator wants to upload the voucher file with <size> vouchers for type {string}")
+//    public void theOperatorWantsToUploadTheVoucherFileWithSizeVouchersForTypeType() {
+//
+//    }
     @When("the operator wants to upload the voucher file with {int} vouchers for type {string} and the voucher file contain also {string}")
     public void theOperatorWantsToUploadTheVoucherFileWithVouchersForTypeTINMAndTheVoucherFileContainEXISTINGVOUCHER(int size, String type, String code) throws Exception {
         MockMultipartFile file = buildVoucherFile(size, code);
@@ -100,14 +100,25 @@ public class VoucherStepDefs extends StepDefs {
             .characterEncoding("UTF-8"));
     }
 
-    @When("the operator wants to upload the voucher file malformed for type {string}")
-    public void theOperatorWantsToUploadTheVoucherFileMalformedForType(String type) throws Exception {
+    @When("the operator wants to redeem the voucher file for the type {string} with the voucher {string}")
+    public void theOperatorWantsToRedeemTheVoucherFileForTheTypeTypeWithTheVoucherVoucher(String type, String code) throws Exception {
+        MockMultipartFile file = buildVoucherFile(0, code);
+
+        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/redeem")
+            .file(file)
+            .param("type", type)
+            .characterEncoding("UTF-8"));
+
+    }
+
+    @When("the operator wants to {string} the voucher file malformed for type {string}")
+    public void theOperatorWantsToUploadTheVoucherFileMalformedForType(String operation, String type) throws Exception {
 
         writeVoucherFile(3, "voucher_example.csv", null);
         byte[] fileContent = readVoucherFile();
         MockMultipartFile file = new MockMultipartFile("file", "voucher_example.csv", "fdgbfdv", fileContent);
 
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/upload")
+        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
             .file(file)
             .param("type", type)
             .characterEncoding("UTF-8"));
@@ -164,6 +175,17 @@ public class VoucherStepDefs extends StepDefs {
 
     }
 
+    @Then("the operator redeem the voucher correctly for type {string}")
+    public void theOperatorRedeemTheVoucherCorrectlyForType(String type) throws Exception {
+        resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("UPLOADED"))
+            .andExpect(jsonPath("$.filename").value("voucher_example.csv"))
+            .andExpect(jsonPath("$.type").value(type))
+            .andExpect(jsonPath("$.total").value(1))
+            .andExpect(jsonPath("$.uploaded").value(1))
+            .andExpect(jsonPath("$.errors").value(0));
+    }
+
     @Then("the operator receive the error code {string} and description {string}")
     public void theOperatorReceiveTheErrorCodeAndDescription(String errorCode, String errorMessage) throws Exception {
         checkBadRequest(errorCode, errorMessage);
@@ -218,4 +240,5 @@ public class VoucherStepDefs extends StepDefs {
         voucher.setTypeId(voucherType.getId());
         return voucher;
     }
+
 }

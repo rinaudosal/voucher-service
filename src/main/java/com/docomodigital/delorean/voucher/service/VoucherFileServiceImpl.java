@@ -1,12 +1,18 @@
 package com.docomodigital.delorean.voucher.service;
 
-import com.docomodigital.delorean.voucher.domain.*;
+import com.docomodigital.delorean.voucher.domain.Voucher;
+import com.docomodigital.delorean.voucher.domain.VoucherFile;
+import com.docomodigital.delorean.voucher.domain.VoucherFileStatus;
+import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.mapper.VoucherFileMapper;
 import com.docomodigital.delorean.voucher.repository.VoucherFileRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
+import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
+import com.docomodigital.delorean.voucher.service.upload.VoucherSingleProcessor;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -22,24 +28,22 @@ import java.util.Scanner;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Component
-public class VoucherFileComponent {
+public class VoucherFileServiceImpl implements VoucherFileService {
     private static final int BULK_SIZE = 1000;
 
     private final VoucherRepository voucherRepository;
     private final VoucherFileRepository voucherFileRepository;
     private final VoucherFileMapper voucherFileMapper;
 
-    public VoucherFileComponent(VoucherRepository voucherRepository, VoucherFileRepository voucherFileRepository, VoucherFileMapper voucherFileMapper) {
+    public VoucherFileServiceImpl(VoucherRepository voucherRepository,
+                                  VoucherFileRepository voucherFileRepository,
+                                  VoucherFileMapper voucherFileMapper) {
         this.voucherRepository = voucherRepository;
         this.voucherFileRepository = voucherFileRepository;
         this.voucherFileMapper = voucherFileMapper;
     }
 
-    /**
-     * Check the file that want to upload
-     *
-     * @param file the multipart file
-     */
+    @Override
     public void checkFileToUpload(MultipartFile file) {
         // must to be text/plain
         if (!Objects.equals(file.getContentType(), "text/csv")) {
@@ -47,30 +51,41 @@ public class VoucherFileComponent {
         }
     }
 
-    public VoucherUpload uploadFile(MultipartFile file, VoucherType voucherType) throws IOException {
+    @Override
+    @Transactional
+    public VoucherUpload uploadFile(MultipartFile file, VoucherType type, UploadOperation uploadOperation, VoucherSingleProcessor voucherSingleProcessor) {
+
         VoucherFile voucherUpload = new VoucherFile();
         voucherUpload.setFilename(file.getOriginalFilename());
-        voucherUpload.setType(voucherType);
+        voucherUpload.setType(type);
+        voucherUpload.setOperation(uploadOperation);
         voucherUpload.setStatus(VoucherFileStatus.UPLOADED);
         voucherFileRepository.save(voucherUpload);
 
-        //ho il file in memoria, leggo 100 righe alla volta, ogni cento righe salvo a db e svuoto le collection
         List<Voucher> vouchersToSave = new ArrayList<>();
         int total = 0;
         int uploaded = 0;
         int errors = 0;
 
-        Scanner sc = new Scanner(file.getInputStream());
-        while (sc.hasNextLine()) {
-            total += 1;
-            String line = sc.nextLine();
-            vouchersToSave.add(this.buildVoucher(line, voucherType, voucherUpload.getId()));
+        try {
 
-            if (vouchersToSave.size() == BULK_SIZE || !sc.hasNextLine()) {
-                voucherRepository.saveAll(vouchersToSave);
-                uploaded += vouchersToSave.size();
-                vouchersToSave = new ArrayList<>();
+            Scanner sc = new Scanner(file.getInputStream());
+            while (sc.hasNextLine()) {
+                total += 1;
+                String line = sc.nextLine();
+
+                // this change from upload purchase or redeem
+
+                vouchersToSave.add(voucherSingleProcessor.consume(line, type, voucherUpload.getId()));
+
+                if (vouchersToSave.size() == BULK_SIZE || !sc.hasNextLine()) {
+                    voucherRepository.saveAll(vouchersToSave);
+                    uploaded += vouchersToSave.size();
+                    vouchersToSave = new ArrayList<>();
+                }
             }
+        } catch (IOException e) {
+            voucherUpload.setStatus(VoucherFileStatus.ERROR);
         }
 
         voucherUpload.setTotal(total);
@@ -78,15 +93,5 @@ public class VoucherFileComponent {
         voucherUpload.setErrors(errors);
 
         return voucherFileMapper.toDto(voucherUpload);
-    }
-
-    private Voucher buildVoucher(String code, VoucherType voucherType, String uploadId) {
-        Voucher voucher = new Voucher();
-        voucher.setCode(code);
-        voucher.setStatus(VoucherStatus.ACTIVE);
-        voucher.setTypeId(voucherType.getId());
-        voucher.setVoucherFileId(uploadId);
-
-        return voucher;
     }
 }

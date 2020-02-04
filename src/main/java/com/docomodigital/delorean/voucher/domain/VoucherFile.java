@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.domain;
 
+import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -27,6 +28,9 @@ public class VoucherFile extends AbstractAuditingEntity {
 
     @NotNull
     private VoucherFileStatus status;
+
+    @NotNull
+    private UploadOperation operation;
 
     private Integer total;
     private Integer uploaded;
@@ -62,6 +66,14 @@ public class VoucherFile extends AbstractAuditingEntity {
 
     public void setStatus(VoucherFileStatus status) {
         this.status = status;
+    }
+
+    public UploadOperation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(UploadOperation operation) {
+        this.operation = operation;
     }
 
     public Integer getTotal() {

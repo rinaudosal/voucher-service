@@ -18,7 +18,7 @@ import java.time.ZoneOffset;
 public interface VoucherMapper extends EntityMapper<Vouchers, Voucher> {
 
     @Override
-    @Mapping(target = "typeId", ignore = true)
+    @Mapping(source = "type", target = "typeId")
     Voucher toEntity(Vouchers dto);
 
     @Override

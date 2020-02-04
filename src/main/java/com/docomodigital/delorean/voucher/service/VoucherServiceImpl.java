@@ -6,6 +6,9 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.mapper.VoucherMapper;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
+import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherStrategy;
+import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherFactory;
+import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
@@ -13,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -31,27 +33,32 @@ public class VoucherServiceImpl implements VoucherService {
 
     private final VoucherRepository voucherRepository;
     private final VoucherTypeRepository voucherTypeRepository;
-    private final VoucherFileComponent voucherFileComponent;
+    private final VoucherFileService voucherFileService;
     private final VoucherMapper voucherMapper;
     private final Clock clock;
     private static final String ENTITY_NAME = "Voucher Type ";
+    private final ProcessVoucherFactory uploadFileFactory;
 
     public VoucherServiceImpl(VoucherRepository voucherRepository,
                               VoucherTypeRepository voucherTypeRepository,
-                              VoucherFileComponent voucherFileComponent,
+                              VoucherFileService voucherFileService,
                               VoucherMapper voucherMapper,
-                              Clock clock) {
+                              Clock clock,
+                              ProcessVoucherFactory uploadFileFactory
+    ) {
         this.voucherRepository = voucherRepository;
         this.voucherTypeRepository = voucherTypeRepository;
-        this.voucherFileComponent = voucherFileComponent;
+        this.voucherFileService = voucherFileService;
         this.voucherMapper = voucherMapper;
         this.clock = clock;
+        this.uploadFileFactory = uploadFileFactory;
     }
 
     @Override
     public Vouchers createVoucher(String code, String type) {
+        ProcessVoucherStrategy processVoucherStrategy = uploadFileFactory.getUploadFileStrategy(UploadOperation.UPLOAD);
 
-        VoucherType voucherType = getValidVoucherType(type);
+        VoucherType voucherType = processVoucherStrategy.getValidVoucherType(type);
 
         // check existing voucher code with the same merchant
         List<String> typeIds = voucherTypeRepository.findAllByMerchantId(voucherType.getMerchantId()).stream()
@@ -61,31 +68,25 @@ public class VoucherServiceImpl implements VoucherService {
             throw new BadRequestException("ALREADY_EXIST", "Voucher with code " + code + " already exist");
         }
 
-        Voucher voucher = new Voucher();
-        voucher.setCode(code);
-        voucher.setStatus(VoucherStatus.ACTIVE);
-        voucher.setTypeId(voucherType.getId());
-
-        Vouchers vouchers = voucherMapper.toDto(voucherRepository.save(voucher));
+        Vouchers vouchers = voucherMapper.toDto(
+            voucherRepository.save(
+                processVoucherStrategy.processLine(code, voucherType, null)));
         vouchers.setType(type);
         return vouchers;
     }
 
     @Override
-    public VoucherUpload uploadVouchers(MultipartFile file, String type) {
+    public VoucherUpload processVouchers(MultipartFile file, String type, UploadOperation uploadOperation) {
 
-        voucherFileComponent.checkFileToUpload(file);
+        voucherFileService.checkFileToUpload(file);
 
-        VoucherType voucherType = getValidVoucherType(type);
+        ProcessVoucherStrategy processVoucherStrategy = uploadFileFactory.getUploadFileStrategy(uploadOperation);
 
-        try {
-            return voucherFileComponent.uploadFile(file, voucherType);
-        } catch (IOException e) {
-            log.error("IOException on upload file", e);
-        }
+        VoucherType voucherType = processVoucherStrategy.getValidVoucherType(type);
 
-        return null;
+        return voucherFileService.uploadFile(file, voucherType, uploadOperation, processVoucherStrategy::processLine);
     }
+
 
     @Override
     public Vouchers purchaseVoucher(String code, String transactionId, OffsetDateTime transactionDate, String userId) {
@@ -100,7 +101,7 @@ public class VoucherServiceImpl implements VoucherService {
             .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", ENTITY_NAME + voucher.getTypeId() + " not found"));
 
         if (LocalDate.now(clock).isBefore(voucherType.getStartDate())) {
-            throw new BadRequestException("TYPE_NOT_YET_AVAILABLE", "Voucher Type " + voucherType.getCode() + " is not yet available");
+            throw new BadRequestException("TYPE_NOT_YET_AVAILABLE", ENTITY_NAME + voucherType.getCode() + " is not yet available");
         }
 
         if (!voucherType.getEnabled()) {
@@ -108,8 +109,6 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         voucher.setActivationUrl(voucherType.getBaseUrl() + voucher.getCode());
-
-
         voucher.setStatus(VoucherStatus.PURCHASED);
         voucher.setUserId(userId);
         voucher.setTransactionId(transactionId);
@@ -118,21 +117,5 @@ public class VoucherServiceImpl implements VoucherService {
 
 
         return voucherMapper.toDto(voucherRepository.save(voucher));
-    }
-
-    private VoucherType getValidVoucherType(String type) {
-        VoucherType voucherType = voucherTypeRepository.findByCode(type)
-            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", ENTITY_NAME + type + " not found"));
-
-        if (!voucherType.getEnabled()) {
-            throw new BadRequestException("TYPE_DISABLED", ENTITY_NAME + type + " is disabled");
-        }
-
-        LocalDate today = LocalDate.now(clock);
-        if (!voucherType.getEndDate().isAfter(today)) {
-            throw new BadRequestException("TYPE_EXPIRED", ENTITY_NAME + type + " is expired");
-        }
-
-        return voucherType;
     }
 }
