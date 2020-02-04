@@ -61,6 +61,13 @@ public class VoucherController implements VoucherApi {
     }
 
     @Override
+    public ResponseEntity<VoucherUpload> purchaseFileVoucher(@Valid MultipartFile file, String type) {
+        VoucherUpload vouchersUploaded = voucherService.processVouchers(file, type, UploadOperation.PURCHASE);
+
+        return ResponseEntity.ok(vouchersUploaded);
+    }
+
+    @Override
     public ResponseEntity<Vouchers> purchaseVoucher(String code, @NotNull @Valid String transactionId, @Valid OffsetDateTime transactionDate, @Valid String userId) {
         Vouchers voucher = voucherService.purchaseVoucher(code, transactionId, transactionDate, userId);
 

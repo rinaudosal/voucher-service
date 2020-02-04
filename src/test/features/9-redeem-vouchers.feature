@@ -21,8 +21,8 @@ Feature: Redeem Voucher
       | VOU51PUR | TIN3E | PURCHASED |
 
   Scenario Outline: Voucher file redeemed
-    When the operator wants to redeem the voucher file for the type '<type>' with the voucher '<voucher>'
-    Then the operator redeem the voucher correctly for type '<type>'
+    When the operator wants to 'redeem' the voucher file for the type '<type>' with the voucher '<voucher>'
+    Then the operator receive the voucher correctly for type '<type>'
     Examples:
       | type  | voucher  |
       | TIN1M | VOU11PUR |
@@ -31,7 +31,7 @@ Feature: Redeem Voucher
       | TIN3E | VOU51PUR |
 
   Scenario Outline: Voucher redeem in error
-    When the operator wants to redeem the voucher file for the type '<type>' with the voucher '<voucher>'
+    When the operator wants to 'redeem' the voucher file for the type '<type>' with the voucher '<voucher>'
     Then the operator receive the error code '<errorCode>' and description '<errorDescription>'
     Examples:
       | type  | voucher  | errorCode         | errorDescription                                      |

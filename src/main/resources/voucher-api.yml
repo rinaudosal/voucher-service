@@ -274,6 +274,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VoucherUpload'
+
   /voucher/redeem:
     post:
       tags:
@@ -281,6 +282,36 @@ paths:
       summary: redeem
       operationId: redeemVoucher
       description: redeem the voucher
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                type:
+                  type: string
+                  example: VOU1M
+              required:
+                - file
+                - type
+      responses:
+        '200':      # Response
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherUpload'
+
+  /voucher/purchase:
+    post:
+      tags:
+        - voucher
+      summary: purchasefile
+      operationId: purchaseFileVoucher
+      description: purchase the voucher from file
       requestBody:
         content:
           multipart/form-data:

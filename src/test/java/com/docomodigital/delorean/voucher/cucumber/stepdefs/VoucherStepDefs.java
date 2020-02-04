@@ -9,8 +9,6 @@ import io.cucumber.java.en.When;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,7 +84,7 @@ public class VoucherStepDefs extends StepDefs {
     }
 
 
-//    @When("the operator wants to upload the voucher file with <size> vouchers for type {string}")
+    //    @When("the operator wants to upload the voucher file with <size> vouchers for type {string}")
 //    public void theOperatorWantsToUploadTheVoucherFileWithSizeVouchersForTypeType() {
 //
 //    }
@@ -100,11 +98,11 @@ public class VoucherStepDefs extends StepDefs {
             .characterEncoding("UTF-8"));
     }
 
-    @When("the operator wants to redeem the voucher file for the type {string} with the voucher {string}")
-    public void theOperatorWantsToRedeemTheVoucherFileForTheTypeTypeWithTheVoucherVoucher(String type, String code) throws Exception {
+    @When("the operator wants to {string} the voucher file for the type {string} with the voucher {string}")
+    public void theOperatorWantsToRedeemTheVoucherFileForTheTypeTypeWithTheVoucherVoucher(String operation, String type, String code) throws Exception {
         MockMultipartFile file = buildVoucherFile(0, code);
 
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/redeem")
+        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
             .file(file)
             .param("type", type)
             .characterEncoding("UTF-8"));
@@ -175,7 +173,7 @@ public class VoucherStepDefs extends StepDefs {
 
     }
 
-    @Then("the operator redeem the voucher correctly for type {string}")
+    @Then("the operator receive the voucher correctly for type {string}")
     public void theOperatorRedeemTheVoucherCorrectlyForType(String type) throws Exception {
         resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("UPLOADED"))
