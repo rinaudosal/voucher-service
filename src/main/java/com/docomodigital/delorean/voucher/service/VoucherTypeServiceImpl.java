@@ -77,7 +77,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             return availableVoucherTypes;
         })
             .filter(v -> v.getVoucherAvailable() > 0)
-            .sorted(Comparator.comparing(AvailableVoucherTypes::getCode))//only voucher available
+            .sorted(Comparator.comparing(AvailableVoucherTypes::getCode))
             .collect(Collectors.toList());
     }
 

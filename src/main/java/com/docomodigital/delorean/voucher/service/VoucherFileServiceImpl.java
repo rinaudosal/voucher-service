@@ -9,6 +9,7 @@ import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.service.upload.VoucherSingleProcessor;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import java.util.Scanner;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
+@Slf4j
 @Component
 public class VoucherFileServiceImpl implements VoucherFileService {
     private static final int BULK_SIZE = 1000;
@@ -54,7 +56,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
 
     @Override
     @Transactional
-    public VoucherUpload uploadFile(MultipartFile file, VoucherType type, UploadOperation uploadOperation, VoucherSingleProcessor voucherSingleProcessor) {
+    public VoucherUpload uploadFile(MultipartFile file, VoucherType type, UploadOperation uploadOperation, VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor) {
 
         VoucherFile voucherUpload = new VoucherFile();
         voucherUpload.setFilename(file.getOriginalFilename());
@@ -77,19 +79,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
 
                 // this change from upload purchase or redeem
 
-                try {
-                    Voucher voucherProcessed = voucherSingleProcessor.consume(line, type, voucherUpload.getId());
-                    vouchersToSave.add(voucherProcessed);
-                } catch (BadRequestException e) {
-                    errors += 1;
-                    VoucherError voucherError = new VoucherError();
-                    voucherError.setUploadId(voucherUpload.getId());
-                    voucherError.setCode(line);
-                    voucherError.setLineNumber(lineNumber);
-                    voucherError.setErrorCode(e.getErrorCode());
-                    voucherError.setErrorMessage(e.getMessage());
-                    voucherErrorRepository.save(voucherError);
-                }
+                errors = checkSingleLine(type, voucherSingleProcessor, voucherUpload, vouchersToSave, lineNumber, errors, line);
 
                 if (vouchersToSave.size() == BULK_SIZE || !sc.hasNextLine()) {
                     voucherRepository.saveAll(vouchersToSave);
@@ -98,6 +88,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
                 }
             }
         } catch (IOException e) {
+            log.error("Exception on read file", e);
             voucherUpload.setStatus(VoucherFileStatus.ERROR);
         }
 
@@ -106,5 +97,24 @@ public class VoucherFileServiceImpl implements VoucherFileService {
         voucherUpload.setErrors(errors);
 
         return voucherFileMapper.toDto(voucherUpload);
+    }
+
+    private int checkSingleLine(VoucherType type, VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor, VoucherFile voucherUpload, List<Voucher> vouchersToSave, int lineNumber, int errors, String line) {
+        try {
+            Voucher voucherProcessed = voucherSingleProcessor.consume(line, type, voucherUpload.getId());
+            vouchersToSave.add(voucherProcessed);
+        } catch (BadRequestException e) {
+            log.error("Error on process line " + lineNumber + " with error " + e.getErrorCode(), e.getMessage());
+
+            errors += 1;
+            VoucherError voucherError = new VoucherError();
+            voucherError.setUploadId(voucherUpload.getId());
+            voucherError.setCode(line);
+            voucherError.setLineNumber(lineNumber);
+            voucherError.setErrorCode(e.getErrorCode());
+            voucherError.setErrorMessage(e.getMessage());
+            voucherErrorRepository.save(voucherError);
+        }
+        return errors;
     }
 }

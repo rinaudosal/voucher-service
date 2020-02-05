@@ -17,17 +17,10 @@ import java.time.LocalDate;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Component
-public class PurchaseVoucherStrategyImpl implements ProcessVoucherStrategy {
-    private static final String VOUCHER_TYPE_ENTITY_NAME = "Voucher Type ";
-
-    private final VoucherTypeRepository voucherTypeRepository;
-    private final VoucherRepository voucherRepository;
-    private final Clock clock;
+public class PurchaseVoucherStrategyImpl extends AbstractVoucherStrategyImpl implements ProcessVoucherStrategy {
 
     public PurchaseVoucherStrategyImpl(VoucherTypeRepository voucherTypeRepository, VoucherRepository voucherRepository, Clock clock) {
-        this.voucherTypeRepository = voucherTypeRepository;
-        this.voucherRepository = voucherRepository;
-        this.clock = clock;
+        super(voucherTypeRepository, voucherRepository, clock);
     }
 
     @Override
@@ -44,23 +37,6 @@ public class PurchaseVoucherStrategyImpl implements ProcessVoucherStrategy {
         voucher.setVoucherFileId(uploadId);
 
         return voucher;
-    }
-
-    @Override
-    public VoucherType getValidVoucherType(String type) {
-        VoucherType voucherType = voucherTypeRepository.findByCode(type)
-            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", VOUCHER_TYPE_ENTITY_NAME + type + " not found"));
-
-        if (!voucherType.getEnabled()) {
-            throw new BadRequestException("TYPE_DISABLED", VOUCHER_TYPE_ENTITY_NAME + type + " is disabled");
-        }
-
-        LocalDate today = LocalDate.now(clock);
-        if (!voucherType.getEndDate().isAfter(today)) {
-            throw new BadRequestException("TYPE_EXPIRED", VOUCHER_TYPE_ENTITY_NAME + type + " is expired");
-        }
-
-        return voucherType;
     }
 
 }

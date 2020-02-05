@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.service;
 
+import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.service.upload.VoucherSingleProcessor;
@@ -29,5 +30,5 @@ public interface VoucherFileService {
      * @param voucherSingleProcessor processo for single lines
      * @return the Object with statistics data
      */
-    VoucherUpload uploadFile(MultipartFile file, VoucherType voucherType, UploadOperation uploadOperation, VoucherSingleProcessor voucherSingleProcessor);
+    VoucherUpload uploadFile(MultipartFile file, VoucherType voucherType, UploadOperation uploadOperation, VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor);
 }

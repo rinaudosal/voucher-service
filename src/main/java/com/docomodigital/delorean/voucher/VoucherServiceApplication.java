@@ -19,7 +19,7 @@ import java.util.Collections;
 @SpringBootApplication
 @EnableConfigurationProperties({ApplicationProperties.class})
 public class VoucherServiceApplication implements InitializingBean {
-    private static final Logger log = LoggerFactory.getLogger(VoucherServiceApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(VoucherServiceApplication.class);
 
     private final Environment env;
 
@@ -38,7 +38,7 @@ public class VoucherServiceApplication implements InitializingBean {
     public void afterPropertiesSet() {
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
         if (activeProfiles.contains("dev") && activeProfiles.contains("prod")) {
-            log.error("You have misconfigured your application! It should not run " +
+            logger.error("You have misconfigured your application! It should not run " +
                 "with both the 'dev' and 'prod' profiles at the same time.");
         }
     }
@@ -69,9 +69,9 @@ public class VoucherServiceApplication implements InitializingBean {
         try {
             hostAddress = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
-            log.warn("The host name could not be determined, using `localhost` as fallback");
+            logger.warn("The host name could not be determined, using `localhost` as fallback. ", e);
         }
-        log.info("\n----------------------------------------------------------\n\t" +
+        logger.info("\n----------------------------------------------------------\n\t" +
                 "Application '{}' is running! Access URLs:\n\t" +
                 "Local: \t\t{}://localhost:{}{}\n\t" +
                 "External: \t{}://{}:{}{}\n\t" +

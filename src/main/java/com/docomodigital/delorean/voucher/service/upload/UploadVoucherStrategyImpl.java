@@ -9,7 +9,6 @@ import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
-import java.time.LocalDate;
 import java.util.Collections;
 
 /**
@@ -18,22 +17,14 @@ import java.util.Collections;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Component
-public class UploadVoucherStrategyImpl implements ProcessVoucherStrategy {
-
-    private static final String VOUCHER_TYPE_ENTITY_NAME = "Voucher Type ";
-    private final VoucherTypeRepository voucherTypeRepository;
-    private final VoucherRepository voucherRepository;
-    private final Clock clock;
-
+public class UploadVoucherStrategyImpl extends AbstractVoucherStrategyImpl implements ProcessVoucherStrategy {
     public UploadVoucherStrategyImpl(VoucherTypeRepository voucherTypeRepository, VoucherRepository voucherRepository, Clock clock) {
-        this.voucherTypeRepository = voucherTypeRepository;
-        this.voucherRepository = voucherRepository;
-        this.clock = clock;
+        super(voucherTypeRepository, voucherRepository, clock);
     }
 
     @Override
     public Voucher processLine(String line, VoucherType type, String uploadId) {
-        if(voucherRepository.existsVoucherByCodeAndTypeIdIn(line, Collections.singletonList(type.getId()))) {
+        if (voucherRepository.existsVoucherByCodeAndTypeIdIn(line, Collections.singletonList(type.getId()))) {
             throw new BadRequestException("ALREADY_EXIST", "Voucher " + line + " already exist");
         }
 
@@ -46,20 +37,4 @@ public class UploadVoucherStrategyImpl implements ProcessVoucherStrategy {
         return voucher;
     }
 
-    @Override
-    public VoucherType getValidVoucherType(String type) {
-        VoucherType voucherType = voucherTypeRepository.findByCode(type)
-            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", VOUCHER_TYPE_ENTITY_NAME + type + " not found"));
-
-        if (!voucherType.getEnabled()) {
-            throw new BadRequestException("TYPE_DISABLED", VOUCHER_TYPE_ENTITY_NAME + type + " is disabled");
-        }
-
-        LocalDate today = LocalDate.now(clock);
-        if (!voucherType.getEndDate().isAfter(today)) {
-            throw new BadRequestException("TYPE_EXPIRED", VOUCHER_TYPE_ENTITY_NAME + type + " is expired");
-        }
-
-        return voucherType;
-    }
 }
