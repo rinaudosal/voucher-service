@@ -104,7 +104,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
             Voucher voucherProcessed = voucherSingleProcessor.consume(line, type, voucherUpload.getId());
             vouchersToSave.add(voucherProcessed);
         } catch (BadRequestException e) {
-            log.error("Error on process line " + lineNumber + " with error " + e.getErrorCode(), e.getMessage());
+            log.error("Error on process line " + lineNumber + " with error " + e.getErrorCode(), e);
 
             errors += 1;
             VoucherError voucherError = new VoucherError();
