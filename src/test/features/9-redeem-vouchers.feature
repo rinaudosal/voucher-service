@@ -34,20 +34,22 @@ Feature: Redeem Voucher
     When the operator wants to 'redeem' the voucher file for the type '<type>' with the voucher '<voucher>'
     Then the operator receive the error code '<errorCode>' and description '<errorDescription>'
     Examples:
-      | type  | voucher  | errorCode         | errorDescription                                      |
-      | PIPPO | VOU11PUR | TYPE_NOT_FOUND    | Voucher Type PIPPO not found                          |
-      | TIN1M | VOU12INA | WRONG_STATUS      | Voucher VOU12INA not redeemed, the status is INACTIVE |
-      | TIN1M | VOU13ACT | WRONG_STATUS      | Voucher VOU13ACT not redeemed, the status is ACTIVE   |
-      | TIN1M | VOU14RED | WRONG_STATUS      | Voucher VOU14RED not redeemed, the status is REDEEMED |
-      | TIN1M | VOU31PUR | VOUCHER_NOT_FOUND | Voucher VOU31PUR not found for Type TIN1M             |
+      | type  | voucher  | errorCode      | errorDescription             |
+      | PIPPO | VOU11PUR | TYPE_NOT_FOUND | Voucher Type PIPPO not found |
 
   Scenario: Voucher redeem file malformed
     When the operator wants to 'redeem' the voucher file malformed for type 'TIN1M'
     Then the operator receive the error code 'FILE_MALFORMED' and description 'Error, the file is malformed'
 
-#  Scenario: Voucher upload partial in error
-#    When the operator wants to upload the voucher file with 3 vouchers for type 'TIN1M' and the voucher file contain also 'EXISTINGVOUCHER'
-#    Then the operator upload the 3 vouchers correctly and 1 with error 'Voucher with code 'EXISTINGVOUCHER' already exist'
+  Scenario Outline: Voucher redeem partial in error
+    When the operator wants to 'redeem' the voucher file with 0 vouchers for type 'TIN1M' and the voucher file contain also '<vouchers>'
+    Then the operator 'redeem' the 1 vouchers correctly and 1 with error '<errorCode>' and message '<errorMessage>'
+    Examples:
+      | vouchers          | errorCode         | errorMessage                                          |
+      | VOU12INA,VOU11PUR | WRONG_STATUS      | Voucher VOU12INA not redeemed, the status is INACTIVE |
+      | VOU13ACT,VOU11PUR | WRONG_STATUS      | Voucher VOU13ACT not redeemed, the status is ACTIVE   |
+      | VOU14RED,VOU11PUR | WRONG_STATUS      | Voucher VOU14RED not redeemed, the status is REDEEMED |
+      | VOU31PUR,VOU11PUR | VOUCHER_NOT_FOUND | Voucher VOU31PUR not found for Type TIN1M             |
 
   Scenario Outline: Voucher redeem without mandatory fields
     When the operator wants to 'redeem' the voucher without field '<field>'

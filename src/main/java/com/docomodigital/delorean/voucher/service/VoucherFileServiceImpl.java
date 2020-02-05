@@ -1,10 +1,8 @@
 package com.docomodigital.delorean.voucher.service;
 
-import com.docomodigital.delorean.voucher.domain.Voucher;
-import com.docomodigital.delorean.voucher.domain.VoucherFile;
-import com.docomodigital.delorean.voucher.domain.VoucherFileStatus;
-import com.docomodigital.delorean.voucher.domain.VoucherType;
+import com.docomodigital.delorean.voucher.domain.*;
 import com.docomodigital.delorean.voucher.mapper.VoucherFileMapper;
+import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherFileRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
@@ -33,13 +31,16 @@ public class VoucherFileServiceImpl implements VoucherFileService {
 
     private final VoucherRepository voucherRepository;
     private final VoucherFileRepository voucherFileRepository;
+    private final VoucherErrorRepository voucherErrorRepository;
     private final VoucherFileMapper voucherFileMapper;
 
     public VoucherFileServiceImpl(VoucherRepository voucherRepository,
                                   VoucherFileRepository voucherFileRepository,
+                                  VoucherErrorRepository voucherErrorRepository,
                                   VoucherFileMapper voucherFileMapper) {
         this.voucherRepository = voucherRepository;
         this.voucherFileRepository = voucherFileRepository;
+        this.voucherErrorRepository = voucherErrorRepository;
         this.voucherFileMapper = voucherFileMapper;
     }
 
@@ -63,7 +64,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
         voucherFileRepository.save(voucherUpload);
 
         List<Voucher> vouchersToSave = new ArrayList<>();
-        int total = 0;
+        int lineNumber = 0;
         int uploaded = 0;
         int errors = 0;
 
@@ -71,12 +72,24 @@ public class VoucherFileServiceImpl implements VoucherFileService {
 
             Scanner sc = new Scanner(file.getInputStream());
             while (sc.hasNextLine()) {
-                total += 1;
+                lineNumber += 1;
                 String line = sc.nextLine();
 
                 // this change from upload purchase or redeem
 
-                vouchersToSave.add(voucherSingleProcessor.consume(line, type, voucherUpload.getId()));
+                try {
+                    Voucher voucherProcessed = voucherSingleProcessor.consume(line, type, voucherUpload.getId());
+                    vouchersToSave.add(voucherProcessed);
+                } catch (BadRequestException e) {
+                    errors += 1;
+                    VoucherError voucherError = new VoucherError();
+                    voucherError.setUploadId(voucherUpload.getId());
+                    voucherError.setCode(line);
+                    voucherError.setLineNumber(lineNumber);
+                    voucherError.setErrorCode(e.getErrorCode());
+                    voucherError.setErrorMessage(e.getMessage());
+                    voucherErrorRepository.save(voucherError);
+                }
 
                 if (vouchersToSave.size() == BULK_SIZE || !sc.hasNextLine()) {
                     voucherRepository.saveAll(vouchersToSave);
@@ -88,7 +101,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
             voucherUpload.setStatus(VoucherFileStatus.ERROR);
         }
 
-        voucherUpload.setTotal(total);
+        voucherUpload.setTotal(lineNumber);
         voucherUpload.setUploaded(uploaded);
         voucherUpload.setErrors(errors);
 

@@ -1,6 +1,7 @@
 package com.docomodigital.delorean.voucher.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Document
+@CompoundIndex(def = "{'code':1, 'typeId':1}", name = "compound_index")
 public class Voucher extends AbstractAuditingEntity {
 
     @Id

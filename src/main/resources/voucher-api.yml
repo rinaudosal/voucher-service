@@ -451,6 +451,9 @@ components:
         status:
           type: string
           enum: [UPLOADED, ERROR]
+        operation:
+          type: string
+          enum: [UPLOAD, PURCHASE, REDEEM]
         filename:
           type: string
           example: file.csv

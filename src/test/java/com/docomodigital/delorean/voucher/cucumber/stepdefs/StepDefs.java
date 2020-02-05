@@ -1,9 +1,9 @@
 package com.docomodigital.delorean.voucher.cucumber.stepdefs;
 
+import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,6 +44,9 @@ public abstract class StepDefs {
     protected VoucherRepository voucherRepository;
 
     @Autowired
+    protected VoucherErrorRepository voucherErrorRepository;
+
+    @Autowired
     protected VoucherTypeRepository voucherTypeRepository;
 
     @Autowired
@@ -73,12 +76,15 @@ public abstract class StepDefs {
             .andExpect(jsonPath("$.errorMessage").value(errorMessage));
     }
 
-    protected static void writeVoucherFile(int size,String fileName,  String code) throws Exception {
+    protected static void writeVoucherFile(int size, String fileName, String code) throws Exception {
         Writer fstream = new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
 
-        if(code != null) {
-            fstream.append(code);
-            fstream.append("\n");
+        if (code != null) {
+            String[] codes = code.split(",");
+            for (String line : codes) {
+                fstream.append(line);
+                fstream.append("\n");
+            }
         }
 
         for (int i = 0; i < size; i++) {

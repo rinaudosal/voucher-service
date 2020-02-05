@@ -1,11 +1,13 @@
 package com.docomodigital.delorean.voucher.cucumber.stepdefs;
 
 import com.docomodigital.delorean.voucher.domain.Voucher;
+import com.docomodigital.delorean.voucher.domain.VoucherError;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.assertj.core.api.Assertions;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -83,16 +85,11 @@ public class VoucherStepDefs extends StepDefs {
             .characterEncoding("UTF-8"));
     }
 
-
-    //    @When("the operator wants to upload the voucher file with <size> vouchers for type {string}")
-//    public void theOperatorWantsToUploadTheVoucherFileWithSizeVouchersForTypeType() {
-//
-//    }
-    @When("the operator wants to upload the voucher file with {int} vouchers for type {string} and the voucher file contain also {string}")
-    public void theOperatorWantsToUploadTheVoucherFileWithVouchersForTypeTINMAndTheVoucherFileContainEXISTINGVOUCHER(int size, String type, String code) throws Exception {
+    @When("the operator wants to {string} the voucher file with {int} vouchers for type {string} and the voucher file contain also {string}")
+    public void theOperatorWantsToUploadTheVoucherFileWithVouchersForTypeAndTheVoucherFileContain(String operation, int size, String type, String code) throws Exception {
         MockMultipartFile file = buildVoucherFile(size, code);
 
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/upload")
+        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
             .file(file)
             .param("type", type)
             .characterEncoding("UTF-8"));
@@ -194,15 +191,26 @@ public class VoucherStepDefs extends StepDefs {
         checkBadRequest("MISSING_REQUEST_PARAM", "Invalid request, parameter " + missingField + " is mandatory");
     }
 
-    @Then("the operator upload the {int} vouchers correctly and {int} with error 'Voucher with code {string} already exist'")
-    public void theOperatorUploadTheVouchersCorrectlyAndWithErrorVoucherWithCode(int uploaded, int errors, String code) throws Exception {
+    @Then("the operator {string} the {int} vouchers correctly and {int} with error {string} and message {string}")
+    public void theOperatorUploadTheVouchersCorrectlyAndWithErrorVoucherWithCode(String operation, int uploaded, int errors, String errorCode, String errorMessage) throws Exception {
         resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("UPLOADED"))
+            .andExpect(jsonPath("$.operation").value(operation.toUpperCase()))
             .andExpect(jsonPath("$.filename").value("voucher_example.csv"))
             .andExpect(jsonPath("$.type").value("TIN1M"))
             .andExpect(jsonPath("$.total").value(uploaded + errors))
             .andExpect(jsonPath("$.uploaded").value(uploaded))
             .andExpect(jsonPath("$.errors").value(errors));
+
+        //find the repository errors and find the single errorcode
+        List<VoucherError> voucherErrors = voucherErrorRepository.findAll();
+        Assertions.assertThat(voucherErrors).hasSize(1);
+        VoucherError voucherError = voucherErrors.get(0);
+        Assertions.assertThat(voucherError.getCode()).isNotNull();
+        Assertions.assertThat(voucherError.getLineNumber()).isEqualTo(1);
+        Assertions.assertThat(voucherError.getErrorCode()).isEqualTo(errorCode);
+        Assertions.assertThat(voucherError.getErrorMessage()).isEqualTo(errorMessage);
+
     }
 
     private MockMultipartFile buildVoucherFile(Integer size, String code) throws Exception {

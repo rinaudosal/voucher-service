@@ -32,22 +32,24 @@ Feature: Purchase Voucher File
     When the operator wants to 'purchase' the voucher file for the type '<type>' with the voucher '<voucher>'
     Then the operator receive the error code '<errorCode>' and description '<errorDescription>'
     Examples:
-      | type  | voucher  | errorCode         | errorDescription                                  |
-      | PIPPO | VOU11ACT | TYPE_NOT_FOUND    | Voucher Type PIPPO not found                      |
-      | TIN1M | VOU12INA | WRONG_STATUS      | Voucher with code VOU12INA is not in ACTIVE state |
-      | TIN1M | VOU13PUR | WRONG_STATUS      | Voucher with code VOU13PUR is not in ACTIVE state |
-      | TIN1M | VOU14RED | WRONG_STATUS      | Voucher with code VOU14RED is not in ACTIVE state |
-      | TIN1M | VOU31ACT | VOUCHER_NOT_FOUND | Voucher VOU31ACT not found for Type TIN1M         |
-      | TIN3D | VOU41ACT | TYPE_DISABLED     | Voucher Type TIN3D is disabled                    |
-      | TIN3E | VOU51ACT | TYPE_EXPIRED      | Voucher Type TIN3E is expired                     |
+      | type  | voucher  | errorCode      | errorDescription               |
+      | PIPPO | VOU11ACT | TYPE_NOT_FOUND | Voucher Type PIPPO not found   |
+      | TIN3D | VOU41ACT | TYPE_DISABLED  | Voucher Type TIN3D is disabled |
+      | TIN3E | VOU51ACT | TYPE_EXPIRED   | Voucher Type TIN3E is expired  |
 
   Scenario: Voucher file purchase malformed
     When the operator wants to 'purchase' the voucher file malformed for type 'TIN1M'
     Then the operator receive the error code 'FILE_MALFORMED' and description 'Error, the file is malformed'
 
-#  Scenario: Voucher upload partial in error
-#    When the operator wants to upload the voucher file with 3 vouchers for type 'TIN1M' and the voucher file contain also 'EXISTINGVOUCHER'
-#    Then the operator upload the 3 vouchers correctly and 1 with error 'Voucher with code 'EXISTINGVOUCHER' already exist'
+  Scenario Outline: Voucher redeem partial in error
+    When the operator wants to 'purchase' the voucher file with 0 vouchers for type 'TIN1M' and the voucher file contain also '<vouchers>'
+    Then the operator 'purchase' the 1 vouchers correctly and 1 with error '<errorCode>' and message '<errorMessage>'
+    Examples:
+      | vouchers          | errorCode         | errorMessage                                          |
+      | VOU12INA,VOU11ACT | WRONG_STATUS      | Voucher with code VOU12INA is not in ACTIVE state     |
+      | VOU13PUR,VOU11ACT | WRONG_STATUS      | Voucher with code VOU13PUR is not in ACTIVE state     |
+      | VOU14RED,VOU11ACT | WRONG_STATUS      | Voucher with code VOU14RED is not in ACTIVE state     |
+      | VOU31ACT,VOU11ACT | VOUCHER_NOT_FOUND | Voucher VOU31ACT not found for Type TIN1M             |
 
   Scenario Outline: Voucher redeem without mandatory fields
     When the operator wants to 'redeem' the voucher without field '<field>'

@@ -27,7 +27,7 @@ public class ProcessVoucherFactory {
     public ProcessVoucherStrategy getUploadFileStrategy(UploadOperation uploadOperation) {
         switch (uploadOperation) {
             case UPLOAD:
-                return new UploadVoucherStrategyImpl(voucherTypeRepository, clock);
+                return new UploadVoucherStrategyImpl(voucherTypeRepository, voucherRepository, clock);
             case REDEEM:
                 return new RedeemVoucherStrategyImpl(voucherTypeRepository, voucherRepository, clock);
             case PURCHASE:

@@ -1,6 +1,7 @@
 package com.docomodigital.delorean.voucher.cucumber;
 
 import com.docomodigital.delorean.voucher.VoucherServiceApplication;
+import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherFileRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
@@ -33,6 +34,9 @@ public class CucumberContextConfiguration {
     @Autowired
     private VoucherFileRepository voucherFileRepository;
 
+    @Autowired
+    private VoucherErrorRepository voucherErrorRepository;
+
     @Before
     public void setUp() {
 
@@ -51,5 +55,6 @@ public class CucumberContextConfiguration {
         voucherRepository.deleteAll();
         voucherTypeRepository.deleteAll();
         voucherFileRepository.deleteAll();
+        voucherErrorRepository.deleteAll();
     }
 }

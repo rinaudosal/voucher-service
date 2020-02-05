@@ -21,10 +21,10 @@ public class VoucherError extends AbstractAuditingEntity {
     @NotBlank
     private String uploadId;
 
+    private Integer lineNumber;
+
     @NotBlank
     private String code;
-
-    private String line;
 
     private String errorCode;
 
@@ -54,12 +54,12 @@ public class VoucherError extends AbstractAuditingEntity {
         this.code = code;
     }
 
-    public String getLine() {
-        return line;
+    public Integer getLineNumber() {
+        return lineNumber;
     }
 
-    public void setLine(String line) {
-        this.line = line;
+    public void setLineNumber(Integer lineNumber) {
+        this.lineNumber = lineNumber;
     }
 
     public String getErrorCode() {

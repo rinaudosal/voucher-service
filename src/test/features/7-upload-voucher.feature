@@ -41,9 +41,12 @@ Feature: Upload Voucher
     When the operator wants to 'upload' the voucher file malformed for type 'TIN1M'
     Then the operator receive the error code 'FILE_MALFORMED' and description 'Error, the file is malformed'
 
-#  Scenario: Voucher upload partial in error
-#    When the operator wants to upload the voucher file with 3 vouchers for type 'TIN1M' and the voucher file contain also 'EXISTINGVOUCHER'
-#    Then the operator upload the 3 vouchers correctly and 1 with error 'Voucher with code 'EXISTINGVOUCHER' already exist'
+  Scenario Outline: Voucher upload partial in error
+    When the operator wants to 'upload' the voucher file with 3 vouchers for type 'TIN1M' and the voucher file contain also 'EXISTINGVOUCHER'
+    Then the operator 'upload' the 3 vouchers correctly and 1 with error '<errorCode>' and message '<errorMessage>'
+    Examples:
+      | errorCode     | errorMessage                          |
+      | ALREADY_EXIST | Voucher EXISTINGVOUCHER already exist |
 
   Scenario Outline: Voucher upload without mandatory fields
     When the operator wants to 'upload' the voucher without field '<field>'
