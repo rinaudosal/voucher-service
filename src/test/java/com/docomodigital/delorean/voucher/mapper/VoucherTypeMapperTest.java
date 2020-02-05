@@ -34,6 +34,29 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
     }
 
     @Test
+    public void updateFromDtoMappedCorrectly() {
+        VoucherTypes voucherTypes = getDto();
+        VoucherType voucherType = new VoucherType();
+        voucherType.setCode("my_code");
+        target.updateFromDto(voucherTypes, voucherType);
+        assertEntity(voucherType);
+    }
+
+    @Test
+    public void nullReferencedUnMappedCorrectly() {
+        Assertions.assertThat(target.toDto((VoucherType) null)).isNull();
+        Assertions.assertThat(target.toDto((List<VoucherType>) null)).isNull();
+        Assertions.assertThat(target.toEntity((VoucherTypes) null)).isNull();
+        Assertions.assertThat(target.toEntity((List<VoucherTypes>) null)).isNull();
+
+        final VoucherType voucherType = new VoucherType();
+        voucherType.setCountry("bye");
+        target.updateFromDto(null, voucherType);
+        Assertions.assertThat(voucherType.getCountry()).isEqualTo("bye");
+
+    }
+
+    @Test
     public void listDtoMappedCorrectly() {
         VoucherType voucherType = getEntity();
 

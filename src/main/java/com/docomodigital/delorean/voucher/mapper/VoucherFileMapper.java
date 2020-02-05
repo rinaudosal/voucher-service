@@ -14,7 +14,7 @@ import org.mapstruct.Mapping;
 public interface VoucherFileMapper extends EntityMapper<VoucherUpload, VoucherFile> {
 
     @Override
-    @Mapping(target = "type", ignore = true)
+    @Mapping(source = "type", target = "type.code")
     VoucherFile toEntity(VoucherUpload dto);
 
     @Override

@@ -27,6 +27,6 @@ public interface VoucherTypeMapper extends EntityMapper<VoucherTypes, VoucherTyp
     @Mapping(target = "code", ignore = true)
     @Mapping(source = "merchant", target = "merchantId")
     @Mapping(source = "shop", target = "shopId")
-    void updateFromDto(VoucherTypes voucherTypes, @MappingTarget VoucherType car);
+    void updateFromDto(VoucherTypes voucherTypes, @MappingTarget VoucherType voucherType);
 
 }
