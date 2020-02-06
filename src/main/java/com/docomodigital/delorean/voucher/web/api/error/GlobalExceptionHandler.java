@@ -11,7 +11,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
+    private static final String MISSING_PARAMETER = "Invalid request, parameter %s is mandatory";
 
     @ExceptionHandler(BadRequestException.class)
     @ResponseBody
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(new ErrorDetails(
                 "MISSING_FIELD",
-                "Invalid " + exception.getBindingResult().getObjectName() + ", " + exception.getBindingResult().getFieldError().getField() + " is mandatory"));
+                String.format("Invalid %s, %s is mandatory", exception.getBindingResult().getObjectName(), exception.getBindingResult().getFieldError().getField())));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(new ErrorDetails(
                 "MISSING_REQUEST_PARAM",
-                "Invalid request, parameter " + exception.getParameterName() + " is mandatory"));
+                String.format(MISSING_PARAMETER, exception.getParameterName())));
     }
 
     @ExceptionHandler(MissingServletRequestPartException.class)
@@ -46,6 +46,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(new ErrorDetails(
                 "MISSING_REQUEST_PARAM",
-                "Invalid request, parameter " + exception.getRequestPartName() + " is mandatory"));
+                String.format(MISSING_PARAMETER, exception.getRequestPartName())));
     }
 }

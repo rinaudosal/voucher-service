@@ -1,10 +1,9 @@
 package com.docomodigital.delorean.voucher.web.api;
 
-import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.service.VoucherService;
+import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +13,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 
 /**
@@ -37,13 +35,8 @@ public class VoucherController implements VoucherApi {
     public ResponseEntity<Vouchers> createVoucher(String code, @NotNull @Valid String type) {
         Vouchers voucher = voucherService.createVoucher(code, type);
 
-        try {
-            return ResponseEntity.created(new URI("/v1/voucher/" + voucher.getCode()))
-                .body(voucher);
-        } catch (URISyntaxException e) {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                .body(voucher);
-        }
+        return ResponseEntity.created(URI.create("/v1/voucher/" + voucher.getCode()))
+            .body(voucher);
     }
 
     @Override

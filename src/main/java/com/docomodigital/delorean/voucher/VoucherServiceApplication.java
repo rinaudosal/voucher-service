@@ -1,9 +1,8 @@
 package com.docomodigital.delorean.voucher;
 
 import com.docomodigital.delorean.voucher.config.ApplicationProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,11 +15,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+@Slf4j
 @SpringBootApplication
 @EnableConfigurationProperties({ApplicationProperties.class})
 public class VoucherServiceApplication implements InitializingBean {
-    private static final Logger logger = LoggerFactory.getLogger(VoucherServiceApplication.class);
-
     private final Environment env;
 
     public VoucherServiceApplication(Environment env) {
@@ -38,7 +36,7 @@ public class VoucherServiceApplication implements InitializingBean {
     public void afterPropertiesSet() {
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
         if (activeProfiles.contains("dev") && activeProfiles.contains("prod")) {
-            logger.error("You have misconfigured your application! It should not run " +
+            log.error("You have misconfigured your application! It should not run " +
                 "with both the 'dev' and 'prod' profiles at the same time.");
         }
     }
@@ -69,9 +67,9 @@ public class VoucherServiceApplication implements InitializingBean {
         try {
             hostAddress = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
-            logger.warn("The host name could not be determined, using `localhost` as fallback. ", e);
+            log.warn("The host name could not be determined, using `localhost` as fallback. ", e);
         }
-        logger.info("\n----------------------------------------------------------\n\t" +
+        log.info("\n----------------------------------------------------------\n\t" +
                 "Application '{}' is running! Access URLs:\n\t" +
                 "Local: \t\t{}://localhost:{}{}\n\t" +
                 "External: \t{}://{}:{}{}\n\t" +
