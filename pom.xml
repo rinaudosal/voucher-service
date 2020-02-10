@@ -876,5 +876,15 @@
         <!-- jhipster-needle-maven-add-profile -->
     </profiles>
 
-
+    <distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <url>https://repo-04.dodi.io/repository/maven-ddp-releases-hosted/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <url>https://repo-04.dodi.io/repository/maven-ddp-snapshots-hosted/</url>
+            <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
