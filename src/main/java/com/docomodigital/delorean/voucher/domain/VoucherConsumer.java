@@ -1,8 +1,8 @@
 package com.docomodigital.delorean.voucher.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class VoucherConsumer {
 
     private String merchantId;
