@@ -59,4 +59,15 @@ public interface VoucherTypeService {
      * @return the voucher type updated
      */
     Optional<VoucherTypes> updateVoucherType(String code, VoucherTypes voucherTypes);
+
+    /**
+     * Retrieve voucher type with the highest priority in current day of the request
+     *
+     * @param merchantId      the merchant id
+     * @param paymentProvider the payment provider
+     * @param country         the country
+     * @param productId       the product id
+     * @return the voucher type if found
+     */
+    VoucherType getVoucherType(String merchantId, String paymentProvider, String country, String productId);
 }

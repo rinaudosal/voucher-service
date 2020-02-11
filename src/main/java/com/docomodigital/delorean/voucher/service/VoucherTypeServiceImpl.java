@@ -59,21 +59,13 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             voucherTypes.add(voucherTypeGrouped);
         });
 
-
         return voucherTypes.stream().map(v -> {
             AvailableVoucherTypes availableVoucherTypes = new AvailableVoucherTypes();
             availableVoucherTypes.setCode(v.getCode());
             availableVoucherTypes.setDescription(v.getDescription());
             availableVoucherTypes.setAmount(v.getAmount());
             availableVoucherTypes.setCurrency(v.getCurrency());
-
-            // count the voucher ACTIVE
-            Voucher voucher = new Voucher();
-            voucher.setStatus(VoucherStatus.ACTIVE);
-            voucher.setTypeId(v.getId());
-            voucher.setCreatedDate(null);
-            voucher.setLastModifiedDate(null);
-            availableVoucherTypes.setVoucherAvailable((int) voucherRepository.count(Example.of(voucher)));
+            availableVoucherTypes.setVoucherAvailable(this.getVoucherAvailable(v));
             return availableVoucherTypes;
         })
             .filter(v -> v.getVoucherAvailable() > 0)
@@ -125,6 +117,38 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
                 return v;
             })
             .map(voucherTypeMapper::toDto);
+    }
+
+    @Override
+    public VoucherType getVoucherType(String merchantId, String paymentProvider, String country, String productId) {
+
+        VoucherType voucherType = new VoucherType();
+        voucherType.setMerchantId(merchantId);
+        voucherType.setPaymentProvider(paymentProvider);
+        voucherType.setProduct(productId);
+        voucherType.setCountry(country);
+        voucherType.setEnabled(true);
+        voucherType.setCreatedDate(null);
+        voucherType.setLastModifiedDate(null);
+        Example<VoucherType> exampleRequest = Example.of(voucherType);
+
+        return voucherTypeRepository.findAll(exampleRequest).stream()
+            .filter(vou -> {
+                LocalDate now = LocalDate.now(clock);
+                return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate()) && this.getVoucherAvailable(vou) > 0;
+            })
+            .max(Comparator.comparing(VoucherType::getPriority))
+            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND",
+                String.format("No Voucher Type available for merchant %s, paymentProvider %s, country %s and product %s", merchantId, paymentProvider, country, productId)));
+    }
+
+    private int getVoucherAvailable(VoucherType v) {
+        Voucher voucher = new Voucher();
+        voucher.setStatus(VoucherStatus.ACTIVE);
+        voucher.setTypeId(v.getId());
+        voucher.setCreatedDate(null);
+        voucher.setLastModifiedDate(null);
+        return (int) voucherRepository.count(Example.of(voucher));
     }
 
     private Example<VoucherType> getVoucherTypeExample(String merchant, String paymentProvider, String country) {

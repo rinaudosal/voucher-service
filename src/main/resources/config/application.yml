@@ -33,10 +33,6 @@ spring:
       max-request-size: 50MB
   application:
     name: voucher-service
-  data:
-    mongodb:
-      uri: mongodb://delorean:ATxT7krK@192.168.124.141:27000/delorean
-
   profiles:
     # The commented value for `active` can be replaced with valid Spring profiles to load.
     # Otherwise, it will be filled in by maven when building the JAR file

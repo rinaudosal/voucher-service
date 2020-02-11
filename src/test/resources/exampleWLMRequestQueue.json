@@ -1,0 +1,119 @@
+{
+  "type": "PluginRequest",
+  "attributes": {
+    "code": "2372a681-2164-421a-99a1-c48d89301e6a",
+    "dateCreated": "2020-01-20 08:00:36",
+    "transaction": {
+      "type": "Transaction",
+      "id": "518927",
+      "attributes": {
+        "flowType": "subscribe",
+        "product": {
+          "type": "Product",
+          "id": "7",
+          "attributes": {
+            "environment": {
+              "type": "Environment",
+              "id": "11",
+              "attributes": {
+                "name": "VFAU PROD",
+                "peUrl": "https://pay.vodafone.com.au/",
+                "apiUrl": "http://txe-vfau.cashlog.com:10080",
+                "iframeScriptPath": "/dynamicpe/js/",
+                "certificateId": "1",
+                "defaultPeIsPhp": true,
+                "enabled": null
+              }
+            },
+            "apiVersion": "2",
+            "country": {
+              "type": "Country",
+              "id": "36",
+              "attributes": {
+                "code": "AU",
+                "name": "Australia"
+              }
+            },
+            "merchantCode": "MRNor1014793",
+            "siteCode": "STNor4937907",
+            "name": "Norton Security",
+            "description": "Help keep your Windows PC, Mac and mobile devices safe from viruses and online threats with Norton's comprehensive multi-device protection.",
+            "category": "GENERAL",
+            "price": "9.99",
+            "currencyCode": "AUD",
+            "paymentFrequency": {
+              "type": "PaymentFrequency",
+              "id": "3",
+              "attributes": {
+                "code": "M",
+                "name": "Month"
+              }
+            },
+            "isDelegatedSubscription": false,
+            "isCreditFlowEnabled": null,
+            "enabled": true,
+            "isLoginProduct": false,
+            "promos": null,
+            "defaultStyle": null
+          }
+        },
+        "dateStarted": "2020-01-20 07:59:29",
+        "dateLastUpdated": "2020-01-20 07:59:29",
+        "responseType": "SUBSCRIBE",
+        "status": null,
+        "subscriptionStatus": "SUBSCRIBED",
+        "billingStatus": "BILLED",
+        "mainErrorCode": null,
+        "detailedErrorCode": null,
+        "errorDescription": null,
+        "subscriptionCode": "5e255e14e4b0cbc029c57038",
+        "transactionCode": "7c24a089-d2fc-4011-b711-891d69",
+        "refundedTransactionCode": null,
+        "purchaseCode": "84970",
+        "subscriptions": null,
+        "requestId": "dc4c3185-a7b8-49b5-80fb-2aa3672865d6",
+        "targetTransaction": null,
+        "amountCharged": 0,
+        "amountRefunded": null,
+        "amountCredited": null,
+        "promo": {
+          "type": "Promo",
+          "id": "5",
+          "attributes": {
+            "code": "9.99_1M_FREE_1M",
+            "description": "First month free only with Vodafone"
+          }
+        },
+        "userId": {
+          "type": "UserId",
+          "attributes": {
+            "msisdn": "+61452609835",
+            "maskedMsisdn": null,
+            "alias": null,
+            "imsi": null,
+            "ip": null,
+            "customerId": "5da85c48a0cf582e93858dc7"
+          }
+        },
+        "telco": {
+          "type": "Telco",
+          "attributes": {
+            "code": "VFONE",
+            "name": "Vodafone Australia"
+          }
+        },
+        "authToken": null,
+        "productNameOverride": null,
+        "priceOverride": null,
+        "paymentFrequencyOverride": null,
+        "catExecutionKey": null,
+        "wireDumpUrl": null,
+        "pluginCalls": null,
+        "flowOptions": null,
+        "localSubscription": null,
+        "subscriptionBatchLineId": null,
+        "targetRequestId": null
+      }
+    }
+  }
+}

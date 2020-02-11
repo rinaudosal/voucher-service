@@ -3,8 +3,10 @@ package com.docomodigital.delorean.voucher.cucumber.stepdefs;
 import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
+import com.docomodigital.delorean.voucher.service.VoucherQueueReceiverService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.BDDMockito;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,6 +41,12 @@ public abstract class StepDefs {
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @Autowired
+    protected VoucherQueueReceiverService voucherQueueReceiverService;
+
+    @Autowired
+    protected RabbitTemplate rabbitTemplate;
 
     @Autowired
     protected VoucherRepository voucherRepository;

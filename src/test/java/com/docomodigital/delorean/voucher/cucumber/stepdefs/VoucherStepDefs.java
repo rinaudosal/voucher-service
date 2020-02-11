@@ -4,9 +4,14 @@ import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherError;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
+import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -14,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
@@ -247,4 +253,53 @@ public class VoucherStepDefs extends StepDefs {
         return voucher;
     }
 
+    @When("the operator wants to consume the voucher billed for merchant {string}, product {string}, country {string} and paymentProvider {string}")
+    public void theOperatorWantsToConsumeTheVoucher(String merchant, String product, String country, String paymentProvider) throws Exception {
+        String message = createJsonMessage(merchant, product, country, paymentProvider);
+
+        voucherQueueReceiverService.handleMessage(message);
+    }
+
+    @When("the operator wants to consume the voucher billed for merchant {string}, product {string}, country {string} and paymentProvider {string} receiving the error code {string} and description {string}")
+    public void theOperatorWantsToConsumeTheVoucher(String merchant, String product, String country, String paymentProvider, String errorCode, String errorDescription) throws Exception {
+        String message = createJsonMessage(merchant, product, country, paymentProvider);
+
+        Assertions.assertThatThrownBy(() -> voucherQueueReceiverService.handleMessage(message))
+            .isInstanceOf(BadRequestException.class)
+            .hasMessage(errorDescription)
+            .hasFieldOrPropertyWithValue("errorCode", errorCode);
+
+    }
+
+    @Then("the operator receive the voucher {string} correctly")
+    public void theOperatorReceiveTheVoucherCodeCorrectly(String voucherCode) {
+        Voucher voucher = voucherRepository.findByCode(voucherCode).get();
+
+        Assertions.assertThat(voucher.getPurchaseDate()).isNotNull();
+        Assertions.assertThat(voucher.getUserId()).isNotNull();
+        Assertions.assertThat(voucher.getTransactionId()).isNotNull();
+        Assertions.assertThat(voucher.getTransactionDate()).isNotNull();
+        Assertions.assertThat(voucher.getStatus()).isEqualTo(VoucherStatus.PURCHASED);
+    }
+
+    @And("notification will be sent to requestor without error")
+    public void notificationWillBeSentToRequestorWithoutError() {
+
+    }
+
+    @And("notification will be sent to requestor with errors")
+    public void notificationWillBeSentToRequestorWithErrors() {
+
+    }
+
+    private String createJsonMessage(String merchant, String product, String country, String paymentProvider) throws Exception {
+        DocumentContext jsonContext = JsonPath.parse(FileUtils.readFileToString(new File("src/test/resources/exampleWLMRequestQueue.json"), StandardCharsets.UTF_8));
+
+        jsonContext.put("$['attributes'].['transaction'].['attributes'].['product'].['attributes']", "merchantCode", merchant);
+        jsonContext.put("$['attributes'].['transaction'].['attributes'].['telco'].['attributes']", "code", paymentProvider);
+        jsonContext.put("$['attributes'].['transaction'].['attributes'].['product']", "type", product);
+        jsonContext.put("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['country'].['attributes']", "code", country);
+
+        return jsonContext.jsonString();
+    }
 }

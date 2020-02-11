@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.docomodigital.delorean</groupId>
     <artifactId>voucher-service</artifactId>
-    <version>1.0.0.0</version>
+    <version>1.0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>voucher-service</name>
     <description>Microservice that manage the Vouchers</description>
@@ -67,7 +67,6 @@
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <scope>test</scope>
             <!-- parent POM declares this dependency in default (compile) scope -->
         </dependency>
         <dependency>
@@ -176,15 +175,21 @@
         </dependency>
 
         <!-- Rabbit MQ dependency -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-amqp</artifactId>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.amqp</groupId>-->
-        <!--            <artifactId>spring-rabbit-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.fridujo</groupId>
+            <artifactId>rabbitmq-mock</artifactId>
+            <version>1.0.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-rabbit-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Mongo dependency -->
         <dependency>

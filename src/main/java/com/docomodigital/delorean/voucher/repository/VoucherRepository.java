@@ -1,6 +1,7 @@
 package com.docomodigital.delorean.voucher.repository;
 
 import com.docomodigital.delorean.voucher.domain.Voucher;
+import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
@@ -30,6 +31,15 @@ public interface VoucherRepository extends MongoRepository<Voucher, String> {
      * @return the voucher if found, false otherwise
      */
     Optional<Voucher> findByCode(String code);
+
+    /**
+     * find any voucher for specified type and status
+     *
+     * @param typeId        the type id requested
+     * @param voucherStatus the status requested
+     * @return the voucher if found
+     */
+    Optional<Voucher> findFirstByTypeIdAndStatusEquals(String typeId, VoucherStatus voucherStatus);
 
     /**
      * Method to find by code and type

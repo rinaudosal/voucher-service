@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,6 +52,9 @@ public abstract class BaseVoucherIntegrationTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    protected RabbitTemplate rabbitTemplate;
 
     /**
      * Step before all integration test tha extends this class

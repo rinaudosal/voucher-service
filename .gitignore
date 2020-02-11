@@ -30,5 +30,4 @@ build/
 ### VS Code ###
 .vscode/
 /.mvn/
-src/test/resources/
-*.csv
+src/test/resources/*.csv
