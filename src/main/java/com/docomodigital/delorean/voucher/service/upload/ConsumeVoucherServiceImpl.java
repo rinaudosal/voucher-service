@@ -64,7 +64,7 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
 
     @Override
     public Voucher consumeVoucher(VoucherConsumer voucherConsumer) {
-        if (!voucherConsumer.getBillingStatus().equals("BILLED")) {
+        if (!"BILLED".equals(voucherConsumer.getBillingStatus())) {
             throw new BadRequestException("REQUEST_NOT_BILLED", "Wrong type of request, status must be BILLED, request status is " + voucherConsumer.getBillingStatus());
         }
 
