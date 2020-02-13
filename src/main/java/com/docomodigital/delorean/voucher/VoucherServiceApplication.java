@@ -1,6 +1,6 @@
 package com.docomodigital.delorean.voucher;
 
-import com.docomodigital.delorean.voucher.config.ApplicationProperties;
+import com.docomodigital.delorean.voucher.config.QueueProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -17,7 +17,7 @@ import java.util.Collections;
 
 @Slf4j
 @SpringBootApplication
-@EnableConfigurationProperties({ApplicationProperties.class})
+@EnableConfigurationProperties({QueueProperties.class})
 public class VoucherServiceApplication implements InitializingBean {
     private final Environment env;
 

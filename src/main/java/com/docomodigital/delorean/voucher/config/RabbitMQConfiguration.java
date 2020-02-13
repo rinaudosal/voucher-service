@@ -22,7 +22,7 @@ import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 public class RabbitMQConfiguration {
 
     @Autowired
-    private ApplicationProperties applicationProperties;
+    private QueueProperties applicationProperties;
 
 //    public static final String TOPIC_EXCHANGE_NAME = "voucher-consume";
 //    public static final String QUEUE_NAME = "voucher-queue";
@@ -51,7 +51,7 @@ public class RabbitMQConfiguration {
     @Bean
     SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
                                              MessageListenerAdapter listenerAdapter,
-                                             ApplicationProperties applicationProperties) {
+                                             QueueProperties applicationProperties) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueueNames(applicationProperties.getInputQueueName());
