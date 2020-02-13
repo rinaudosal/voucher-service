@@ -72,6 +72,3 @@ info:
   # Comma separated list of profiles that will trigger the ribbon to show
   display-ribbon-on-profiles: 'dev'
 
-queue:
-  input-queue-name: tinder-api2plugin
-  output-queue-name: tinder-plugin2api

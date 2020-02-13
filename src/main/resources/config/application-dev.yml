@@ -34,10 +34,9 @@ spring:
       indent-output: true
   data:
     mongodb:
-      uri: mongodb://localhost:27017/delorean
-      database: delorean
+      uri: mongodb://tinder:G521TrfzR@192.168.127.201:27000/tinder
   rabbitmq:
-    host: 192.168.124.100
+    host: 192.168.129.141
     port: 5672
     username: guest
     password: guest

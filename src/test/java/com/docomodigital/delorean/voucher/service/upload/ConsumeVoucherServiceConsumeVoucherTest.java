@@ -41,7 +41,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
 
     @Before
     public void setUp() {
-        target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, clock);
+        target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, clock, null);
 
         Instant instant = LocalDate.parse("17/12/2002", DateTimeFormatter.ofPattern("dd/MM/yyyy")).atStartOfDay().toInstant(ZoneOffset.UTC);
         setupClockMock(instant);

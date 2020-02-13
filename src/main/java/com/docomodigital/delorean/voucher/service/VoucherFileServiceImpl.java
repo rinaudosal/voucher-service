@@ -99,7 +99,13 @@ public class VoucherFileServiceImpl implements VoucherFileService {
         return voucherFileMapper.toDto(voucherUpload);
     }
 
-    private int checkSingleLine(VoucherType type, VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor, VoucherFile voucherUpload, List<Voucher> vouchersToSave, int lineNumber, int errors, String line) {
+    private int checkSingleLine(VoucherType type,
+                                VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor,
+                                VoucherFile voucherUpload,
+                                List<Voucher> vouchersToSave,
+                                int lineNumber,
+                                int errors,
+                                String line) {
         try {
             Voucher voucherProcessed = voucherSingleProcessor.consume(line, type, voucherUpload.getId());
             vouchersToSave.add(voucherProcessed);

@@ -21,7 +21,7 @@ public class ConsumeVoucherServiceReadMessageTest extends BaseUnitTest {
 
     @Before
     public void setUp() {
-        target = new ConsumeVoucherServiceImpl(null, null, null);
+        target = new ConsumeVoucherServiceImpl(null, null, null, null);
     }
 
     @Test

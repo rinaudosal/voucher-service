@@ -7,11 +7,15 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -25,17 +29,20 @@ import java.util.Optional;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
+@Slf4j
 @Service
 public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
 
     private final VoucherTypeService voucherTypeService;
     private final VoucherRepository voucherRepository;
     private final Clock clock;
+    private final RabbitTemplate rabbitTemplate;
 
-    public ConsumeVoucherServiceImpl(VoucherTypeService voucherTypeService, VoucherRepository voucherRepository, Clock clock) {
+    public ConsumeVoucherServiceImpl(VoucherTypeService voucherTypeService, VoucherRepository voucherRepository, Clock clock, RabbitTemplate rabbitTemplate) {
         this.voucherTypeService = voucherTypeService;
         this.voucherRepository = voucherRepository;
         this.clock = clock;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
@@ -89,7 +96,10 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
     }
 
     @Override
-    public void sendNotification(Voucher voucher) {
-        // nothing to do
+    public void sendNotification(Voucher voucher) throws JsonProcessingException {
+        String voucherString = new ObjectMapper().writeValueAsString(voucher);
+        log.info(String.format("Sending response %s to tinder-plugin2api queue...", voucherString));
+        rabbitTemplate.convertAndSend("tinder-plugin2api", voucherString);
+        log.info("Message sent successfully");
     }
 }

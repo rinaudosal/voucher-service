@@ -9,6 +9,7 @@ import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +24,7 @@ import java.time.Clock;
 @WebAppConfiguration
 @ContextConfiguration(classes = VoucherServiceApplication.class)
 @AutoConfigureMockMvc
-@MockBean(classes = {Clock.class})
+@MockBean(classes = {Clock.class, RabbitTemplate.class})
 public class CucumberContextConfiguration {
     @Autowired
     private VoucherRepository voucherRepository;

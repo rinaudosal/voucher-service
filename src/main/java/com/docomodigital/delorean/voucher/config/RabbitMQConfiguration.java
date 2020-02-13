@@ -2,8 +2,9 @@ package com.docomodigital.delorean.voucher.config;
 
 import com.docomodigital.delorean.voucher.service.VoucherQueueReceiverService;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.SimpleRoutingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -18,30 +19,26 @@ import org.springframework.messaging.converter.MappingJackson2MessageConverter;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Configuration
+@EnableRabbit
 public class RabbitMQConfiguration {
-
-//    public static final String TOPIC_EXCHANGE_NAME = "voucher-consume";
-//    public static final String QUEUE_NAME = "voucher-queue";
+    private static final String INPUT_QUEUE_NAME = "tinder-api2plugin";
+    private static final String OUTPUT_QUEUE_NAME = "tinder-plugin2api";
 
     @Bean
-    Queue queue() {
-        return new Queue("tinder-api2plugin", false);
+    RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+        return new RabbitAdmin(connectionFactory);
     }
-
-//    @Bean
-//    TopicExchange exchange() {
-//        return new TopicExchange(TOPIC_EXCHANGE_NAME);
-//    }
-
-//    @Bean
-//    Binding binding(Queue queue, TopicExchange exchange) {
-//        return BindingBuilder.bind(queue).to(exchange).with("com.docomodigital.delorean.voucher.#");
-//    }
 
     @Bean
     @Profile("!test")
-    ConnectionFactory connectionFactory() {
-        return new SimpleRoutingConnectionFactory();
+    Queue api2plugin() {
+        return new Queue(INPUT_QUEUE_NAME);
+    }
+
+    @Bean
+    @Profile("!test")
+    Queue plugin2api() {
+        return new Queue(OUTPUT_QUEUE_NAME);
     }
 
     @Bean
@@ -49,14 +46,14 @@ public class RabbitMQConfiguration {
                                              MessageListenerAdapter listenerAdapter) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames("tinder-api2plugin");
+        container.setQueueNames(INPUT_QUEUE_NAME);
         container.setMessageListener(listenerAdapter);
         return container;
     }
 
     @Bean
-    public MappingJackson2MessageConverter consumerJackson2MessageConverter() {
-        return new MappingJackson2MessageConverter();
+    MessageListenerAdapter listenerAdapter(VoucherQueueReceiverService receiver) {
+        return new MessageListenerAdapter(receiver, messageConverter());
     }
 
     @Bean
@@ -65,8 +62,8 @@ public class RabbitMQConfiguration {
     }
 
     @Bean
-    MessageListenerAdapter listenerAdapter(VoucherQueueReceiverService receiver) {
-        return new MessageListenerAdapter(receiver, messageConverter());
+    public MappingJackson2MessageConverter consumerJackson2MessageConverter() {
+        return new MappingJackson2MessageConverter();
     }
 
 }

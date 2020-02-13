@@ -1,12 +1,10 @@
 package com.docomodigital.delorean.voucher;
 
-import com.docomodigital.delorean.voucher.config.QueueProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.env.Environment;
 
 import java.net.InetAddress;
@@ -17,7 +15,6 @@ import java.util.Collections;
 
 @Slf4j
 @SpringBootApplication
-@EnableConfigurationProperties({QueueProperties.class})
 public class VoucherServiceApplication implements InitializingBean {
     private final Environment env;
 

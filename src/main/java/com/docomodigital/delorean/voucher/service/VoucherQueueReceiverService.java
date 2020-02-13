@@ -3,6 +3,7 @@ package com.docomodigital.delorean.voucher.service;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherConsumer;
 import com.docomodigital.delorean.voucher.service.upload.ConsumeVoucherService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class VoucherQueueReceiverService {
         this.consumeVoucherService = consumeVoucherService;
     }
 
-    public void handleMessage(String message) {
+    public void handleMessage(String message) throws JsonProcessingException {
         log.info("Received <" + message + ">");
 
         // read the message received from WLM
