@@ -7,7 +7,6 @@ import org.springframework.amqp.rabbit.connection.SimpleRoutingConnectionFactory
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -25,8 +24,8 @@ public class RabbitMQConfiguration {
 //    public static final String QUEUE_NAME = "voucher-queue";
 
     @Bean
-    Queue queue(QueueProperties queueProperties) {
-        return new Queue(queueProperties.getInputQueueName(), false);
+    Queue queue() {
+        return new Queue("tinder-api2plugin", false);
     }
 
 //    @Bean
@@ -47,11 +46,10 @@ public class RabbitMQConfiguration {
 
     @Bean
     SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
-                                             MessageListenerAdapter listenerAdapter,
-                                             QueueProperties queueProperties) {
+                                             MessageListenerAdapter listenerAdapter) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(queueProperties.getInputQueueName());
+        container.setQueueNames("tinder-api2plugin");
         container.setMessageListener(listenerAdapter);
         return container;
     }
