@@ -21,15 +21,12 @@ import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 @Configuration
 public class RabbitMQConfiguration {
 
-    @Autowired
-    private QueueProperties applicationProperties;
-
 //    public static final String TOPIC_EXCHANGE_NAME = "voucher-consume";
 //    public static final String QUEUE_NAME = "voucher-queue";
 
     @Bean
-    Queue queue() {
-        return new Queue(applicationProperties.getInputQueueName(), false);
+    Queue queue(QueueProperties queueProperties) {
+        return new Queue(queueProperties.getInputQueueName(), false);
     }
 
 //    @Bean
@@ -51,10 +48,10 @@ public class RabbitMQConfiguration {
     @Bean
     SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
                                              MessageListenerAdapter listenerAdapter,
-                                             QueueProperties applicationProperties) {
+                                             QueueProperties queueProperties) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(applicationProperties.getInputQueueName());
+        container.setQueueNames(queueProperties.getInputQueueName());
         container.setMessageListener(listenerAdapter);
         return container;
     }
