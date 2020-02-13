@@ -1,15 +1,13 @@
 package com.docomodigital.delorean.voucher.config;
 
 import com.docomodigital.delorean.voucher.service.VoucherQueueReceiverService;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.SimpleRoutingConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -22,23 +20,27 @@ import org.springframework.messaging.converter.MappingJackson2MessageConverter;
  */
 @Configuration
 public class RabbitMQConfiguration {
-    public static final String TOPIC_EXCHANGE_NAME = "voucher-consume";
-    public static final String QUEUE_NAME = "voucher-queue";
+
+    @Autowired
+    private ApplicationProperties applicationProperties;
+
+//    public static final String TOPIC_EXCHANGE_NAME = "voucher-consume";
+//    public static final String QUEUE_NAME = "voucher-queue";
 
     @Bean
     Queue queue() {
-        return new Queue(QUEUE_NAME, false);
+        return new Queue(applicationProperties.getInputQueueName(), false);
     }
 
-    @Bean
-    TopicExchange exchange() {
-        return new TopicExchange(TOPIC_EXCHANGE_NAME);
-    }
+//    @Bean
+//    TopicExchange exchange() {
+//        return new TopicExchange(TOPIC_EXCHANGE_NAME);
+//    }
 
-    @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("com.docomodigital.delorean.voucher.#");
-    }
+//    @Bean
+//    Binding binding(Queue queue, TopicExchange exchange) {
+//        return BindingBuilder.bind(queue).to(exchange).with("com.docomodigital.delorean.voucher.#");
+//    }
 
     @Bean
     @Profile("!test")
@@ -48,10 +50,11 @@ public class RabbitMQConfiguration {
 
     @Bean
     SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
-                                             MessageListenerAdapter listenerAdapter) {
+                                             MessageListenerAdapter listenerAdapter,
+                                             ApplicationProperties applicationProperties) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(QUEUE_NAME);
+        container.setQueueNames(applicationProperties.getInputQueueName());
         container.setMessageListener(listenerAdapter);
         return container;
     }
@@ -68,7 +71,6 @@ public class RabbitMQConfiguration {
 
     @Bean
     MessageListenerAdapter listenerAdapter(VoucherQueueReceiverService receiver) {
-
         return new MessageListenerAdapter(receiver, messageConverter());
     }
 
