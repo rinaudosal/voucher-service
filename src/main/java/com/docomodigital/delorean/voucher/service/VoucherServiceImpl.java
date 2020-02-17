@@ -6,13 +6,16 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.mapper.VoucherMapper;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
-import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherStrategy;
 import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherFactory;
+import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherStrategy;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -117,5 +120,33 @@ public class VoucherServiceImpl implements VoucherService {
 
 
         return voucherMapper.toDto(voucherRepository.save(voucher));
+    }
+
+    @Override
+    public List<Vouchers> getVouchers(String typeCode, String status, String userId) {
+        Voucher voucher = new Voucher();
+        voucher.setUserId(StringUtils.trimToNull(userId));
+
+        if (StringUtils.isNotBlank(typeCode)) {
+            String typeId = voucherTypeRepository.findByCode(typeCode)
+                .map(VoucherType::getId)
+                .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", ENTITY_NAME + typeCode + " not found"));
+            voucher.setTypeId(StringUtils.trimToNull(typeId));
+        }
+
+        if (StringUtils.isNotBlank(status)) {
+            if (!EnumUtils.isValidEnum(VoucherStatus.class, status)) {
+                throw new BadRequestException("WRONG_STATUS", "Status " + status + " is wrong");
+            }
+            voucher.setStatus(VoucherStatus.valueOf(status));
+        }
+
+        voucher.setCreatedDate(null);
+        voucher.setLastModifiedDate(null);
+        Example<Voucher> voucherExample = Example.of(voucher);
+
+        return voucherRepository.findAll(voucherExample).stream()
+            .map(voucherMapper::toDto)
+            .collect(Collectors.toList());
     }
 }

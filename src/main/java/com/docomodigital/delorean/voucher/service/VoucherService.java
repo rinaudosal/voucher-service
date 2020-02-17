@@ -6,6 +6,7 @@ import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 /**
  * * Business class that manage the vouchers
@@ -45,4 +46,14 @@ public interface VoucherService {
      * @return the voucher purchased if found
      */
     Vouchers purchaseVoucher(String code, String transactionId, OffsetDateTime transactionDate, String userId);
+
+    /**
+     * Retrieve list of vouchers with the filters requested
+     *
+     * @param typeId id of the voucher type
+     * @param status status would be find
+     * @param userId user would be find
+     * @return vouchers found
+     */
+    List<Vouchers> getVouchers(String typeId, String status, String userId);
 }

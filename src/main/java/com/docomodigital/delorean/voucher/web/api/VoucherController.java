@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 /**
  * Implementation of voucher-type endpoint to manage the voucher types
@@ -37,6 +38,11 @@ public class VoucherController implements VoucherApi {
 
         return ResponseEntity.created(URI.create("/v1/voucher/" + voucher.getCode()))
             .body(voucher);
+    }
+
+    @Override
+    public ResponseEntity<List<Vouchers>> getVouchers(@Valid String typeId, @Valid String status, @Valid String userId) {
+        return ResponseEntity.ok(voucherService.getVouchers(typeId, status, userId));
     }
 
     @Override

@@ -12,6 +12,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -24,6 +25,8 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -135,6 +138,15 @@ public class VoucherStepDefs extends StepDefs {
             .param("transactionDate", "2020-12-12T17:12:14Z"));
     }
 
+    @When("the operator requires the vouchers with type {string}, status {string} and userId {string}")
+    public void theOperatorRequiresTheVouchersWithTypeStatusAndUserId(String type, String status, String userId) throws Exception {
+        resultActions = mockMvc.perform(get("/v1/voucher")
+            .accept(MediaType.APPLICATION_JSON)
+            .param("typeId", type)
+            .param("status", status)
+            .param("userId", userId));
+    }
+
     @Then("the operator create the voucher correctly with {string} and type {string}")
     public void theOperatorCreateTheVoucherCorrectlyWithCodeAndType(String code, String type) throws Exception {
         resultActions.andExpect(status().isCreated())
@@ -219,6 +231,17 @@ public class VoucherStepDefs extends StepDefs {
 
     }
 
+    @Then("the user retrieve the list with {string} vouchers")
+    public void theUserRetrieveTheListWithVouchers(String vouchers) throws Exception {
+        resultActions.andExpect(status().isOk());
+
+        String[] voucherList = StringUtils.split(vouchers, ",");
+        resultActions.andExpect(jsonPath("$[*]", hasSize(voucherList.length)));
+        for (String code : voucherList) {
+            resultActions.andExpect(jsonPath("$[?(@.code== '" + code + "')]").exists());
+        }
+    }
+
     private MockMultipartFile buildVoucherFile(Integer size, String code) throws Exception {
 
         writeVoucherFile(size, "voucher_example.csv", code);
@@ -236,20 +259,22 @@ public class VoucherStepDefs extends StepDefs {
     private void saveVouchersFromDatatableData(List<Map<String, String>> datatable) {
         datatable.forEach(row -> {
             VoucherStatus voucherStatus = row.get("status") != null ? VoucherStatus.valueOf(row.get("status")) : VoucherStatus.ACTIVE;
-            Voucher voucher = getVoucher(row.get("code"), row.get("type"), voucherStatus);
+
+            Voucher voucher = getVoucher(StringUtils.trimToNull(row.get("code")), StringUtils.trimToNull(row.get("type")), voucherStatus, StringUtils.trimToNull(row.get("userId")));
 
             voucherRepository.save(voucher);
         });
 
     }
 
-    private Voucher getVoucher(String code, String type, VoucherStatus status) {
+    private Voucher getVoucher(String code, String type, VoucherStatus status, String userId) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type).get();
 
         Voucher voucher = new Voucher();
         voucher.setStatus(status);
         voucher.setCode(code);
         voucher.setTypeId(voucherType.getId());
+        voucher.setUserId(userId);
         return voucher;
     }
 

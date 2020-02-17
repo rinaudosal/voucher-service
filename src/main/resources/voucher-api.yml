@@ -245,6 +245,43 @@ paths:
               schema:
                 $ref: '#/components/schemas/Vouchers'
 
+  /voucher:
+    get:
+      tags:
+        - vouchers
+      summary: search the vouchers
+      operationId: getVouchers
+      description: list of vouchers with optional filters
+      parameters:
+        - in: query
+          name: typeId
+          description: the type id of the category
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: status
+          description: status of the vouchers
+          required: false
+          schema:
+            type: string
+            enum: [ ACTIVE, PURCHASED, REDEEMED, INACTIVE]
+        - in: query
+          name: userId
+          description: user id that have consumed the vouchers
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: resulting Voucher list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vouchers'
+
   /voucher/upload:
     post:
       tags:
