@@ -52,6 +52,33 @@ paths:
                   $ref: '#/components/schemas/AvailableVoucherTypes'
         '404':
           description: voucher types not available
+
+  /products/available:
+    get:
+      tags:
+        - products
+      summary: search the products available
+      operationId: getAvailableProducts
+      description: list of products available
+      parameters:
+        - in: query
+          name: products
+          description: list of products to check availability
+          required: false
+          example: Tinder 1 Month
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: resulting products list available
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
   /voucher-type:
     get:
       tags:
