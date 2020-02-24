@@ -123,15 +123,20 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public List<Vouchers> getVouchers(String typeCode, String status, String userId) {
+    public List<Vouchers> getVouchers(String typeCode, String status, String userId, String merchantId, String transactionId) {
         Voucher voucher = new Voucher();
         voucher.setUserId(StringUtils.trimToNull(userId));
-
+        voucher.setTransactionId(StringUtils.trimToNull(transactionId));
         if (StringUtils.isNotBlank(typeCode)) {
-            String typeId = voucherTypeRepository.findByCode(typeCode)
-                .map(VoucherType::getId)
+
+            VoucherType type = voucherTypeRepository.findByCode(typeCode)
                 .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", ENTITY_NAME + typeCode + " not found"));
-            voucher.setTypeId(StringUtils.trimToNull(typeId));
+
+            if (StringUtils.isBlank(merchantId) || type.getMerchantId().equals(merchantId)) {
+                voucher.setTypeId(StringUtils.trimToNull(type.getId()));
+            } else {
+                throw new BadRequestException("TYPE_NOT_FOUND", ENTITY_NAME + typeCode + " not found");
+            }
         }
 
         if (StringUtils.isNotBlank(status)) {

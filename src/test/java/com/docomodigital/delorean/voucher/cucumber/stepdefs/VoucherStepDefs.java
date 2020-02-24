@@ -138,13 +138,17 @@ public class VoucherStepDefs extends StepDefs {
             .param("transactionDate", "2020-12-12T17:12:14Z"));
     }
 
-    @When("the operator requires the vouchers with type {string}, status {string} and userId {string}")
-    public void theOperatorRequiresTheVouchersWithTypeStatusAndUserId(String type, String status, String userId) throws Exception {
+    @When("the operator requires the vouchers with type {string}, status {string}, userId {string}, merchantId {string} and transactionId {string}")
+    public void theOperatorRequiresTheVouchersWithTypeStatusAndUserId(String type, String status, String userId, String merchantId, String transactionId) throws Exception {
         resultActions = mockMvc.perform(get("/v1/voucher")
             .accept(MediaType.APPLICATION_JSON)
             .param("typeId", type)
             .param("status", status)
-            .param("userId", userId));
+            .param("userId", userId)
+            .param("merchantId", merchantId)
+            .param("transactionId", transactionId)
+
+        );
     }
 
     @Then("the operator create the voucher correctly with {string} and type {string}")
@@ -260,14 +264,21 @@ public class VoucherStepDefs extends StepDefs {
         datatable.forEach(row -> {
             VoucherStatus voucherStatus = row.get("status") != null ? VoucherStatus.valueOf(row.get("status")) : VoucherStatus.ACTIVE;
 
-            Voucher voucher = getVoucher(StringUtils.trimToNull(row.get("code")), StringUtils.trimToNull(row.get("type")), voucherStatus, StringUtils.trimToNull(row.get("userId")));
+            Voucher voucher = getVoucher(
+                StringUtils.trimToNull(row.get("code")),
+                StringUtils.trimToNull(row.get("type")),
+                voucherStatus,
+                StringUtils.trimToNull(row.get("userId")),
+                StringUtils.trimToNull(row.get("transactionId"))
+
+            );
 
             voucherRepository.save(voucher);
         });
 
     }
 
-    private Voucher getVoucher(String code, String type, VoucherStatus status, String userId) {
+    private Voucher getVoucher(String code, String type, VoucherStatus status, String userId, String transactionId) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type).get();
 
         Voucher voucher = new Voucher();
@@ -275,6 +286,7 @@ public class VoucherStepDefs extends StepDefs {
         voucher.setCode(code);
         voucher.setTypeId(voucherType.getId());
         voucher.setUserId(userId);
+        voucher.setTransactionId(transactionId);
         return voucher;
     }
 

@@ -41,8 +41,13 @@ public class VoucherController implements VoucherApi {
     }
 
     @Override
-    public ResponseEntity<List<Vouchers>> getVouchers(@Valid String typeId, @Valid String status, @Valid String userId) {
-        return ResponseEntity.ok(voucherService.getVouchers(typeId, status, userId));
+    public ResponseEntity<List<Vouchers>> getVouchers(
+        @Valid String typeId,
+        @Valid String status,
+        @Valid String userId,
+        @Valid String merchantId,
+        @Valid String transactionId) {
+        return ResponseEntity.ok(voucherService.getVouchers(typeId, status, userId, merchantId, transactionId));
     }
 
     @Override

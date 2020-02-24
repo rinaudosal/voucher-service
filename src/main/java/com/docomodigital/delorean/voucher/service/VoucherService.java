@@ -50,10 +50,12 @@ public interface VoucherService {
     /**
      * Retrieve list of vouchers with the filters requested
      *
-     * @param typeId id of the voucher type
-     * @param status status would be find
-     * @param userId user would be find
+     * @param typeId        id of the voucher type
+     * @param status        status would be find
+     * @param userId        user would be find
+     * @param merchantId    merchant would be find
+     * @param transactionId transaction would be find
      * @return vouchers found
      */
-    List<Vouchers> getVouchers(String typeId, String status, String userId);
+    List<Vouchers> getVouchers(String typeId, String status, String userId, String merchantId, String transactionId);
 }
