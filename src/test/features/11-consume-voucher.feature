@@ -46,7 +46,7 @@ Feature: Consume Voucher
   Scenario Outline: Voucher consume in error
     And today is '<billedDate>'
     When the operator wants to consume the voucher billed for merchant '<merchant>', product '<product>', country '<country>' and paymentProvider '<paymentProvider>' receiving the error code '<errorCode>' and description '<errorDescription>'
-    And notification will be sent to requestor with errors
+    And notification will be sent to requestor with error code '<errorCode>' and description '<errorDescription>'
     Examples:
       | merchant | product             | country | paymentProvider | billedDate | errorCode      | errorDescription                                                                                                  |
       | bumble   | Tinder 1 Month Gold | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for merchant bumble, paymentProvider PAYTM, country IN and product Tinder 1 Month Gold  |

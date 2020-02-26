@@ -7,7 +7,6 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
@@ -59,7 +58,8 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         voucherConsumer.setCountry(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['country'].['attributes'].['code']"));
         voucherConsumer.setUserId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['userId'].['attributes'].['customerId']"));
         voucherConsumer.setTransactionId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['transactionCode']"));
-        voucherConsumer.setBillingStatus(jsonContext.read("$['attributes'].['transaction'].['attributes'].['billingStatus']"));
+        voucherConsumer.setRequestId(jsonContext.read("$['attributes'].['code']"));
+        voucherConsumer.setBillingStatus(jsonContext.read("$['attributes'].['transaction'].['attributes'].['status']"));
 
         String transactionDateString = jsonContext.read("$['attributes'].['transaction'].['attributes'].['dateLastUpdated']");
         if (StringUtils.isNotBlank(transactionDateString)) {
@@ -88,6 +88,7 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         voucherToBeConsume.setStatus(VoucherStatus.PURCHASED);
         voucherToBeConsume.setUserId(voucherConsumer.getUserId());
         voucherToBeConsume.setTransactionId(voucherConsumer.getTransactionId());
+        voucherToBeConsume.setRequestId(voucherConsumer.getRequestId());
         voucherToBeConsume.setTransactionDate(voucherConsumer.getTransactionDate());
         voucherToBeConsume.setPurchaseDate(LocalDate.now(clock));
         voucherToBeConsume.setActivationUrl(voucherType.getBaseUrl() + voucherToBeConsume.getCode());
@@ -96,10 +97,13 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
     }
 
     @Override
-    public void sendNotification(Voucher voucher) throws JsonProcessingException {
+    public void sendNotification(Voucher voucher) throws Exception {
         String voucherString = new ObjectMapper().writeValueAsString(voucher);
         log.info(String.format("Sending response %s to tinder-plugin2api queue...", voucherString));
-        rabbitTemplate.convertAndSend("tinder-plugin2api", voucherString);
+        rabbitTemplate.convertAndSend("tinder-plugin2api", voucherString, m -> {
+            m.getMessageProperties().getHeaders().put("pluginCallCode", voucher.getRequestId());
+            return m;
+        });
         log.info("Message sent successfully");
     }
 }

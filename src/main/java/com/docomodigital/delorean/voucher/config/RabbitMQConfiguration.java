@@ -7,11 +7,9 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 
 /**
  * 2020/02/06
@@ -52,18 +50,9 @@ public class RabbitMQConfiguration {
     }
 
     @Bean
-    MessageListenerAdapter listenerAdapter(VoucherQueueReceiverService receiver) {
-        return new MessageListenerAdapter(receiver, messageConverter());
-    }
-
-    @Bean
-    public Jackson2JsonMessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
-
-    @Bean
-    public MappingJackson2MessageConverter consumerJackson2MessageConverter() {
-        return new MappingJackson2MessageConverter();
+    MessageListenerAdapter listenerAdapter(
+        VoucherQueueReceiverService receiver) {
+        return new MessageListenerAdapter(receiver);
     }
 
 }

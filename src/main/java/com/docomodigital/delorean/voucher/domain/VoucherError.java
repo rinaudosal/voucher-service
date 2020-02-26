@@ -3,8 +3,6 @@ package com.docomodigital.delorean.voucher.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotBlank;
-
 /**
  * Voucher collection
  * <p>
@@ -18,12 +16,10 @@ public class VoucherError extends AbstractAuditingEntity {
     @Id
     private String id;
 
-    @NotBlank
     private String uploadId;
 
     private Integer lineNumber;
 
-    @NotBlank
     private String code;
 
     private String errorCode;

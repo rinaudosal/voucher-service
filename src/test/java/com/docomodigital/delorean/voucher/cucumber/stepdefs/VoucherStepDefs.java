@@ -4,7 +4,6 @@ import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherError;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
-import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import io.cucumber.java.en.And;
@@ -294,17 +293,14 @@ public class VoucherStepDefs extends StepDefs {
     public void theOperatorWantsToConsumeTheVoucher(String merchant, String product, String country, String paymentProvider) throws Exception {
         String message = createJsonMessage(merchant, product, country, paymentProvider);
 
-        voucherQueueReceiverService.handleMessage(message);
+        voucherQueueReceiverService.handleMessage(message.getBytes());
     }
 
     @When("the operator wants to consume the voucher billed for merchant {string}, product {string}, country {string} and paymentProvider {string} receiving the error code {string} and description {string}")
     public void theOperatorWantsToConsumeTheVoucher(String merchant, String product, String country, String paymentProvider, String errorCode, String errorDescription) throws Exception {
         String message = createJsonMessage(merchant, product, country, paymentProvider);
 
-        Assertions.assertThatThrownBy(() -> voucherQueueReceiverService.handleMessage(message))
-            .isInstanceOf(BadRequestException.class)
-            .hasMessage(errorDescription)
-            .hasFieldOrPropertyWithValue("errorCode", errorCode);
+        voucherQueueReceiverService.handleMessage(message.getBytes());
 
     }
 
@@ -321,12 +317,15 @@ public class VoucherStepDefs extends StepDefs {
 
     @And("notification will be sent to requestor without error")
     public void notificationWillBeSentToRequestorWithoutError() {
-
+        Assertions.assertThat(voucherErrorRepository.findAll()).isEmpty();
     }
 
-    @And("notification will be sent to requestor with errors")
-    public void notificationWillBeSentToRequestorWithErrors() {
-
+    @And("notification will be sent to requestor with error code {string} and description {string}")
+    public void notificationWillBeSentToRequestorWithErrors(String errorCode, String errorDescription) {
+        List<VoucherError> voucherErrors = voucherErrorRepository.findAll();
+        Assertions.assertThat(voucherErrors).hasSize(1);
+        Assertions.assertThat(voucherErrors.get(0).getErrorCode()).isEqualTo(errorCode);
+        Assertions.assertThat(voucherErrors.get(0).getErrorMessage()).isEqualTo(errorDescription);
     }
 
     private String createJsonMessage(String merchant, String product, String country, String paymentProvider) throws Exception {

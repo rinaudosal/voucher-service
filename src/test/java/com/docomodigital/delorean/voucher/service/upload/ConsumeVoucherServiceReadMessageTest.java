@@ -36,6 +36,7 @@ public class ConsumeVoucherServiceReadMessageTest extends BaseUnitTest {
         Assertions.assertThat(output.getProductId()).isEqualTo("Product");
         Assertions.assertThat(output.getUserId()).isEqualTo("5da85c48a0cf582e93858dc7");
         Assertions.assertThat(output.getTransactionId()).isEqualTo("7c24a089-d2fc-4011-b711-891d69");
+        Assertions.assertThat(output.getRequestId()).isEqualTo("2372a681-2164-421a-99a1-c48d89301e6a");
         Assertions.assertThat(output.getTransactionDate()).isEqualTo(LocalDateTime.of(2020, 1, 20, 7, 59, 29));
         Assertions.assertThat(output.getBillingStatus()).isEqualTo("BILLED");
     }
@@ -49,6 +50,7 @@ public class ConsumeVoucherServiceReadMessageTest extends BaseUnitTest {
         Assertions.assertThat(voucherConsumer.getProductId()).isNull();
         Assertions.assertThat(voucherConsumer.getUserId()).isNull();
         Assertions.assertThat(voucherConsumer.getTransactionId()).isNull();
+        Assertions.assertThat(voucherConsumer.getRequestId()).isNull();
         Assertions.assertThat(voucherConsumer.getTransactionDate()).isNull();
         Assertions.assertThat(voucherConsumer.getBillingStatus()).isNull();
     }
