@@ -161,7 +161,7 @@ public class VoucherTypeStepDefs extends StepDefs {
     @Then("the user retrieve the voucher type")
     public void theUserRetrieveTheVoucherType() throws Exception {
         resultActions.andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").isNotEmpty());
+            .andExpect(jsonPath("$.typeId").isNotEmpty());
     }
 
     @Then("the user receive the error 'No Voucher type found'")
@@ -204,7 +204,7 @@ public class VoucherTypeStepDefs extends StepDefs {
             AvailableVoucherTypes resultValue = resultList.get(i);
 
             //check single row values
-            Assertions.assertThat(resultValue.getCode()).isEqualTo(expectedValue.get("code"));
+            Assertions.assertThat(resultValue.getTypeId()).isEqualTo(expectedValue.get("typeId"));
             Assertions.assertThat(resultValue.getDescription()).isEqualTo(expectedValue.get("description"));
             Assertions.assertThat(resultValue.getAmount()).isEqualTo(expectedValue.get("amount"));
             Assertions.assertThat(resultValue.getCurrency()).isEqualTo(expectedValue.get("currency"));
@@ -216,8 +216,8 @@ public class VoucherTypeStepDefs extends StepDefs {
         Map<String, String> firstRow = datatable.get(0);
 
         VoucherTypes voucherType = new VoucherTypes();
-        if (!StringUtils.equals(missingField, "code")) {
-            voucherType.setCode(firstRow.get("code"));
+        if (!StringUtils.equals(missingField, "typeId")) {
+            voucherType.setTypeId(firstRow.get("typeId"));
         }
         if (!StringUtils.equals(missingField, "promo")) {
             voucherType.setPromo(firstRow.get("promo"));
@@ -267,7 +267,7 @@ public class VoucherTypeStepDefs extends StepDefs {
 
         datatable.forEach(row -> {
             VoucherType voucherType = new VoucherType();
-            voucherType.setCode(getElementOrDefault(row, "code", "DEFCODE"));
+            voucherType.setCode(getElementOrDefault(row, "typeId", "DEFCODE"));
             voucherType.setProduct(getElementOrDefault(row, "product", "DEFPRODUCT"));
             voucherType.setPromo(getElementOrDefault(row, "promo", "DEFPROMO"));
             voucherType.setDescription(getElementOrDefault(row, "description", "DEFDESCRIPTION"));

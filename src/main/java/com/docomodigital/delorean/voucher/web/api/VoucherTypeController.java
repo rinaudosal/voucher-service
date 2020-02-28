@@ -74,7 +74,7 @@ public class VoucherTypeController implements VoucherTypeApi {
     public ResponseEntity<VoucherTypes> createVoucherType(@Valid VoucherTypes voucherTypes) {
         VoucherTypes voucherType = voucherTypeService.createVoucherType(voucherTypes);
 
-        return ResponseEntity.created(URI.create("/v1/voucher-type/" + voucherType.getCode()))
+        return ResponseEntity.created(URI.create("/v1/voucher-type/" + voucherType.getTypeId()))
             .body(voucherType);
     }
 

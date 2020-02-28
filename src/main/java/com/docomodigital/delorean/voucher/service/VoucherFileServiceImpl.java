@@ -114,7 +114,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
 
             errors += 1;
             VoucherError voucherError = new VoucherError();
-            voucherError.setUploadId(voucherUpload.getId());
+            voucherError.setVoucherFileId(voucherUpload.getId());
             voucherError.setCode(line);
             voucherError.setLineNumber(lineNumber);
             voucherError.setErrorCode(e.getErrorCode());

@@ -61,7 +61,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
 
         return voucherTypes.stream().map(v -> {
             AvailableVoucherTypes availableVoucherTypes = new AvailableVoucherTypes();
-            availableVoucherTypes.setCode(v.getCode());
+            availableVoucherTypes.setTypeId(v.getCode());
             availableVoucherTypes.setDescription(v.getDescription());
             availableVoucherTypes.setAmount(v.getAmount());
             availableVoucherTypes.setCurrency(v.getCurrency());
@@ -69,7 +69,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             return availableVoucherTypes;
         })
             .filter(v -> v.getVoucherAvailable() > 0)
-            .sorted(Comparator.comparing(AvailableVoucherTypes::getCode))
+            .sorted(Comparator.comparing(AvailableVoucherTypes::getTypeId))
             .collect(Collectors.toList());
     }
 
@@ -87,11 +87,11 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
 
     @Override
     public VoucherTypes createVoucherType(VoucherTypes voucherTypes) {
-        if (StringUtils.isBlank(voucherTypes.getCode())) {
-            throw new BadRequestException("MISSING_FIELD", "Invalid voucherTypes, code is mandatory");
+        if (StringUtils.isBlank(voucherTypes.getTypeId())) {
+            throw new BadRequestException("MISSING_FIELD", "Invalid voucherTypes, typeId is mandatory");
         }
 
-        if (voucherTypeRepository.existsVoucherTypeByCode(voucherTypes.getCode())) {
+        if (voucherTypeRepository.existsVoucherTypeByCode(voucherTypes.getTypeId())) {
             throw new BadRequestException("ALREADY_EXIST", "Voucher Type already exist");
         }
 
@@ -106,8 +106,8 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
 
     @Override
     public Optional<VoucherTypes> updateVoucherType(String code, VoucherTypes voucherTypes) {
-        if (StringUtils.isNotBlank(voucherTypes.getCode())) {
-            throw new BadRequestException("WRONG_FIELD", "Cannot pass Voucher Type code in body request");
+        if (StringUtils.isNotBlank(voucherTypes.getTypeId())) {
+            throw new BadRequestException("WRONG_FIELD", "Cannot pass Voucher Type typeId in body request");
         }
 
         return voucherTypeRepository.findByCode(code)

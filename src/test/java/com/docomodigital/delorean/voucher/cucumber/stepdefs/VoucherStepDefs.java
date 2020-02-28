@@ -48,20 +48,20 @@ public class VoucherStepDefs extends StepDefs {
     public void theOperatorWantsToCreateTheVoucherCodeWithTypeType(String code, String type) throws Exception {
         resultActions = mockMvc.perform(post("/v1/voucher/" + code + "/upload")
             .accept(MediaType.APPLICATION_JSON)
-            .param("type", type));
+            .param("typeId", type));
     }
 
     @When("the operator wants to {string} the voucher without field {string}")
     public void theOperatorWantsToUpdateTheVoucherWithoutField(String operation, String missingField) throws Exception {
         MockMultipartFile file = buildVoucherFile(2, null);
 
-        if (missingField.equals("type")) {
+        if (missingField.equals("typeId")) {
             resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
                 .file(file)
                 .characterEncoding("UTF-8"));
         } else {
             resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
-                .param("type", "TIN1M")
+                .param("typeId", "TIN1M")
                 .characterEncoding("UTF-8"));
         }
     }
@@ -74,10 +74,10 @@ public class VoucherStepDefs extends StepDefs {
                 .accept(MediaType.APPLICATION_JSON));
         }
 
-        if (!missingField.equals("type")) {
+        if (!missingField.equals("typeId")) {
             resultActions = mockMvc.perform(post("/v1/voucher/upload")
                 .accept(MediaType.APPLICATION_JSON)
-                .param("type", "TIN1M"));
+                .param("typeId", "TIN1M"));
         }
 
 
@@ -89,7 +89,7 @@ public class VoucherStepDefs extends StepDefs {
 
         resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/upload")
             .file(file)
-            .param("type", type)
+            .param("typeId", type)
             .characterEncoding("UTF-8"));
     }
 
@@ -99,7 +99,7 @@ public class VoucherStepDefs extends StepDefs {
 
         resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
             .file(file)
-            .param("type", type)
+            .param("typeId", type)
             .characterEncoding("UTF-8"));
     }
 
@@ -109,7 +109,7 @@ public class VoucherStepDefs extends StepDefs {
 
         resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
             .file(file)
-            .param("type", type)
+            .param("typeId", type)
             .characterEncoding("UTF-8"));
 
     }
@@ -123,7 +123,7 @@ public class VoucherStepDefs extends StepDefs {
 
         resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
             .file(file)
-            .param("type", type)
+            .param("typeId", type)
             .characterEncoding("UTF-8"));
 
     }
@@ -154,7 +154,7 @@ public class VoucherStepDefs extends StepDefs {
     public void theOperatorCreateTheVoucherCorrectlyWithCodeAndType(String code, String type) throws Exception {
         resultActions.andExpect(status().isCreated())
             .andExpect(jsonPath("$.code").value(code))
-            .andExpect(jsonPath("$.type").value(type))
+            .andExpect(jsonPath("$.typeId").value(type))
             .andExpect(jsonPath("$.status").value("ACTIVE"))
             .andExpect(jsonPath("$.userId").isEmpty())
             .andExpect(jsonPath("$.transactionId").isEmpty())
@@ -168,7 +168,7 @@ public class VoucherStepDefs extends StepDefs {
     public void theOperatorPurchaseTheVoucherCorrectly(String code) throws Exception {
         resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.code").value(code))
-            .andExpect(jsonPath("$.type").isNotEmpty())
+            .andExpect(jsonPath("$.typeId").isNotEmpty())
             .andExpect(jsonPath("$.status").value("PURCHASED"))
             .andExpect(jsonPath("$.userId").isNotEmpty())
             .andExpect(jsonPath("$.transactionId").isNotEmpty())
@@ -184,7 +184,7 @@ public class VoucherStepDefs extends StepDefs {
         resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("UPLOADED"))
             .andExpect(jsonPath("$.filename").value("voucher_example.csv"))
-            .andExpect(jsonPath("$.type").value(type))
+            .andExpect(jsonPath("$.typeId").value(type))
             .andExpect(jsonPath("$.total").value(size))
             .andExpect(jsonPath("$.uploaded").value(size))
             .andExpect(jsonPath("$.errors").value(0));
@@ -196,7 +196,7 @@ public class VoucherStepDefs extends StepDefs {
         resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("UPLOADED"))
             .andExpect(jsonPath("$.filename").value("voucher_example.csv"))
-            .andExpect(jsonPath("$.type").value(type))
+            .andExpect(jsonPath("$.typeId").value(type))
             .andExpect(jsonPath("$.total").value(1))
             .andExpect(jsonPath("$.uploaded").value(1))
             .andExpect(jsonPath("$.errors").value(0));
@@ -218,7 +218,7 @@ public class VoucherStepDefs extends StepDefs {
             .andExpect(jsonPath("$.status").value("UPLOADED"))
             .andExpect(jsonPath("$.operation").value(operation.toUpperCase()))
             .andExpect(jsonPath("$.filename").value("voucher_example.csv"))
-            .andExpect(jsonPath("$.type").value("TIN1M"))
+            .andExpect(jsonPath("$.typeId").value("TIN1M"))
             .andExpect(jsonPath("$.total").value(uploaded + errors))
             .andExpect(jsonPath("$.uploaded").value(uploaded))
             .andExpect(jsonPath("$.errors").value(errors));
@@ -265,7 +265,7 @@ public class VoucherStepDefs extends StepDefs {
 
             Voucher voucher = getVoucher(
                 StringUtils.trimToNull(row.get("code")),
-                StringUtils.trimToNull(row.get("type")),
+                StringUtils.trimToNull(row.get("typeId")),
                 voucherStatus,
                 StringUtils.trimToNull(row.get("userId")),
                 StringUtils.trimToNull(row.get("transactionId"))
@@ -279,7 +279,6 @@ public class VoucherStepDefs extends StepDefs {
 
     private Voucher getVoucher(String code, String type, VoucherStatus status, String userId, String transactionId) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type).get();
-
         Voucher voucher = new Voucher();
         voucher.setStatus(status);
         voucher.setCode(code);

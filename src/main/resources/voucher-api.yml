@@ -152,7 +152,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/VoucherTypes'
 
-  /voucher-type/{code}:
+  /voucher-type/{typeId}:
     get:
       tags:
         - voucher-types
@@ -161,7 +161,7 @@ paths:
       description: voucher type with code passed
       parameters:
         - in: path
-          name: code
+          name: typeId
           description: code of the voucher type
           required: true
           example: VOU1MONTH
@@ -182,7 +182,7 @@ paths:
       description: voucher type with code passed
       parameters:
         - in: path
-          name: code
+          name: typeId
           description: code of the voucher type
           required: true
           example: VOU1MONTH
@@ -217,7 +217,7 @@ paths:
           schema:
             type: string
         - in: query
-          name: type
+          name: typeId
           description: the voucher type configured
           required: true
           schema:
@@ -337,12 +337,12 @@ paths:
                 file:
                   type: string
                   format: binary
-                type:
+                typeId:
                   type: string
                   example: VOU1M
               required:
                 - file
-                - type
+                - typeId
       responses:
         '200':      # Response
           description: OK
@@ -367,12 +367,12 @@ paths:
                 file:
                   type: string
                   format: binary
-                type:
+                typeId:
                   type: string
                   example: VOU1M
               required:
                 - file
-                - type
+                - typeId
       responses:
         '200':      # Response
           description: OK
@@ -397,12 +397,12 @@ paths:
                 file:
                   type: string
                   format: binary
-                type:
+                typeId:
                   type: string
                   example: VOU1M
               required:
                 - file
-                - type
+                - typeId
       responses:
         '200':      # Response
           description: OK
@@ -415,7 +415,7 @@ components:
     AvailableVoucherTypes:
       type: object
       properties:
-        code:
+        typeId:
           type: string
           example: VOU1MONTH
         description:
@@ -443,7 +443,7 @@ components:
         - shop
         - priority
       properties:
-        code:
+        typeId:
           type: string
           example: VOU1MONTH
         description:
@@ -494,7 +494,7 @@ components:
         code:
           type: string
           example: VOU1MONTH
-        type:
+        typeId:
           type: string
           example: TND1MGLD
         status:
@@ -533,7 +533,7 @@ components:
         filename:
           type: string
           example: file.csv
-        type:
+        typeId:
           type: string
           example: TIN1M
         total:

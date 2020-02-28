@@ -104,7 +104,7 @@ public class VoucherFileMapperTest extends BaseUnitTest {
         voucherUpload.setStatus(VoucherUpload.StatusEnum.UPLOADED);
         voucherUpload.setOperation(VoucherUpload.OperationEnum.PURCHASE);
         voucherUpload.setFilename("my_filename");
-        voucherUpload.setType("my_code");
+        voucherUpload.setTypeId("my_code");
         voucherUpload.setTotal(42);
         voucherUpload.setUploaded(42);
         voucherUpload.setErrors(42);
@@ -145,7 +145,7 @@ public class VoucherFileMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherUpload.getStatus()).isEqualTo(VoucherUpload.StatusEnum.UPLOADED);
         Assertions.assertThat(voucherUpload.getOperation()).isEqualTo(VoucherUpload.OperationEnum.PURCHASE);
         Assertions.assertThat(voucherUpload.getFilename()).isEqualTo("my_filename");
-        Assertions.assertThat(voucherUpload.getType()).isEqualTo("my_code");
+        Assertions.assertThat(voucherUpload.getTypeId()).isEqualTo("my_code");
         Assertions.assertThat(voucherUpload.getTotal()).isEqualTo(42);
         Assertions.assertThat(voucherUpload.getUploaded()).isEqualTo(42);
         Assertions.assertThat(voucherUpload.getErrors()).isEqualTo(42);

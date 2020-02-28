@@ -16,7 +16,6 @@ import java.time.LocalDate;
  */
 @Document
 public class VoucherType extends AbstractAuditingEntity {
-
     @Id
     private String id;
 

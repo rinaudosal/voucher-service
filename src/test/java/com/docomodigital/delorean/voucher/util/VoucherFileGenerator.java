@@ -11,7 +11,7 @@ import java.util.UUID;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-public class VoucherParserTest {
+public class VoucherFileGenerator {
 
     public static void main(String[] args) throws Exception {
         Writer fstream = new OutputStreamWriter(new FileOutputStream("DOCOMO_1_10000.csv"), StandardCharsets.UTF_8);

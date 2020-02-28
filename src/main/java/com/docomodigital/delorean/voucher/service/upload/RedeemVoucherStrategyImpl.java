@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.service.upload;
 
+import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
@@ -18,8 +19,6 @@ import java.time.LocalDate;
  */
 @Component
 public class RedeemVoucherStrategyImpl implements ProcessVoucherStrategy {
-    private static final String VOUCHER_TYPE_ENTITY_NAME = "Voucher Type ";
-
     private final VoucherTypeRepository voucherTypeRepository;
     private final VoucherRepository voucherRepository;
     private final Clock clock;
@@ -33,9 +32,11 @@ public class RedeemVoucherStrategyImpl implements ProcessVoucherStrategy {
     @Override
     public Voucher processLine(String line, VoucherType type, String uploadId) {
         Voucher voucher = voucherRepository.findByCodeAndTypeId(line, type.getId())
-            .orElseThrow(() -> new BadRequestException("VOUCHER_NOT_FOUND", "Voucher " + line + " not found for Type " + type.getCode()));
+            .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR,
+                String.format("Voucher %s not found for Type %s", line, type.getCode())));
         if (!VoucherStatus.PURCHASED.equals(voucher.getStatus())) {
-            throw new BadRequestException("WRONG_STATUS", "Voucher " + line + " not redeemed, the status is " + voucher.getStatus());
+            throw new BadRequestException(Constants.WRONG_STATUS_ERROR,
+                String.format("Voucher %s not redeemed, the status is %s", line, voucher.getStatus()));
         }
 
         voucher.setStatus(VoucherStatus.REDEEMED);
@@ -48,7 +49,8 @@ public class RedeemVoucherStrategyImpl implements ProcessVoucherStrategy {
     @Override
     public VoucherType getValidVoucherType(String type) {
         return voucherTypeRepository.findByCode(type)
-            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", VOUCHER_TYPE_ENTITY_NAME + type + " not found"));
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR,
+                String.format("Voucher Type %s not found", type)));
     }
 
 }

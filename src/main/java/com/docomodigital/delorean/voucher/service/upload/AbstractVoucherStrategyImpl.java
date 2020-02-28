@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.service.upload;
 
+import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
@@ -14,7 +15,6 @@ import java.time.LocalDate;
  * @author salvatore.rinaudo@docomodigital.com
  */
 public class AbstractVoucherStrategyImpl {
-    private static final String VOUCHER_TYPE_ENTITY_NAME = "Voucher Type ";
     protected final VoucherTypeRepository voucherTypeRepository;
     protected final VoucherRepository voucherRepository;
     protected final Clock clock;
@@ -27,15 +27,16 @@ public class AbstractVoucherStrategyImpl {
 
     public VoucherType getValidVoucherType(String type) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type)
-            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", VOUCHER_TYPE_ENTITY_NAME + type + " not found"));
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR,
+                String.format("Voucher Type %s not found", type)));
 
         if (!voucherType.getEnabled()) {
-            throw new BadRequestException("TYPE_DISABLED", VOUCHER_TYPE_ENTITY_NAME + type + " is disabled");
+            throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", type));
         }
 
         LocalDate today = LocalDate.now(clock);
         if (!voucherType.getEndDate().isAfter(today)) {
-            throw new BadRequestException("TYPE_EXPIRED", VOUCHER_TYPE_ENTITY_NAME + type + " is expired");
+            throw new BadRequestException(Constants.TYPE_EXPIRED_ERROR, String.format("Voucher Type %s is expired", type));
         }
 
         return voucherType;

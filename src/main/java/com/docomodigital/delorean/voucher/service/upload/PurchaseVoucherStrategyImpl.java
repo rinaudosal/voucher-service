@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.service.upload;
 
+import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
@@ -26,10 +27,12 @@ public class PurchaseVoucherStrategyImpl extends AbstractVoucherStrategyImpl imp
     @Override
     public Voucher processLine(String line, VoucherType type, String uploadId) {
         Voucher voucher = voucherRepository.findByCodeAndTypeId(line, type.getId())
-            .orElseThrow(() -> new BadRequestException("VOUCHER_NOT_FOUND", "Voucher " + line + " not found for Type " + type.getCode()));
+            .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR,
+                String.format("Voucher %s not found for Type %s", line, type.getCode())));
 
         if (!VoucherStatus.ACTIVE.equals(voucher.getStatus())) {
-            throw new BadRequestException("WRONG_STATUS", "Voucher with code " + line + " is not in ACTIVE state");
+            throw new BadRequestException(Constants.WRONG_STATUS_ERROR,
+                String.format("Voucher with code %s is not in ACTIVE state", line));
         }
 
         voucher.setStatus(VoucherStatus.PURCHASED);

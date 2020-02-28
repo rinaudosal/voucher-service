@@ -3,7 +3,6 @@ package com.docomodigital.delorean.voucher.mapper;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -18,11 +17,9 @@ import java.time.ZoneOffset;
 public interface VoucherMapper extends EntityMapper<Vouchers, Voucher> {
 
     @Override
-    @Mapping(source = "type", target = "typeId")
     Voucher toEntity(Vouchers dto);
 
     @Override
-    @Mapping(source = "typeId", target = "type")
     Vouchers toDto(Voucher entity);
 
     default OffsetDateTime map(LocalDateTime localDateTime) {

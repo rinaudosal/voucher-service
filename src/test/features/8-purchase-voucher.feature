@@ -5,21 +5,21 @@ Feature: Purchase Voucher
 
   Background:
     Given exist the voucher types:
-      | code  | description       | merchant | enabled | startDate  | endDate    |
-      | TIN1M | 1 Months          | tinder   | true    | 01/01/2020 | 31/12/2020 |
-      | TIN3M | 3 Months to be    | tinder   | true    | 01/03/2020 | 31/12/2020 |
-      | TIN6M | 6 Months disabled | tinder   | false   | 01/01/2020 | 31/12/2020 |
-      | TIN9M | 9 Months expired  | tinder   | true    | 01/01/2020 | 21/01/2020 |
+      | typeId | description       | merchant | enabled | startDate  | endDate    |
+      | TIN1M  | 1 Months          | tinder   | true    | 01/01/2020 | 31/12/2020 |
+      | TIN3M  | 3 Months to be    | tinder   | true    | 01/03/2020 | 31/12/2020 |
+      | TIN6M  | 6 Months disabled | tinder   | false   | 01/01/2020 | 31/12/2020 |
+      | TIN9M  | 9 Months expired  | tinder   | true    | 01/01/2020 | 21/01/2020 |
     And exist the voucher:
-      | code              | type  | status    | purchaseDate |
-      | VOUCHER1ACTIVE    | TIN1M | ACTIVE    | 31/01/2020   |
-      | VOUCHER1PURCHASED | TIN1M | PURCHASED | 31/01/2020   |
-      | VOUCHER3ACTIVE    | TIN3M | ACTIVE    | 31/01/2020   |
-      | VOUCHER3PURCHASED | TIN3M | PURCHASED | 31/01/2020   |
-      | VOUCHER6ACTIVE    | TIN6M | ACTIVE    | 31/01/2020   |
-      | VOUCHER6PURCHASED | TIN6M | PURCHASED | 31/01/2020   |
-      | VOUCHER9ACTIVE    | TIN9M | ACTIVE    | 31/01/2020   |
-      | VOUCHER9PURCHASED | TIN9M | PURCHASED | 31/01/2020   |
+      | code              | typeId | status    | purchaseDate |
+      | VOUCHER1ACTIVE    | TIN1M  | ACTIVE    | 31/01/2020   |
+      | VOUCHER1PURCHASED | TIN1M  | PURCHASED | 31/01/2020   |
+      | VOUCHER3ACTIVE    | TIN3M  | ACTIVE    | 31/01/2020   |
+      | VOUCHER3PURCHASED | TIN3M  | PURCHASED | 31/01/2020   |
+      | VOUCHER6ACTIVE    | TIN6M  | ACTIVE    | 31/01/2020   |
+      | VOUCHER6PURCHASED | TIN6M  | PURCHASED | 31/01/2020   |
+      | VOUCHER9ACTIVE    | TIN9M  | ACTIVE    | 31/01/2020   |
+      | VOUCHER9PURCHASED | TIN9M  | PURCHASED | 31/01/2020   |
     And today is '01/02/2020'
 
   Scenario Outline: Voucher purchased

@@ -33,9 +33,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<String> getAvailableProducts(List<String> products) {
-
         // find all voucher type for the merchant, enabled and in correct range date
-        List<String> availableProducts = voucherTypeRepository.findAllVoucherTypeByProductIn(products)
+        return voucherTypeRepository.findAllVoucherTypeByProductIn(products)
             .stream()
             .filter(vou -> {
                 LocalDate now = LocalDate.now(clock);
@@ -49,8 +48,6 @@ public class ProductServiceImpl implements ProductService {
             .map(VoucherType::getProduct)
             .collect(Collectors.toSet())
             .stream().collect(Collectors.toList());
-
-        return availableProducts;
 
     }
 

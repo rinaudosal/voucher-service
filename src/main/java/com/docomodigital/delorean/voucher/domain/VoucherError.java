@@ -16,7 +16,7 @@ public class VoucherError extends AbstractAuditingEntity {
     @Id
     private String id;
 
-    private String uploadId;
+    private String voucherFileId;
 
     private Integer lineNumber;
 
@@ -34,12 +34,12 @@ public class VoucherError extends AbstractAuditingEntity {
         this.id = id;
     }
 
-    public String getUploadId() {
-        return uploadId;
+    public String getVoucherFileId() {
+        return voucherFileId;
     }
 
-    public void setUploadId(String uploadId) {
-        this.uploadId = uploadId;
+    public void setVoucherFileId(String voucherFileId) {
+        this.voucherFileId = voucherFileId;
     }
 
     public String getCode() {

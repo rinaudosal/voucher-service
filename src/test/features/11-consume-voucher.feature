@@ -5,7 +5,7 @@ Feature: Consume Voucher
 
   Background:
     Given exist the voucher types:
-      | code    | product              | description           | Promo          | amount | currency | merchant | country | paymentProvider | shop  | enabled | startDate  | endDate    | priority |
+      | typeId  | product              | description           | Promo          | amount | currency | merchant | country | paymentProvider | shop  | enabled | startDate  | endDate    | priority |
       | TIN1M   | Tinder 1 Month Gold  | 1 Months              |                | 9.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/01/2020 | 31/12/2020 | 0        |
       | TIN1S   | Tinder 1 Month Gold  | 1 Months Sale!        | tnd1msale      | 7.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/02/2020 | 18/08/2020 | 1        |
       | TIN1SS  | Tinder 1 Month Gold  | 1 Months Super Sale!! | tnd1msupersale | 5.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/08/2020 | 15/08/2020 | 2        |
@@ -17,7 +17,7 @@ Feature: Consume Voucher
       | TIN6M   | Tinder 6 Month Gold  | 6 Months              |                | 39.99  | EUR      | tinder   | IN      | PAYTM           | shop3 | true    | 01/01/2020 | 21/04/2020 | 0        |
       | TIN9D   | Tinder 9 Month Gold  | Voucher not enabled   |                | 49.99  | EUR      | tinder   | US      | PAYTM           | shop3 | false   | 05/01/2020 | 21/02/2020 | 0        |
     And exist the voucher:
-      | code          | type    | status    |
+      | code          | typeId  | status    |
       | V1ACTIVE      | TIN1M   | ACTIVE    |
       | V1PURCHASED   | TIN1M   | PURCHASED |
       | V1SACTIVE     | TIN1S   | ACTIVE    |

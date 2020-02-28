@@ -18,6 +18,7 @@ public interface VoucherTypeMapper extends EntityMapper<VoucherTypes, VoucherTyp
     @Override
     @Mapping(source = "merchant", target = "merchantId")
     @Mapping(source = "shop", target = "shopId")
+    @Mapping(source = "typeId", target = "code")
     VoucherType toEntity(VoucherTypes dto);
 
     @Override

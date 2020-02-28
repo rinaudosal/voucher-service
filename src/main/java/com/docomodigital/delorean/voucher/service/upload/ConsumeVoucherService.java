@@ -31,6 +31,6 @@ public interface ConsumeVoucherService {
      *
      * @param voucher the voucher billed
      */
-    void sendNotification(Voucher voucher) throws Exception;
+    void sendNotification(Voucher voucher) throws Exception; //NOSONAR
 
 }

@@ -80,7 +80,7 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
             voucherConsumer.getPaymentProvider(),
             voucherConsumer.getCountry(),
             voucherConsumer.getProductId()))
-            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", "Voucher type not found"));
+            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", "Voucher Type not found"));
 
         Voucher voucherToBeConsume = voucherRepository.findFirstByTypeIdAndStatusEquals(voucherType.getId(), VoucherStatus.ACTIVE)
             .orElseThrow(() -> new BadRequestException("VOUCHER_NOT_FOUND", "Voucher with type " + voucherType.getId() + " and status ACTIVE not found"));

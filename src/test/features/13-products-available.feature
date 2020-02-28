@@ -5,7 +5,7 @@ Feature: Retrieve the List of products available
 
   Background:
     Given exist the voucher types:
-      | code            | product               | description           | promo          | amount | currency | merchant | country | paymentProvider | shop  | enabled | startDate  | endDate    | priority | Voucher Purchased | Voucher Active |
+      | typeId          | product               | description           | promo          | amount | currency | merchant | country | paymentProvider | shop  | enabled | startDate  | endDate    | priority | Voucher Purchased | Voucher Active |
       | STD1MONTHS      | Tinder 1 Month Gold   | 1 Months              |                | 9.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/01/2020 | 21/06/2020 | 0        | 3                 | 3              |
       | SALE1MONTHS     | Tinder 1 Month Gold   | 1 Months Sale!        | tnd1msale      | 7.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/02/2020 | 28/02/2020 | 1        | 2                 | 1              |
       | SSALE1MONTHS    | Tinder 1 Month Gold   | 1 Months Super Sale!! | tnd1msupersale | 5.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/08/2020 | 15/08/2020 | 2        | 1                 | 2              |

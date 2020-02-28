@@ -99,7 +99,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
         Assertions.assertThatThrownBy(() -> target.consumeVoucher(input))
             .isInstanceOf(BadRequestException.class)
             .hasFieldOrPropertyWithValue("errorCode", "TYPE_NOT_FOUND")
-            .hasMessage("Voucher type not found");
+            .hasMessage("Voucher Type not found");
 
     }
 

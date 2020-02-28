@@ -96,7 +96,7 @@ public class VoucherMapperTest extends BaseUnitTest {
     private Vouchers getDto() {
         Vouchers voucher = new Vouchers();
         voucher.setCode("my_code");
-        voucher.setType("my_type");
+        voucher.setTypeId("my_type");
         voucher.setStatus(Vouchers.StatusEnum.ACTIVE);
         voucher.setUserId("my_user_id");
         voucher.setTransactionId("my_transaction_id");
@@ -141,7 +141,7 @@ public class VoucherMapperTest extends BaseUnitTest {
 
     private void assertDto(Vouchers vouchers) {
         Assertions.assertThat(vouchers.getCode()).isEqualTo("my_code");
-        Assertions.assertThat(vouchers.getType()).isEqualTo("my_type_id");
+        Assertions.assertThat(vouchers.getTypeId()).isEqualTo("my_type_id");
         Assertions.assertThat(vouchers.getStatus()).isEqualTo(Vouchers.StatusEnum.ACTIVE);
         Assertions.assertThat(vouchers.getUserId()).isEqualTo("my_user_id");
         Assertions.assertThat(vouchers.getTransactionId()).isEqualTo("my_transaction_id");
