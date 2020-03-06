@@ -1,0 +1,18 @@
+@startuml
+scale 500 width
+
+note "Voucher status flow" as N1
+
+[*] --> ACTIVE : uploadVouchers()
+
+ACTIVE --> PURCHASED : purchaseVoucher()
+ACTIVE --> RESERVED : reserveVoucher()
+
+RESERVED --> ACTIVE : timeout()
+RESERVED --> PURCHASED : confirmVoucherReserved()
+PURCHASED --> REDEEMED : redeemVouchers()
+
+ACTIVE --> INACTIVE : terminateCampaign()
+RESERVED --> INACTIVE : terminateCampaign()
+
+@enduml

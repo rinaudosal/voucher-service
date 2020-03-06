@@ -46,7 +46,7 @@ public class VoucherStepDefs extends StepDefs {
 
     @When("the operator wants to create the voucher {string} with type {string}")
     public void theOperatorWantsToCreateTheVoucherCodeWithTypeType(String code, String type) throws Exception {
-        resultActions = mockMvc.perform(post("/v1/voucher/" + code + "/upload")
+        resultActions = mockMvc.perform(post("/v1/voucher/" + code)
             .accept(MediaType.APPLICATION_JSON)
             .param("typeId", type));
     }
@@ -70,7 +70,7 @@ public class VoucherStepDefs extends StepDefs {
     @When("the operator wants to create the voucher without field {string}")
     public void theOperatorWantsToCreateTheVoucherWithoutField(String missingField) throws Exception {
         if (!missingField.equals("code")) {
-            resultActions = mockMvc.perform(post("/v1/voucher/VOUCHER21/upload")
+            resultActions = mockMvc.perform(post("/v1/voucher/VOUCHER21")
                 .accept(MediaType.APPLICATION_JSON));
         }
 
