@@ -7,6 +7,7 @@ import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +27,8 @@ public class VoucherMapperTest extends BaseUnitTest {
     @Before
     public void setUp() {
         target = new VoucherMapperImpl();
+
+        ReflectionTestUtils.setField(target, "commonMapper", new CommonMapperImpl());
     }
 
     @Test
@@ -55,8 +58,8 @@ public class VoucherMapperTest extends BaseUnitTest {
 
     @Test
     public void assertNullMapLocalDate() {
-        Assertions.assertThat(target.map((LocalDateTime)null)).isNull();
-        Assertions.assertThat(target.map((OffsetDateTime) null)).isNull();
+        Assertions.assertThat(new CommonMapperImpl().map((LocalDateTime)null)).isNull();
+        Assertions.assertThat(new CommonMapperImpl().map((OffsetDateTime) null)).isNull();
     }
 
     @Test

@@ -34,7 +34,7 @@ public class CommonStepDefs extends StepDefs {
     public void theUserOfRequestTheProductAvailableByProductsProductsIn(String productsIn) throws Exception {
         String[] products = StringUtils.split(productsIn, ",");
 
-        resultActions = mockMvc.perform(get("/v1/products/available")
+        resultComponent.resultActions = mockMvc.perform(get("/v1/products/available")
             .accept(MediaType.APPLICATION_JSON)
             .param("products", products));
 
@@ -44,13 +44,13 @@ public class CommonStepDefs extends StepDefs {
     public void theUserRetrieveTheListOfProductsOut(String productsOut) throws Exception {
         String[] products = StringUtils.split(productsOut, ",");
 
-        resultActions.andExpect(jsonPath("$[*]", hasSize(products.length)));
-        resultActions.andExpect(jsonPath("$[*]", containsInAnyOrder(products)));
+        resultComponent.resultActions.andExpect(jsonPath("$[*]", hasSize(products.length)));
+        resultComponent.resultActions.andExpect(jsonPath("$[*]", containsInAnyOrder(products)));
     }
 
     @Then("the user receive the error 'No Products available, try later'")
     public void theUserReceiveTheErrorNoProductsAvailableTryLater() throws Exception{
-        resultActions.andExpect(status().isOk())
+        resultComponent.resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.[*]", hasSize(0)));
     }
 }

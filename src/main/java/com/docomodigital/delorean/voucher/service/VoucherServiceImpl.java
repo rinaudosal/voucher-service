@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 @Service
 public class VoucherServiceImpl implements VoucherService {
 
-    private static final String VOUCHER_TYPE_NOT_FOUND_MESSAGE = "Voucher Type %s not found";
     private final VoucherRepository voucherRepository;
     private final VoucherTypeRepository voucherTypeRepository;
     private final VoucherFileService voucherFileService;
@@ -103,7 +102,7 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         VoucherType voucherType = voucherTypeRepository.findById(voucher.getTypeId())
-            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(VOUCHER_TYPE_NOT_FOUND_MESSAGE, voucher.getTypeId())));
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(Constants.VOUCHER_TYPE_NOT_FOUND_MESSAGE, voucher.getTypeId())));
 
         if (LocalDate.now(clock).isBefore(voucherType.getStartDate())) {
             throw new BadRequestException(Constants.TYPE_NOT_YET_AVAILABLE_ERROR, String.format("Voucher Type %s is not yet available", voucherType.getCode()));
@@ -132,12 +131,12 @@ public class VoucherServiceImpl implements VoucherService {
         if (StringUtils.isNotBlank(typeCode)) {
 
             VoucherType type = voucherTypeRepository.findByCode(typeCode)
-                .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(VOUCHER_TYPE_NOT_FOUND_MESSAGE, typeCode)));
+                .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(Constants.VOUCHER_TYPE_NOT_FOUND_MESSAGE, typeCode)));
 
             if (StringUtils.isBlank(merchantId) || type.getMerchantId().equals(merchantId)) {
                 voucher.setTypeId(StringUtils.trimToNull(type.getId()));
             } else {
-                throw new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(VOUCHER_TYPE_NOT_FOUND_MESSAGE, typeCode));
+                throw new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(Constants.VOUCHER_TYPE_NOT_FOUND_MESSAGE, typeCode));
             }
         }
 

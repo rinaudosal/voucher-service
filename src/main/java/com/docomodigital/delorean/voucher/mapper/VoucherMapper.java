@@ -13,7 +13,7 @@ import java.time.ZoneOffset;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = CommonMapper.class)
 public interface VoucherMapper extends EntityMapper<Vouchers, Voucher> {
 
     @Override
@@ -22,19 +22,4 @@ public interface VoucherMapper extends EntityMapper<Vouchers, Voucher> {
     @Override
     Vouchers toDto(Voucher entity);
 
-    default OffsetDateTime map(LocalDateTime localDateTime) {
-        if (localDateTime != null) {
-            return localDateTime.atOffset(ZoneOffset.UTC);
-        }
-
-        return null;
-    }
-
-    default LocalDateTime map(OffsetDateTime localDateTime) {
-        if (localDateTime != null) {
-            return localDateTime.toLocalDateTime();
-        }
-
-        return null;
-    }
 }

@@ -46,7 +46,7 @@ public class VoucherStepDefs extends StepDefs {
 
     @When("the operator wants to create the voucher {string} with type {string}")
     public void theOperatorWantsToCreateTheVoucherCodeWithTypeType(String code, String type) throws Exception {
-        resultActions = mockMvc.perform(post("/v1/voucher/" + code)
+        resultComponent.resultActions = mockMvc.perform(post("/v1/voucher/" + code)
             .accept(MediaType.APPLICATION_JSON)
             .param("typeId", type));
     }
@@ -56,11 +56,11 @@ public class VoucherStepDefs extends StepDefs {
         MockMultipartFile file = buildVoucherFile(2, null);
 
         if (missingField.equals("typeId")) {
-            resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
+            resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
                 .file(file)
                 .characterEncoding("UTF-8"));
         } else {
-            resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
+            resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
                 .param("typeId", "TIN1M")
                 .characterEncoding("UTF-8"));
         }
@@ -70,12 +70,12 @@ public class VoucherStepDefs extends StepDefs {
     @When("the operator wants to create the voucher without field {string}")
     public void theOperatorWantsToCreateTheVoucherWithoutField(String missingField) throws Exception {
         if (!missingField.equals("code")) {
-            resultActions = mockMvc.perform(post("/v1/voucher/VOUCHER21")
+            resultComponent.resultActions = mockMvc.perform(post("/v1/voucher/VOUCHER21")
                 .accept(MediaType.APPLICATION_JSON));
         }
 
         if (!missingField.equals("typeId")) {
-            resultActions = mockMvc.perform(post("/v1/voucher/upload")
+            resultComponent.resultActions = mockMvc.perform(post("/v1/voucher/upload")
                 .accept(MediaType.APPLICATION_JSON)
                 .param("typeId", "TIN1M"));
         }
@@ -87,7 +87,7 @@ public class VoucherStepDefs extends StepDefs {
     public void theOperatorWantsToUploadTheVoucherFileWithVouchersForType(Integer size, String type) throws Exception {
         MockMultipartFile file = buildVoucherFile(size, null);
 
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/upload")
+        resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/upload")
             .file(file)
             .param("typeId", type)
             .characterEncoding("UTF-8"));
@@ -97,7 +97,7 @@ public class VoucherStepDefs extends StepDefs {
     public void theOperatorWantsToUploadTheVoucherFileWithVouchersForTypeAndTheVoucherFileContain(String operation, int size, String type, String code) throws Exception {
         MockMultipartFile file = buildVoucherFile(size, code);
 
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
+        resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
             .file(file)
             .param("typeId", type)
             .characterEncoding("UTF-8"));
@@ -107,7 +107,7 @@ public class VoucherStepDefs extends StepDefs {
     public void theOperatorWantsToRedeemTheVoucherFileForTheTypeTypeWithTheVoucherVoucher(String operation, String type, String code) throws Exception {
         MockMultipartFile file = buildVoucherFile(0, code);
 
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
+        resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
             .file(file)
             .param("typeId", type)
             .characterEncoding("UTF-8"));
@@ -121,7 +121,7 @@ public class VoucherStepDefs extends StepDefs {
         byte[] fileContent = readVoucherFile();
         MockMultipartFile file = new MockMultipartFile("file", "voucher_example.csv", "fdgbfdv", fileContent);
 
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
+        resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
             .file(file)
             .param("typeId", type)
             .characterEncoding("UTF-8"));
@@ -130,7 +130,7 @@ public class VoucherStepDefs extends StepDefs {
 
     @When("the operator wants to purchase the voucher {string}")
     public void theOperatorWantsToPurchaseTheVoucherCode(String code) throws Exception {
-        resultActions = mockMvc.perform(post("/v1/voucher/" + code + "/purchase")
+        resultComponent.resultActions = mockMvc.perform(post("/v1/voucher/" + code + "/purchase")
             .accept(MediaType.APPLICATION_JSON)
             .param("userId", "user_name")
             .param("transactionId", "txt_123456")
@@ -139,7 +139,7 @@ public class VoucherStepDefs extends StepDefs {
 
     @When("the operator requires the vouchers with type {string}, status {string}, userId {string}, merchantId {string} and transactionId {string}")
     public void theOperatorRequiresTheVouchersWithTypeStatusAndUserId(String type, String status, String userId, String merchantId, String transactionId) throws Exception {
-        resultActions = mockMvc.perform(get("/v1/voucher")
+        resultComponent.resultActions = mockMvc.perform(get("/v1/voucher")
             .accept(MediaType.APPLICATION_JSON)
             .param("typeId", type)
             .param("status", status)
@@ -152,7 +152,7 @@ public class VoucherStepDefs extends StepDefs {
 
     @Then("the operator create the voucher correctly with {string} and type {string}")
     public void theOperatorCreateTheVoucherCorrectlyWithCodeAndType(String code, String type) throws Exception {
-        resultActions.andExpect(status().isCreated())
+        resultComponent.resultActions.andExpect(status().isCreated())
             .andExpect(jsonPath("$.code").value(code))
             .andExpect(jsonPath("$.typeId").value(type))
             .andExpect(jsonPath("$.status").value("ACTIVE"))
@@ -166,7 +166,7 @@ public class VoucherStepDefs extends StepDefs {
 
     @Then("the operator purchase the voucher {string} correctly")
     public void theOperatorPurchaseTheVoucherCorrectly(String code) throws Exception {
-        resultActions.andExpect(status().isOk())
+        resultComponent.resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.code").value(code))
             .andExpect(jsonPath("$.typeId").isNotEmpty())
             .andExpect(jsonPath("$.status").value("PURCHASED"))
@@ -181,7 +181,7 @@ public class VoucherStepDefs extends StepDefs {
 
     @Then("the operator upload the {int} vouchers correctly for type {string}")
     public void theOperatorUploadTheSizeVouchersCorrectly(int size, String type) throws Exception {
-        resultActions.andExpect(status().isOk())
+        resultComponent.resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("UPLOADED"))
             .andExpect(jsonPath("$.filename").value("voucher_example.csv"))
             .andExpect(jsonPath("$.typeId").value(type))
@@ -193,18 +193,13 @@ public class VoucherStepDefs extends StepDefs {
 
     @Then("the operator receive the voucher correctly for type {string}")
     public void theOperatorRedeemTheVoucherCorrectlyForType(String type) throws Exception {
-        resultActions.andExpect(status().isOk())
+        resultComponent.resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("UPLOADED"))
             .andExpect(jsonPath("$.filename").value("voucher_example.csv"))
             .andExpect(jsonPath("$.typeId").value(type))
             .andExpect(jsonPath("$.total").value(1))
             .andExpect(jsonPath("$.uploaded").value(1))
             .andExpect(jsonPath("$.errors").value(0));
-    }
-
-    @Then("the operator receive the error code {string} and description {string}")
-    public void theOperatorReceiveTheErrorCodeAndDescription(String errorCode, String errorMessage) throws Exception {
-        checkBadRequest(errorCode, errorMessage);
     }
 
     @Then("the operator receive the error 'Invalid request, parameter {string} is mandatory'")
@@ -214,7 +209,7 @@ public class VoucherStepDefs extends StepDefs {
 
     @Then("the operator {string} the {int} vouchers correctly and {int} with error {string} and message {string}")
     public void theOperatorUploadTheVouchersCorrectlyAndWithErrorVoucherWithCode(String operation, int uploaded, int errors, String errorCode, String errorMessage) throws Exception {
-        resultActions.andExpect(status().isOk())
+        resultComponent.resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("UPLOADED"))
             .andExpect(jsonPath("$.operation").value(operation.toUpperCase()))
             .andExpect(jsonPath("$.filename").value("voucher_example.csv"))
@@ -236,12 +231,12 @@ public class VoucherStepDefs extends StepDefs {
 
     @Then("the user retrieve the list with {string} vouchers")
     public void theUserRetrieveTheListWithVouchers(String vouchers) throws Exception {
-        resultActions.andExpect(status().isOk());
+        resultComponent.resultActions.andExpect(status().isOk());
 
         String[] voucherList = StringUtils.split(vouchers, ",");
-        resultActions.andExpect(jsonPath("$[*]", hasSize(voucherList.length)));
+        resultComponent.resultActions.andExpect(jsonPath("$[*]", hasSize(voucherList.length)));
         for (String code : voucherList) {
-            resultActions.andExpect(jsonPath("$[?(@.code== '" + code + "')]").exists());
+            resultComponent.resultActions.andExpect(jsonPath("$[?(@.code== '" + code + "')]").exists());
         }
     }
 

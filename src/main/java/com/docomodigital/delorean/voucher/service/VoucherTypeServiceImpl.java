@@ -1,14 +1,19 @@
 package com.docomodigital.delorean.voucher.service;
 
+import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
+import com.docomodigital.delorean.voucher.mapper.CommonMapper;
+import com.docomodigital.delorean.voucher.mapper.VoucherMapper;
 import com.docomodigital.delorean.voucher.mapper.VoucherTypeMapper;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
+import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -30,12 +35,21 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
     private final VoucherRepository voucherRepository;
     private final Clock clock;
     private final VoucherTypeMapper voucherTypeMapper;
+    private final VoucherMapper voucherMapper;
+    private final CommonMapper commonMapper;
 
-    public VoucherTypeServiceImpl(VoucherTypeRepository voucherTypeRepository, VoucherRepository voucherRepository, Clock clock, VoucherTypeMapper voucherTypeMapper) {
+    public VoucherTypeServiceImpl(VoucherTypeRepository voucherTypeRepository,
+                                  VoucherRepository voucherRepository,
+                                  Clock clock,
+                                  VoucherTypeMapper voucherTypeMapper,
+                                  VoucherMapper voucherMapper,
+                                  CommonMapper commonMapper) {
         this.voucherTypeRepository = voucherTypeRepository;
         this.voucherRepository = voucherRepository;
         this.clock = clock;
         this.voucherTypeMapper = voucherTypeMapper;
+        this.voucherMapper = voucherMapper;
+        this.commonMapper = commonMapper;
     }
 
     @Override
@@ -140,6 +154,45 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             .max(Comparator.comparing(VoucherType::getPriority))
             .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND",
                 String.format("No Voucher Type available for merchant %s, paymentProvider %s, country %s and product %s", merchantId, paymentProvider, country, productId)));
+    }
+
+    @Override
+    public Optional<Vouchers> reserveVoucher(String typeId, VoucherRequest voucherRequest) {
+        VoucherType type = getValidVoucherType(typeId);
+
+        Voucher voucherToBeReserve = voucherRepository.findFirstByTypeIdAndStatusEquals(type.getId(), VoucherStatus.ACTIVE)
+            .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR,
+                String.format("Voucher with type %s and status ACTIVE not found", typeId)));
+
+        voucherToBeReserve.setStatus(VoucherStatus.RESERVED);
+        voucherToBeReserve.setUserId(voucherRequest.getUserId());
+        voucherToBeReserve.setTransactionId(voucherRequest.getTransactionId());
+        voucherToBeReserve.setTransactionDate(commonMapper.map(voucherRequest.getTransactionDate()));
+        voucherToBeReserve.setReserveDate(LocalDate.now(clock));
+
+        return Optional.of(voucherRepository.save(voucherToBeReserve))
+            .map(voucherMapper::toDto);
+    }
+
+    private VoucherType getValidVoucherType(String type) {
+        VoucherType voucherType = voucherTypeRepository.findByCode(type)
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR,
+                String.format("Voucher Type %s not found", type)));
+
+        if (!voucherType.getEnabled()) {
+            throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", type));
+        }
+
+        LocalDate today = LocalDate.now(clock);
+        if (!voucherType.getEndDate().isAfter(today)) {
+            throw new BadRequestException(Constants.TYPE_EXPIRED_ERROR, String.format("Voucher Type %s is expired", type));
+        }
+
+        if (voucherType.getStartDate().isAfter(today)) {
+            throw new BadRequestException(Constants.TYPE_NOT_YET_AVAILABLE_ERROR, String.format("Voucher Type %s is not yet available", type));
+        }
+
+        return voucherType;
     }
 
     private int getVoucherAvailable(VoucherType v) {

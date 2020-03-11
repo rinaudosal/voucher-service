@@ -3,7 +3,9 @@ package com.docomodigital.delorean.voucher.web.api;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
+import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.springframework.data.domain.Example;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -83,5 +85,12 @@ public class VoucherTypeController implements VoucherTypeApi {
         Optional<VoucherTypes> voucherType = voucherTypeService.updateVoucherType(code, voucherTypes);
 
         return ResponseEntity.of(voucherType);
+    }
+
+    @Override
+    public ResponseEntity<Vouchers> reserveVoucher(String typeId, @Valid VoucherRequest voucherRequest) {
+        Optional<Vouchers> voucherReserved = voucherTypeService.reserveVoucher(typeId, voucherRequest);
+
+        return ResponseEntity.of(voucherReserved);
     }
 }

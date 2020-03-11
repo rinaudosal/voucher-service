@@ -4,6 +4,7 @@ import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.cucumber.java.en.Given;
@@ -17,6 +18,8 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +58,7 @@ public class VoucherTypeStepDefs extends StepDefs {
     @When("the user of the merchant {string} request the product available for the payment provider {string} in country {string}")
     public void theUserOfTheMerchantTinderRequestTheProductAvailable(String merchant, String paymentProvider, String country) throws Exception {
 
-        resultActions = mockMvc.perform(get("/v1/voucher-type/available")
+        resultComponent.resultActions = mockMvc.perform(get("/v1/voucher-type/available")
             .accept(MediaType.APPLICATION_JSON)
             .param("merchant", merchant)
             .param("paymentProvider", paymentProvider)
@@ -67,18 +70,39 @@ public class VoucherTypeStepDefs extends StepDefs {
     @When("the operator requires the voucher with {string} {string}")
     public void theOperatorRequiresTheVoucherWithParameterValue(String parameterName, String value) throws Exception {
         if (StringUtils.isNotBlank(parameterName)) {
-            resultActions = mockMvc.perform(get("/v1/voucher-type")
+            resultComponent.resultActions = mockMvc.perform(get("/v1/voucher-type")
                 .accept(MediaType.APPLICATION_JSON)
                 .param(parameterName, value));
         } else {
-            resultActions = mockMvc.perform(get("/v1/voucher-type")
+            resultComponent.resultActions = mockMvc.perform(get("/v1/voucher-type")
                 .accept(MediaType.APPLICATION_JSON));
         }
     }
 
+    @When("the operator wants to reserve the voucher to bill for typeId {string}")
+    public void theOperatorWantsToReserveTheVoucherToBillForTypeId(String typeId) throws Exception {
+        VoucherRequest voucherRequest = new VoucherRequest();
+        voucherRequest.setUserId("user_1");
+        voucherRequest.setTransactionId("txt_1");
+        voucherRequest.setTransactionDate(LocalDateTime.now().atOffset(ZoneOffset.UTC));
+        voucherRequest.setAmount(BigDecimal.ONE);
+        voucherRequest.setCurrency("vsd");
+
+        resultComponent.resultActions = mockMvc.perform(post("/v1/voucher-type/" + typeId + "/reserve")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(objectMapper.writeValueAsString(voucherRequest))
+            .accept(MediaType.APPLICATION_JSON));
+
+    }
+
+    @Then("the operator receive the error code {string} and description {string}")
+    public void theOperatorReceiveTheErrorCodeAndDescription(String errorCode, String errorMessage) throws Exception {
+        checkBadRequest(errorCode, errorMessage);
+    }
+
     @When("the operator requires the voucher with merchant {string} and country {string} and paymentProvider {string}")
     public void theOperatorRequiresTheVoucherWithMultiple(String merchant, String country, String paymentProvider) throws Exception {
-        resultActions = mockMvc.perform(get("/v1/voucher-type")
+        resultComponent.resultActions = mockMvc.perform(get("/v1/voucher-type")
             .accept(MediaType.APPLICATION_JSON)
             .param("merchant", merchant)
             .param("country", country)
@@ -88,7 +112,7 @@ public class VoucherTypeStepDefs extends StepDefs {
 
     @When("the operator requires the voucher type with code {string}")
     public void theOperatorRequiresTheVoucherTypeWithCode(String voucherCode) throws Exception {
-        resultActions = mockMvc.perform(get("/v1/voucher-type/" + voucherCode)
+        resultComponent.resultActions = mockMvc.perform(get("/v1/voucher-type/" + voucherCode)
             .accept(MediaType.APPLICATION_JSON));
     }
 
@@ -96,7 +120,7 @@ public class VoucherTypeStepDefs extends StepDefs {
     public void theOperatorWantsToCreateTheVoucherType(List<Map<String, String>> datatable) throws Exception {
         VoucherTypes voucherTypes = buildVoucherTypes(datatable, null);
 
-        resultActions = mockMvc.perform(post("/v1/voucher-type")
+        resultComponent.resultActions = mockMvc.perform(post("/v1/voucher-type")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(objectMapper.writeValueAsString(voucherTypes))
             .accept(MediaType.APPLICATION_JSON));
@@ -106,7 +130,7 @@ public class VoucherTypeStepDefs extends StepDefs {
     public void theOperatorWantsToUpdateTheVoucherType(String code, List<Map<String, String>> datatable) throws Exception {
         VoucherTypes voucherTypes = buildVoucherTypes(datatable, null);
 
-        resultActions = mockMvc.perform(put("/v1/voucher-type/" + code)
+        resultComponent.resultActions = mockMvc.perform(put("/v1/voucher-type/" + code)
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(objectMapper.writeValueAsString(voucherTypes))
             .accept(MediaType.APPLICATION_JSON));
@@ -116,7 +140,7 @@ public class VoucherTypeStepDefs extends StepDefs {
     public void theOperatorWantsToCreateTheVoucherTypeWithoutFieldField(String missingField, List<Map<String, String>> datatable) throws Exception {
         VoucherTypes voucherTypes = buildVoucherTypes(datatable, missingField);
 
-        resultActions = mockMvc.perform(post("/v1/voucher-type")
+        resultComponent.resultActions = mockMvc.perform(post("/v1/voucher-type")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(objectMapper.writeValueAsString(voucherTypes))
             .accept(MediaType.APPLICATION_JSON));
@@ -127,7 +151,7 @@ public class VoucherTypeStepDefs extends StepDefs {
     public void theOperatorWantsToUpdateTheVoucherTypeWithoutField(String code, String missingField, List<Map<String, String>> datatable) throws Exception {
         VoucherTypes voucherTypes = buildVoucherTypes(datatable, missingField);
 
-        resultActions = mockMvc.perform(put("/v1/voucher-type/" + code)
+        resultComponent.resultActions = mockMvc.perform(put("/v1/voucher-type/" + code)
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(objectMapper.writeValueAsString(voucherTypes))
             .accept(MediaType.APPLICATION_JSON));
@@ -135,9 +159,9 @@ public class VoucherTypeStepDefs extends StepDefs {
 
     @Then("the user retrieve the list:")
     public void theUserRetrieveTheList(List<Map<String, String>> datatable) throws Exception {
-        resultActions.andExpect(status().isOk());
+        resultComponent.resultActions.andExpect(status().isOk());
 
-        MvcResult result = resultActions.andReturn();
+        MvcResult result = resultComponent.resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString();
 
         List<AvailableVoucherTypes> resultList = objectMapper.readValue(contentAsString, new TypeReference<List<AvailableVoucherTypes>>() {
@@ -149,34 +173,42 @@ public class VoucherTypeStepDefs extends StepDefs {
 
     @Then("the user receive the error 'No Vouchers available, try later'")
     public void theUserReceiveTheErrorNoVouchersAvailableTryLater() throws Exception {
-        resultActions.andExpect(status().isNotFound());
+        resultComponent.resultActions.andExpect(status().isNotFound());
     }
 
     @Then("the user retrieve the list with {int} Element")
     public void theUserRetrieveTheListWithResultElement(int size) throws Exception {
-        resultActions.andExpect(status().isOk())
+        resultComponent.resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.[*]", hasSize(size)));
     }
 
     @Then("the user retrieve the voucher type")
     public void theUserRetrieveTheVoucherType() throws Exception {
-        resultActions.andExpect(status().isOk())
+        resultComponent.resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.typeId").isNotEmpty());
     }
 
     @Then("the user receive the error 'No Voucher type found'")
     public void theUserReceiveTheErrorNoVoucherTypeFound() throws Exception {
-        resultActions.andExpect(status().isNotFound());
+        resultComponent.resultActions.andExpect(status().isNotFound());
     }
 
     @Then("the operator create the voucher type correctly")
     public void theOperatorCreateTheVoucherTypeCorrectly() throws Exception {
-        resultActions.andExpect(status().isCreated());
+        resultComponent.resultActions.andExpect(status().isCreated());
+    }
+
+    @Then("the operator reserve the voucher {string} correctly")
+    public void theOperatorReserveTheVoucherCodeCorrectly(String voucherCode) throws Exception {
+        resultComponent.resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$.typeId").isNotEmpty())
+            .andExpect(jsonPath("$.code").value(voucherCode))
+            .andExpect(jsonPath("$.status").value("RESERVED"));
     }
 
     @Then("the operator update the voucher type correctly")
     public void theOperatorUpdateTheVoucherTypeCorrectly() throws Exception {
-        resultActions.andExpect(status().isOk());
+        resultComponent.resultActions.andExpect(status().isOk());
     }
 
     @Then("the operator receive the error 'Voucher Type already exist'")

@@ -34,7 +34,8 @@ public abstract class StepDefs {
 
     protected MockMvc mockMvc;
 
-    protected ResultActions resultActions;
+    @Autowired
+    protected ResultComponent resultComponent;
 
     @Autowired
     private WebApplicationContext context;
@@ -79,7 +80,7 @@ public abstract class StepDefs {
     }
 
     protected void checkBadRequest(String errorCode, String errorMessage) throws Exception {
-        resultActions.andExpect(status().isBadRequest())
+        resultComponent.resultActions.andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errorCode").value(errorCode))
             .andExpect(jsonPath("$.errorMessage").value(errorMessage));
     }

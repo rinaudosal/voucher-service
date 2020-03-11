@@ -31,7 +31,7 @@ paths:
       description: reserve the voucher
       security:
         - ApiKeyAuth: []
-          SignRequest: []
+        - SignRequest: []
       parameters:
         - in: path
           name: typeId
@@ -628,7 +628,6 @@ components:
     VoucherRequest:
       type: object
       required:
-        - status
         - transactionId
       properties:
         status:
