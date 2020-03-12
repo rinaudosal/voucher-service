@@ -171,7 +171,11 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
         voucherToBeReserve.setReserveDate(LocalDate.now(clock));
 
         return Optional.of(voucherRepository.save(voucherToBeReserve))
-            .map(voucherMapper::toDto);
+            .map(v -> {
+                Vouchers vouchers = voucherMapper.toDto(v);
+                vouchers.setTypeId(type.getCode());
+                return vouchers;
+            });
     }
 
     private VoucherType getValidVoucherType(String type) {

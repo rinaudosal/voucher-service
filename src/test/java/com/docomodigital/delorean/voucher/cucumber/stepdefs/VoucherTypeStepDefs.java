@@ -198,10 +198,10 @@ public class VoucherTypeStepDefs extends StepDefs {
         resultComponent.resultActions.andExpect(status().isCreated());
     }
 
-    @Then("the operator reserve the voucher {string} correctly")
-    public void theOperatorReserveTheVoucherCodeCorrectly(String voucherCode) throws Exception {
+    @Then("the operator reserve the voucher {string} correctly for typeId {string}")
+    public void theOperatorReserveTheVoucherCodeCorrectly(String voucherCode, String typeId) throws Exception {
         resultComponent.resultActions.andExpect(status().isOk())
-            .andExpect(jsonPath("$.typeId").isNotEmpty())
+            .andExpect(jsonPath("$.typeId").value(typeId))
             .andExpect(jsonPath("$.code").value(voucherCode))
             .andExpect(jsonPath("$.status").value("RESERVED"));
     }

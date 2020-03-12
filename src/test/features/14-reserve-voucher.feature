@@ -26,7 +26,7 @@ Feature: Reserve Voucher
   Scenario Outline: Voucher reserved
     And today is '<billedDate>'
     When the operator wants to reserve the voucher to bill for typeId '<typeId>'
-    Then the operator reserve the voucher '<code>' correctly
+    Then the operator reserve the voucher '<code>' correctly for typeId '<typeId>'
     Examples:
       | billedDate | code       | typeId |
       | 13/01/2020 | V1ACTIVE   | TIN1M  |
