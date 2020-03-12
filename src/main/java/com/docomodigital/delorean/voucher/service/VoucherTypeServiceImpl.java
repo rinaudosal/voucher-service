@@ -4,14 +4,13 @@ import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
-import com.docomodigital.delorean.voucher.mapper.CommonMapper;
 import com.docomodigital.delorean.voucher.mapper.VoucherMapper;
 import com.docomodigital.delorean.voucher.mapper.VoucherTypeMapper;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
-import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
+import com.docomodigital.delorean.voucher.web.api.model.ReserveRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,20 +36,17 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
     private final Clock clock;
     private final VoucherTypeMapper voucherTypeMapper;
     private final VoucherMapper voucherMapper;
-    private final CommonMapper commonMapper;
 
     public VoucherTypeServiceImpl(VoucherTypeRepository voucherTypeRepository,
                                   VoucherRepository voucherRepository,
                                   Clock clock,
                                   VoucherTypeMapper voucherTypeMapper,
-                                  VoucherMapper voucherMapper,
-                                  CommonMapper commonMapper) {
+                                  VoucherMapper voucherMapper) {
         this.voucherTypeRepository = voucherTypeRepository;
         this.voucherRepository = voucherRepository;
         this.clock = clock;
         this.voucherTypeMapper = voucherTypeMapper;
         this.voucherMapper = voucherMapper;
-        this.commonMapper = commonMapper;
     }
 
     @Override
@@ -157,7 +154,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
     }
 
     @Override
-    public Optional<Vouchers> reserveVoucher(String typeId, VoucherRequest voucherRequest) {
+    public Optional<Vouchers> reserveVoucher(String typeId, ReserveRequest reserveRequest) {
         VoucherType type = getValidVoucherType(typeId);
 
         Voucher voucherToBeReserve = voucherRepository.findFirstByTypeIdAndStatusEquals(type.getId(), VoucherStatus.ACTIVE)
@@ -165,10 +162,9 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
                 String.format("Voucher with type %s and status ACTIVE not found", typeId)));
 
         voucherToBeReserve.setStatus(VoucherStatus.RESERVED);
-        voucherToBeReserve.setUserId(voucherRequest.getUserId());
-        voucherToBeReserve.setTransactionId(voucherRequest.getTransactionId());
-        voucherToBeReserve.setTransactionDate(commonMapper.map(voucherRequest.getTransactionDate()));
-        voucherToBeReserve.setReserveDate(LocalDate.now(clock));
+        voucherToBeReserve.setTransactionId(reserveRequest.getTransactionId());
+        voucherToBeReserve.setReserveDate(LocalDateTime.now(clock));
+        voucherToBeReserve.setActivationUrl(type.getBaseUrl() + voucherToBeReserve.getCode());
 
         return Optional.of(voucherRepository.save(voucherToBeReserve))
             .map(v -> {
@@ -177,6 +173,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
                 return vouchers;
             });
     }
+
 
     private VoucherType getValidVoucherType(String type) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type)

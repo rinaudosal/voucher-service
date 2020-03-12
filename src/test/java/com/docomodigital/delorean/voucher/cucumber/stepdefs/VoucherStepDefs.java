@@ -4,6 +4,7 @@ import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherError;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import io.cucumber.java.en.And;
@@ -19,14 +20,19 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -150,6 +156,48 @@ public class VoucherStepDefs extends StepDefs {
         );
     }
 
+    @When("the operator wants to {string} the voucher {string} reserved for typeId {string}")
+    public void theOperatorWantsToOperationTheVoucherCodeReservedForTypeIdTypeId(String operation, String voucherCode, String typeId) throws Exception {
+        VoucherRequest voucherRequest = new VoucherRequest();
+        voucherRequest.setTransactionStatus(VoucherRequest.TransactionStatusEnum.valueOf(operation));
+        voucherRequest.setTransactionId("trx_123");
+        voucherRequest.setTransactionDate(OffsetDateTime.of(LocalDateTime.of(2020, 1, 1, 6, 6, 6), ZoneOffset.UTC));
+        voucherRequest.setUserId("usr_123");
+        voucherRequest.setAmount(BigDecimal.ONE);
+        voucherRequest.setCurrency("INR");
+
+        resultComponent.resultActions = mockMvc.perform(patch("/v1/voucher-type/" + typeId + "/voucher/" + voucherCode)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(objectMapper.writeValueAsString(voucherRequest)));
+    }
+
+
+    @Then("the operator {string} the voucher {string} correctly for typeId {string}")
+    public void theOperatorOperationTheVoucherCorrectlyForTypeIdTypeId(String operation, String voucherCode, String typeId) throws Exception {
+        resultComponent.resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(voucherCode))
+            .andExpect(jsonPath("$.typeId").value(typeId));
+
+        if ("SUCCESS".equalsIgnoreCase(operation)) {
+            resultComponent.resultActions.andExpect(jsonPath("$.status").value("PURCHASED"))
+                .andExpect(jsonPath("$.transactionId").value("trx_123"))
+                .andExpect(jsonPath("$.transactionDate").value("2020-01-01T06:06:06Z"))
+                .andExpect(jsonPath("$.userId").value("usr_123"))
+                .andExpect(jsonPath("$.purchaseDate").isNotEmpty())
+                .andExpect(jsonPath("$.reserveDate").isNotEmpty())
+                .andExpect(jsonPath("$.activationUrl").isNotEmpty());
+        } else {
+            resultComponent.resultActions.andExpect(jsonPath("$.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.transactionId").isEmpty())
+                .andExpect(jsonPath("$.transactionDate").isEmpty())
+                .andExpect(jsonPath("$.userId").isEmpty())
+                .andExpect(jsonPath("$.purchaseDate").isEmpty())
+                .andExpect(jsonPath("$.reserveDate").isEmpty())
+                .andExpect(jsonPath("$.activationUrl").isEmpty());
+        }
+    }
+
     @Then("the operator create the voucher correctly with {string} and type {string}")
     public void theOperatorCreateTheVoucherCorrectlyWithCodeAndType(String code, String type) throws Exception {
         resultComponent.resultActions.andExpect(status().isCreated())
@@ -173,9 +221,9 @@ public class VoucherStepDefs extends StepDefs {
             .andExpect(jsonPath("$.userId").isNotEmpty())
             .andExpect(jsonPath("$.transactionId").isNotEmpty())
             .andExpect(jsonPath("$.transactionDate").isNotEmpty())
-            .andExpect(jsonPath("$.purchaseDate").value("2020-02-01"))
+            .andExpect(jsonPath("$.purchaseDate").value("2020-02-01T00:00:00Z"))
             .andExpect(jsonPath("$.redeemDate").isEmpty())
-            .andExpect(jsonPath("$.activationUrl").value("https://www.tinder.com/redeem/" + code));
+            .andExpect(jsonPath("$.activationUrl").value("www.test.com/vip/" + code));
 
     }
 
@@ -257,14 +305,16 @@ public class VoucherStepDefs extends StepDefs {
     private void saveVouchersFromDatatableData(List<Map<String, String>> datatable) {
         datatable.forEach(row -> {
             VoucherStatus voucherStatus = row.get("status") != null ? VoucherStatus.valueOf(row.get("status")) : VoucherStatus.ACTIVE;
+            LocalDateTime reserveDate = StringUtils.trimToNull(row.get("reserveDate")) != null ? LocalDate.parse(row.get("reserveDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")).atStartOfDay() : null;
 
             Voucher voucher = getVoucher(
                 StringUtils.trimToNull(row.get("code")),
                 StringUtils.trimToNull(row.get("typeId")),
                 voucherStatus,
                 StringUtils.trimToNull(row.get("userId")),
-                StringUtils.trimToNull(row.get("transactionId"))
-
+                StringUtils.trimToNull(row.get("transactionId")),
+                StringUtils.trimToNull(row.get("activationUrl")),
+                reserveDate
             );
 
             voucherRepository.save(voucher);
@@ -272,7 +322,7 @@ public class VoucherStepDefs extends StepDefs {
 
     }
 
-    private Voucher getVoucher(String code, String type, VoucherStatus status, String userId, String transactionId) {
+    private Voucher getVoucher(String code, String type, VoucherStatus status, String userId, String transactionId, String activationUrl, LocalDateTime reserveDate) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type).get();
         Voucher voucher = new Voucher();
         voucher.setStatus(status);
@@ -280,6 +330,8 @@ public class VoucherStepDefs extends StepDefs {
         voucher.setTypeId(voucherType.getId());
         voucher.setUserId(userId);
         voucher.setTransactionId(transactionId);
+        voucher.setActivationUrl(activationUrl);
+        voucher.setReserveDate(reserveDate);
         return voucher;
     }
 
@@ -332,4 +384,5 @@ public class VoucherStepDefs extends StepDefs {
 
         return jsonContext.jsonString();
     }
+
 }

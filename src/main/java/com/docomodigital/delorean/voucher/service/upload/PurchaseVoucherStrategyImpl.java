@@ -10,7 +10,7 @@ import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 2020/02/04
@@ -36,7 +36,7 @@ public class PurchaseVoucherStrategyImpl extends AbstractVoucherStrategyImpl imp
         }
 
         voucher.setStatus(VoucherStatus.PURCHASED);
-        voucher.setPurchaseDate(LocalDate.now(clock));
+        voucher.setPurchaseDate(LocalDateTime.now(clock));
         voucher.setVoucherFileId(uploadId);
 
         return voucher;

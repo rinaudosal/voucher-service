@@ -90,7 +90,7 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         voucherToBeConsume.setTransactionId(voucherConsumer.getTransactionId());
         voucherToBeConsume.setRequestId(voucherConsumer.getRequestId());
         voucherToBeConsume.setTransactionDate(voucherConsumer.getTransactionDate());
-        voucherToBeConsume.setPurchaseDate(LocalDate.now(clock));
+        voucherToBeConsume.setPurchaseDate(LocalDateTime.now(clock));
         voucherToBeConsume.setActivationUrl(voucherType.getBaseUrl() + voucherToBeConsume.getCode());
 
         return voucherRepository.save(voucherToBeConsume);

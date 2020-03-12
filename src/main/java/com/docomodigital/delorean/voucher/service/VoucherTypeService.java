@@ -2,7 +2,7 @@ package com.docomodigital.delorean.voucher.service;
 
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
-import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
+import com.docomodigital.delorean.voucher.web.api.model.ReserveRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.springframework.data.domain.Example;
@@ -73,5 +73,6 @@ public interface VoucherTypeService {
      */
     VoucherType getVoucherType(String merchantId, String paymentProvider, String country, String productId);
 
-    Optional<Vouchers> reserveVoucher(String typeId, VoucherRequest voucherRequest);
+    Optional<Vouchers> reserveVoucher(String typeId, ReserveRequest reserveRequest);
+
 }

@@ -11,6 +11,7 @@ import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherFactory;
 import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherStrategy;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -117,7 +120,7 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setUserId(userId);
         voucher.setTransactionId(transactionId);
         voucher.setTransactionDate(transactionDate.toLocalDateTime());
-        voucher.setPurchaseDate(LocalDate.now(clock));
+        voucher.setPurchaseDate(LocalDateTime.now(clock));
 
 
         return voucherMapper.toDto(voucherRepository.save(voucher));
@@ -154,5 +157,46 @@ public class VoucherServiceImpl implements VoucherService {
         return voucherRepository.findAll(voucherExample).stream()
             .map(voucherMapper::toDto)
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Vouchers> updateVoucher(String code, String typeId, VoucherRequest voucherRequest) {
+        VoucherType voucherType = voucherTypeRepository.findByCode(typeId)
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(Constants.VOUCHER_TYPE_NOT_FOUND_MESSAGE, typeId)));
+
+        if (!voucherType.getEnabled()) {
+            throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", typeId));
+        }
+
+        Voucher voucher = voucherRepository.findByCode(code)
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format("Voucher %s not found for type %s", code, typeId)));
+
+        if (!VoucherStatus.RESERVED.equals(voucher.getStatus())) {
+            throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Voucher with code %s is not in RESERVED state", code));
+        }
+
+        if (VoucherRequest.TransactionStatusEnum.SUCCESS.equals(voucherRequest.getTransactionStatus())) {
+            voucher.setTransactionId(voucherRequest.getTransactionId());
+            voucher.setTransactionDate(voucherRequest.getTransactionDate().toLocalDateTime());
+            voucher.setStatus(VoucherStatus.PURCHASED);
+            voucher.setPurchaseDate(LocalDateTime.now(clock));
+            voucher.setUserId(voucherRequest.getUserId());
+        } else {
+            voucher.setTransactionId(null);
+            voucher.setTransactionDate(null);
+            voucher.setStatus(VoucherStatus.ACTIVE);
+            voucher.setPurchaseDate(null);
+            voucher.setReserveDate(null);
+            voucher.setUserId(null);
+            voucher.setActivationUrl(null);
+        }
+
+        return Optional.of(voucherRepository.save(voucher))
+            .map(v -> {
+                Vouchers vouchers = voucherMapper.toDto(v);
+                vouchers.setTypeId(typeId);
+
+                return vouchers;
+            });
     }
 }

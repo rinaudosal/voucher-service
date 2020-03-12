@@ -4,7 +4,7 @@ import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
-import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
+import com.docomodigital.delorean.voucher.web.api.model.ReserveRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.cucumber.java.en.Given;
@@ -18,8 +18,6 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,12 +79,8 @@ public class VoucherTypeStepDefs extends StepDefs {
 
     @When("the operator wants to reserve the voucher to bill for typeId {string}")
     public void theOperatorWantsToReserveTheVoucherToBillForTypeId(String typeId) throws Exception {
-        VoucherRequest voucherRequest = new VoucherRequest();
-        voucherRequest.setUserId("user_1");
+        ReserveRequest voucherRequest = new ReserveRequest();
         voucherRequest.setTransactionId("txt_1");
-        voucherRequest.setTransactionDate(LocalDateTime.now().atOffset(ZoneOffset.UTC));
-        voucherRequest.setAmount(BigDecimal.ONE);
-        voucherRequest.setCurrency("vsd");
 
         resultComponent.resultActions = mockMvc.perform(post("/v1/voucher-type/" + typeId + "/reserve")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -203,7 +197,8 @@ public class VoucherTypeStepDefs extends StepDefs {
         resultComponent.resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.typeId").value(typeId))
             .andExpect(jsonPath("$.code").value(voucherCode))
-            .andExpect(jsonPath("$.status").value("RESERVED"));
+            .andExpect(jsonPath("$.status").value("RESERVED"))
+            .andExpect(jsonPath("$.activationUrl").value("www.test.com/vip/" + voucherCode));
     }
 
     @Then("the operator update the voucher type correctly")
@@ -314,7 +309,7 @@ public class VoucherTypeStepDefs extends StepDefs {
             voucherType.setStartDate(LocalDate.parse(getElementOrDefault(row, "startDate", "01/01/2020"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             voucherType.setEndDate(LocalDate.parse(getElementOrDefault(row, "endDate", "31/12/2020"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             voucherType.setPriority(Integer.parseInt(getElementOrDefault(row, "priority", "5")));
-            voucherType.setBaseUrl("https://www.tinder.com/redeem/");
+            voucherType.setBaseUrl("www.test.com/vip/");
 
             int voucherPurchased = StringUtils.isBlank(row.get("Voucher Purchased")) ? 0 : Integer.parseInt(row.get("Voucher Purchased"));
             int voucherActive = StringUtils.isBlank(row.get("Voucher Active")) ? 0 : Integer.parseInt(row.get("Voucher Active"));

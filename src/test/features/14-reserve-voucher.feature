@@ -5,13 +5,13 @@ Feature: Reserve Voucher
 
   Background:
     Given exist the voucher types:
-      | typeId | description           | enabled | startDate  | endDate    |
-      | TIN1M  | 1 Months              | true    | 01/01/2020 | 31/12/2020 |
-      | TIN1S  | 1 Months Sale!        | true    | 01/02/2020 | 18/08/2020 |
-      | TIN1SS | 1 Months Super Sale!! | true    | 01/08/2020 | 15/08/2020 |
-      | TIN3EX | not in range          | true    | 01/01/2020 | 20/02/2020 |
-      | TIN3NO | no available product  | true    | 01/01/2020 | 20/06/2020 |
-      | TIN9D  | Voucher not enabled   | false   | 05/01/2020 | 21/02/2020 |
+      | typeId | description           | enabled | startDate  | endDate    | baseUrl           |
+      | TIN1M  | 1 Months              | true    | 01/01/2020 | 31/12/2020 | www.test.com/vip/ |
+      | TIN1S  | 1 Months Sale!        | true    | 01/02/2020 | 18/08/2020 | www.test.com/vip/ |
+      | TIN1SS | 1 Months Super Sale!! | true    | 01/08/2020 | 15/08/2020 | www.test.com/vip/ |
+      | TIN3EX | not in range          | true    | 01/01/2020 | 20/02/2020 | www.test.com/vip/ |
+      | TIN3NO | no available product  | true    | 01/01/2020 | 20/06/2020 | www.test.com/vip/ |
+      | TIN9D  | Voucher not enabled   | false   | 05/01/2020 | 21/02/2020 | www.test.com/vip/ |
     And exist the voucher:
       | code          | typeId | status    |
       | V1ACTIVE      | TIN1M  | ACTIVE    |

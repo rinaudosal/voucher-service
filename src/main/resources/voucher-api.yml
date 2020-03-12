@@ -43,7 +43,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VoucherRequest'
+              $ref: '#/components/schemas/ReserveRequest'
       responses:
         '200':
           description: Voucher reserved
@@ -560,12 +560,12 @@ components:
     ErrorDetails:
       type: object
       properties:
-        typeId:
+        errorCode:
           type: string
-          example: VOU1MONTH
-        description:
+          example: TYPE_NOT_FOUND
+        errorMessage:
           type: string
-          example: 1 Month Voucher
+          example: Voucher Type tin1m not found
 
     VoucherTypes:
       type: object
@@ -625,30 +625,36 @@ components:
           type: integer
           example: 3
 
-    VoucherRequest:
+    ReserveRequest:
       type: object
       required:
         - transactionId
       properties:
-        status:
-          type: string
-          enum: [ ACTIVE, RESERVED, PURCHASED, REDEEMED, INACTIVE]
-        userId:
-          type: string
-          example: MARIO
         transactionId:
           type: string
           example: TXN123445
-        transactionDate:
-          type: string
-          format: date-time
-          example: 2017-07-21T17:32:28Z
-        amount:
-          type: number
-          example: 10.00
-        currency:
-          type: string
-          example: AUD
+
+    VoucherRequest:
+      allOf:
+        - $ref: '#/components/schemas/ReserveRequest'
+        - type: objects
+          properties:
+            userId:
+              type: string
+              example: MARIO
+            transactionStatus:
+              type: string
+              enum: [ SUCCESS, FAILED]
+            transactionDate:
+              type: string
+              format: date-time
+              example: 2017-07-21T17:32:28Z
+            amount:
+              type: number
+              example: 10.00
+            currency:
+              type: string
+              example: AUD
 
     Vouchers:
       type: object
@@ -672,18 +678,18 @@ components:
           type: string
           format: 'date-time'
           example: 2017-07-21T17:32:28Z
-        reservedDate:
+        reserveDate:
           type: string
           format: 'date-time'
           example: 2017-07-21T17:32:28Z
         purchaseDate:
           type: string
-          format: date
-          example: 02/02/2018
+          format: 'date-time'
+          example: 2017-07-21T17:32:28Z
         redeemDate:
           type: string
-          format: date
-          example: 02/02/2018
+          format: 'date-time'
+          example: 2017-07-21T17:32:28Z
         activationUrl:
           type: string
           example: www.test.com/vip/1234-5647

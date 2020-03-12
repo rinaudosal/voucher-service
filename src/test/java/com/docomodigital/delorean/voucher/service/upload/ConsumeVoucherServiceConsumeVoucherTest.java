@@ -137,6 +137,6 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
         Assertions.assertThat(voucher.getCode()).isEqualTo("PIPPO");
         Assertions.assertThat(voucher.getStatus()).isEqualTo(VoucherStatus.PURCHASED);
         Assertions.assertThat(voucher.getActivationUrl()).isEqualTo("www.google.com/PIPPO");
-        Assertions.assertThat(voucher.getPurchaseDate()).isEqualTo(LocalDate.of(2002, 12, 17));
+        Assertions.assertThat(voucher.getPurchaseDate()).isEqualTo(LocalDateTime.of(2002, 12, 17, 0, 0));
     }
 }

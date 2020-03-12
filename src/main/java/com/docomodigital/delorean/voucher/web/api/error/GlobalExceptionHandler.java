@@ -1,7 +1,9 @@
 package com.docomodigital.delorean.voucher.web.api.error;
 
+import com.docomodigital.delorean.voucher.config.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +18,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     @ResponseBody
     public ResponseEntity<ErrorDetails> handleBadRequest(BadRequestException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        HttpStatus httpStatus = Constants.TYPE_NOT_FOUND_ERROR.equals(exception.getErrorCode()) || Constants.VOUCHER_NOT_FOUND_ERROR.equals(exception.getErrorCode())
+            ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
+
+        return ResponseEntity.status(httpStatus)
             .body(new ErrorDetails(
                 exception.getErrorCode(),
                 exception.getMessage()));
@@ -40,6 +45,7 @@ public class GlobalExceptionHandler {
                 String.format(MISSING_PARAMETER, exception.getParameterName())));
     }
 
+
     @ExceptionHandler(MissingServletRequestPartException.class)
     @ResponseBody
     public ResponseEntity<ErrorDetails> handleConstraintViolationException(MissingServletRequestPartException exception) {
@@ -47,5 +53,12 @@ public class GlobalExceptionHandler {
             .body(new ErrorDetails(
                 "MISSING_REQUEST_PARAM",
                 String.format(MISSING_PARAMETER, exception.getRequestPartName())));
+    }
+
+    @ExceptionHandler(HttpMessageConversionException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorDetails> handleIllegalArgumentException(HttpMessageConversionException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new ErrorDetails("MISSING_REQUEST_PARAM", exception.getLocalizedMessage()));
     }
 }

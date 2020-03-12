@@ -1,11 +1,9 @@
 package com.docomodigital.delorean.voucher.web.api;
 
 import com.docomodigital.delorean.voucher.domain.VoucherType;
+import com.docomodigital.delorean.voucher.service.VoucherService;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
-import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
-import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
-import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
-import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
+import com.docomodigital.delorean.voucher.web.api.model.*;
 import org.springframework.data.domain.Example;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,8 +27,11 @@ public class VoucherTypeController implements VoucherTypeApi {
 
     private final VoucherTypeService voucherTypeService;
 
-    public VoucherTypeController(VoucherTypeService voucherTypeService) {
+    private final VoucherService voucherService;
+
+    public VoucherTypeController(VoucherTypeService voucherTypeService, VoucherService voucherService) {
         this.voucherTypeService = voucherTypeService;
+        this.voucherService = voucherService;
     }
 
     @Override
@@ -88,9 +89,15 @@ public class VoucherTypeController implements VoucherTypeApi {
     }
 
     @Override
-    public ResponseEntity<Vouchers> reserveVoucher(String typeId, @Valid VoucherRequest voucherRequest) {
-        Optional<Vouchers> voucherReserved = voucherTypeService.reserveVoucher(typeId, voucherRequest);
+    public ResponseEntity<Vouchers> reserveVoucher(String typeId, @Valid ReserveRequest reserveRequest) {
+        Optional<Vouchers> voucherReserved = voucherTypeService.reserveVoucher(typeId, reserveRequest);
 
         return ResponseEntity.of(voucherReserved);
+    }
+
+    @Override
+    public ResponseEntity<Vouchers> updateVoucher(String typeId, String code, @Valid VoucherRequest voucherRequest) {
+        Optional<Vouchers> voucher = voucherService.updateVoucher(code, typeId, voucherRequest);
+        return ResponseEntity.of(voucher);
     }
 }

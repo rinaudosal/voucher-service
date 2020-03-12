@@ -33,9 +33,9 @@ public class Voucher extends AbstractAuditingEntity {
     private String transactionId;
     private String requestId;
     private LocalDateTime transactionDate;
-    private LocalDate reserveDate;
-    private LocalDate purchaseDate;
-    private LocalDate redeemDate;
+    private LocalDateTime reserveDate;
+    private LocalDateTime purchaseDate;
+    private LocalDateTime redeemDate;
     private String activationUrl;
     private String voucherFileId;
 
@@ -103,27 +103,27 @@ public class Voucher extends AbstractAuditingEntity {
         this.transactionDate = transactionDate;
     }
 
-    public LocalDate getReserveDate() {
+    public LocalDateTime getReserveDate() {
         return reserveDate;
     }
 
-    public void setReserveDate(LocalDate reserveDate) {
+    public void setReserveDate(LocalDateTime reserveDate) {
         this.reserveDate = reserveDate;
     }
 
-    public LocalDate getPurchaseDate() {
+    public LocalDateTime getPurchaseDate() {
         return purchaseDate;
     }
 
-    public void setPurchaseDate(LocalDate purchaseDate) {
+    public void setPurchaseDate(LocalDateTime purchaseDate) {
         this.purchaseDate = purchaseDate;
     }
 
-    public LocalDate getRedeemDate() {
+    public LocalDateTime getRedeemDate() {
         return redeemDate;
     }
 
-    public void setRedeemDate(LocalDate redeemDate) {
+    public void setRedeemDate(LocalDateTime redeemDate) {
         this.redeemDate = redeemDate;
     }
 
