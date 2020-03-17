@@ -147,11 +147,11 @@ public class VoucherStepDefs extends StepDefs {
         );
     }
 
-    @When("the operator wants to {string} the voucher {string} reserved for typeId {string}")
-    public void theOperatorWantsToOperationTheVoucherCodeReservedForTypeIdTypeId(String operation, String voucherCode, String typeId) throws Exception {
+    @When("the operator wants to {string} the voucher {string} reserved for typeId {string} and transactionId {string}")
+    public void theOperatorWantsToOperationTheVoucherCodeReservedForTypeIdTypeId(String operation, String voucherCode, String typeId, String transactionId) throws Exception {
         VoucherRequest voucherRequest = new VoucherRequest();
         voucherRequest.setTransactionStatus(VoucherRequest.TransactionStatusEnum.valueOf(operation));
-        voucherRequest.setTransactionId("trx_123");
+        voucherRequest.setTransactionId(transactionId);
         voucherRequest.setTransactionDate(OffsetDateTime.of(LocalDateTime.of(2020, 1, 1, 6, 6, 6), ZoneOffset.UTC));
         voucherRequest.setUserId("usr_123");
         voucherRequest.setAmount(BigDecimal.ONE);

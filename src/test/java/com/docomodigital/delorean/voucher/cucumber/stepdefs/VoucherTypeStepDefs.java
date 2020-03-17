@@ -77,10 +77,10 @@ public class VoucherTypeStepDefs extends StepDefs {
         }
     }
 
-    @When("the operator wants to reserve the voucher to bill for typeId {string}")
-    public void theOperatorWantsToReserveTheVoucherToBillForTypeId(String typeId) throws Exception {
+    @When("the operator wants to reserve the voucher to bill for typeId {string} and transactionId {string}")
+    public void theOperatorWantsToReserveTheVoucherToBillForTypeId(String typeId, String transactionId) throws Exception {
         ReserveRequest voucherRequest = new ReserveRequest();
-        voucherRequest.setTransactionId("txt_1");
+        voucherRequest.setTransactionId(transactionId);
 
         resultComponent.resultActions = mockMvc.perform(post("/v1/voucher-type/" + typeId + "/reserve")
             .contentType(MediaType.APPLICATION_JSON_UTF8)

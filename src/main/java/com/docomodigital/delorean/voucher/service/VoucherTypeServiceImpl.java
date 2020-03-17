@@ -157,6 +157,15 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
     public Optional<Vouchers> reserveVoucher(String typeId, ReserveRequest reserveRequest) {
         VoucherType type = getValidVoucherType(typeId);
 
+        List<String> voucherTypeIdByMerchantId = voucherTypeRepository.findAllByMerchantId(type.getMerchantId()).stream()
+            .map(VoucherType::getId)
+            .collect(Collectors.toList());
+
+        if(voucherRepository.existsVoucherByTransactionIdAndTypeIdIn(reserveRequest.getTransactionId(), voucherTypeIdByMerchantId)) {
+            throw new BadRequestException(Constants.EXISTING_TRANSACTION_ID_ERROR,
+                String.format("Transaction id %s already exist for merchant %s", reserveRequest.getTransactionId(), type.getMerchantId()));
+        }
+
         Voucher voucherToBeReserve = voucherRepository.findFirstByTypeIdAndStatusEquals(type.getId(), VoucherStatus.ACTIVE)
             .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR,
                 String.format("Voucher with type %s and status ACTIVE not found", typeId)));
