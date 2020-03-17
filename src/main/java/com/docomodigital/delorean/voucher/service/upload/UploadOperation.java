@@ -6,5 +6,5 @@ package com.docomodigital.delorean.voucher.service.upload;
  * @author salvatore.rinaudo@docomodigital.com
  */
 public enum UploadOperation {
-    UPLOAD, PURCHASE, REDEEM
+    UPLOAD, REDEEM
 }

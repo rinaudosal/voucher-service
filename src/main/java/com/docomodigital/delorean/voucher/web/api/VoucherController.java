@@ -13,7 +13,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import java.net.URI;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -62,19 +61,5 @@ public class VoucherController implements VoucherApi {
         VoucherUpload vouchersUploaded = voucherService.processVouchers(file, type, UploadOperation.REDEEM);
 
         return ResponseEntity.ok(vouchersUploaded);
-    }
-
-    @Override
-    public ResponseEntity<VoucherUpload> purchaseFileVoucher(@Valid MultipartFile file, String type) {
-        VoucherUpload vouchersUploaded = voucherService.processVouchers(file, type, UploadOperation.PURCHASE);
-
-        return ResponseEntity.ok(vouchersUploaded);
-    }
-
-    @Override
-    public ResponseEntity<Vouchers> purchaseVoucher(String code, @NotNull @Valid String transactionId, @Valid OffsetDateTime transactionDate, @Valid String userId) {
-        Vouchers voucher = voucherService.purchaseVoucher(code, transactionId, transactionDate, userId);
-
-        return ResponseEntity.ok(voucher);
     }
 }

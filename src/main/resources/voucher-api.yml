@@ -354,49 +354,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Vouchers'
 
-  /voucher/{code}/purchase:
-    post:
-      tags:
-        - Voucher API
-      summary: purchase
-      operationId: purchaseVoucher
-      description: purchase the voucher
-      parameters:
-        - in: path
-          name: code
-          description: the vouchers code
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: transactionId
-          description: the id of the transaction executed to buy the voucher
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: transactionDate
-          description: the date when the transaction are executed
-          required: false
-          schema:
-            type: string
-            format: 'date-time'
-            example: 2017-07-21T17:32:28Z
-        - in: query
-          name: userId
-          description: who is the user that are buy the voucher
-          required: false
-          schema:
-            type: string
-      responses:
-        '201':
-          description: resulting Voucher type
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Vouchers'
-
-
   /voucher:
     get:
       tags:
@@ -483,36 +440,6 @@ paths:
       summary: redeem
       operationId: redeemVoucher
       description: redeem the voucher
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                typeId:
-                  type: string
-                  example: VOU1M
-              required:
-                - file
-                - typeId
-      responses:
-        '200':      # Response
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VoucherUpload'
-
-  /voucher/purchase:
-    post:
-      tags:
-        - Voucher API
-      summary: purchasefile
-      operationId: purchaseFileVoucher
-      description: purchase the voucher from file
       requestBody:
         content:
           multipart/form-data:
@@ -705,7 +632,7 @@ components:
           enum: [UPLOADED, ERROR]
         operation:
           type: string
-          enum: [UPLOAD, PURCHASE, REDEEM]
+          enum: [UPLOAD, REDEEM]
         filename:
           type: string
           example: file.csv

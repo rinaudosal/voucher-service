@@ -134,15 +134,6 @@ public class VoucherStepDefs extends StepDefs {
 
     }
 
-    @When("the operator wants to purchase the voucher {string}")
-    public void theOperatorWantsToPurchaseTheVoucherCode(String code) throws Exception {
-        resultComponent.resultActions = mockMvc.perform(post("/v1/voucher/" + code + "/purchase")
-            .accept(MediaType.APPLICATION_JSON)
-            .param("userId", "user_name")
-            .param("transactionId", "txt_123456")
-            .param("transactionDate", "2020-12-12T17:12:14Z"));
-    }
-
     @When("the operator requires the vouchers with type {string}, status {string}, userId {string}, merchantId {string} and transactionId {string}")
     public void theOperatorRequiresTheVouchersWithTypeStatusAndUserId(String type, String status, String userId, String merchantId, String transactionId) throws Exception {
         resultComponent.resultActions = mockMvc.perform(get("/v1/voucher")
@@ -210,21 +201,6 @@ public class VoucherStepDefs extends StepDefs {
             .andExpect(jsonPath("$.purchaseDate").isEmpty())
             .andExpect(jsonPath("$.redeemDate").isEmpty())
             .andExpect(jsonPath("$.activationUrl").isEmpty());
-    }
-
-    @Then("the operator purchase the voucher {string} correctly")
-    public void theOperatorPurchaseTheVoucherCorrectly(String code) throws Exception {
-        resultComponent.resultActions.andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value(code))
-            .andExpect(jsonPath("$.typeId").isNotEmpty())
-            .andExpect(jsonPath("$.status").value("PURCHASED"))
-            .andExpect(jsonPath("$.userId").isNotEmpty())
-            .andExpect(jsonPath("$.transactionId").isNotEmpty())
-            .andExpect(jsonPath("$.transactionDate").isNotEmpty())
-            .andExpect(jsonPath("$.purchaseDate").value("2020-02-01T00:00:00Z"))
-            .andExpect(jsonPath("$.redeemDate").isEmpty())
-            .andExpect(jsonPath("$.activationUrl").value("www.test.com/vip/" + code));
-
     }
 
     @Then("the operator upload the {int} vouchers correctly for type {string}")
