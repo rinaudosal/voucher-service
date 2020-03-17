@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -32,6 +32,8 @@ public class Voucher extends AbstractAuditingEntity {
     private String userId;
     private String transactionId;
     private String requestId;
+    private BigDecimal amount;
+    private String currency;
     private LocalDateTime transactionDate;
     private LocalDateTime reserveDate;
     private LocalDateTime purchaseDate;
@@ -93,6 +95,22 @@ public class Voucher extends AbstractAuditingEntity {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     public LocalDateTime getTransactionDate() {

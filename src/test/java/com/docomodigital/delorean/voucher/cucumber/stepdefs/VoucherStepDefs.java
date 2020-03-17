@@ -172,10 +172,12 @@ public class VoucherStepDefs extends StepDefs {
 
         if ("SUCCESS".equalsIgnoreCase(operation)) {
             resultComponent.resultActions.andExpect(jsonPath("$.status").value("PURCHASED"))
-                .andExpect(jsonPath("$.transactionId").value("trx_123"))
+                .andExpect(jsonPath("$.transactionId").value("txt1"))
                 .andExpect(jsonPath("$.transactionDate").value("2020-01-01T06:06:06Z"))
                 .andExpect(jsonPath("$.userId").value("usr_123"))
                 .andExpect(jsonPath("$.purchaseDate").isNotEmpty())
+                .andExpect(jsonPath("$.amount").value("1"))
+                .andExpect(jsonPath("$.currency").value("INR"))
                 .andExpect(jsonPath("$.reserveDate").isNotEmpty())
                 .andExpect(jsonPath("$.activationUrl").isNotEmpty());
         } else {
@@ -185,6 +187,8 @@ public class VoucherStepDefs extends StepDefs {
                 .andExpect(jsonPath("$.userId").isEmpty())
                 .andExpect(jsonPath("$.purchaseDate").isEmpty())
                 .andExpect(jsonPath("$.reserveDate").isEmpty())
+                .andExpect(jsonPath("$.amount").isEmpty())
+                .andExpect(jsonPath("$.currency").isEmpty())
                 .andExpect(jsonPath("$.activationUrl").isEmpty());
         }
     }

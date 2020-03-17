@@ -178,15 +178,26 @@ public class VoucherServiceImpl implements VoucherService {
             throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Voucher with code %s is not in RESERVED state", code));
         }
 
+        if(!voucherRequest.getTransactionId().equalsIgnoreCase(voucher.getTransactionId())) {
+            throw new BadRequestException(Constants.WRONG_TRANSACTION_ID_ERROR,
+                String.format("Transaction id %s is different of reserved %s",
+                    voucherRequest.getTransactionId(),
+                    voucher.getTransactionId()));
+        }
+
         if (VoucherRequest.TransactionStatusEnum.SUCCESS.equals(voucherRequest.getTransactionStatus())) {
             voucher.setTransactionId(voucherRequest.getTransactionId());
             voucher.setTransactionDate(voucherRequest.getTransactionDate().toLocalDateTime());
             voucher.setStatus(VoucherStatus.PURCHASED);
             voucher.setPurchaseDate(LocalDateTime.now(clock));
+            voucher.setAmount(voucherRequest.getAmount());
+            voucher.setCurrency(voucherRequest.getCurrency());
             voucher.setUserId(voucherRequest.getUserId());
         } else {
             voucher.setTransactionId(null);
             voucher.setTransactionDate(null);
+            voucher.setAmount(null);
+            voucher.setCurrency(null);
             voucher.setStatus(VoucherStatus.ACTIVE);
             voucher.setPurchaseDate(null);
             voucher.setReserveDate(null);

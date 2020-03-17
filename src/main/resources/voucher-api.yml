@@ -608,6 +608,12 @@ components:
           type: string
           format: 'date-time'
           example: 2017-07-21T17:32:28Z
+        amount:
+          type: number
+          example: 19.99
+        currency:
+          type: string
+          example: USD
         reserveDate:
           type: string
           format: 'date-time'
