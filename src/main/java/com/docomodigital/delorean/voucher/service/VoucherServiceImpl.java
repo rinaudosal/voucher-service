@@ -75,8 +75,7 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         Vouchers vouchers = voucherMapper.toDto(
-            voucherRepository.save(
-                processVoucherStrategy.processLine(code, voucherType, null)));
+            voucherRepository.save(processVoucherStrategy.processLine(code, voucherType, null)));
         vouchers.setTypeId(type);
         return vouchers;
     }
@@ -155,7 +154,11 @@ public class VoucherServiceImpl implements VoucherService {
         Example<Voucher> voucherExample = Example.of(voucher);
 
         return voucherRepository.findAll(voucherExample).stream()
-            .map(voucherMapper::toDto)
+            .map(v -> {
+                Vouchers vouchers = voucherMapper.toDto(v);
+                vouchers.setTypeId(voucherTypeRepository.findById(v.getTypeId()).map(VoucherType::getCode).orElse(null));
+                return vouchers;
+            })
             .collect(Collectors.toList());
     }
 
