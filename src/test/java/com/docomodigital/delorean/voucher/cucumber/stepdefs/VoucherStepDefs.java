@@ -18,8 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -59,9 +58,22 @@ public class VoucherStepDefs extends StepDefs {
 
     @When("the operator wants to {string} the voucher without field {string}")
     public void theOperatorWantsToUpdateTheVoucherWithoutField(String operation, String missingField) throws Exception {
-        MockMultipartFile file = buildVoucherFile(2, null);
-
         if (missingField.equals("typeId")) {
+            Writer fstream = new OutputStreamWriter(new FileOutputStream("voucher_example.csv"), StandardCharsets.UTF_8);
+
+            fstream
+                .append("promo_campaign_name,promo_code,date_redeemed\n")
+                .append("PartnerA_TesterBatch_Set1_1MonthPlus,")
+                .append("fdgfdgdfgfdgfd")
+                .append(",2/5/20 21:41\n");
+
+            fstream.flush();
+            fstream.close();
+
+            byte[] fileContent = readVoucherFile();
+
+            MockMultipartFile file = new MockMultipartFile("file", "voucher_example.csv", "text/csv", fileContent);
+
             resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
                 .file(file)
                 .characterEncoding("UTF-8"));
@@ -99,21 +111,80 @@ public class VoucherStepDefs extends StepDefs {
             .characterEncoding("UTF-8"));
     }
 
-    @When("the operator wants to {string} the voucher file with {int} vouchers for type {string} and the voucher file contain also {string}")
-    public void theOperatorWantsToUploadTheVoucherFileWithVouchersForTypeAndTheVoucherFileContain(String operation, int size, String type, String code) throws Exception {
-        MockMultipartFile file = buildVoucherFile(size, code);
+    @When("the operator wants to 'redeem' the voucher file with {int} vouchers for type {string} and the voucher file contain also {string}")
+    public void theOperatorWantsToRedeemTheVoucherFileWithVouchersForTypeAndTheVoucherFileContain(int size, String type, String code) throws Exception {
+        Writer fstream = new OutputStreamWriter(new FileOutputStream("voucher_example.csv"), StandardCharsets.UTF_8);
 
-        resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
+        fstream
+            .append("promo_campaign_name,promo_code,date_redeemed\n");
+
+        String[] codes = code.split(",");
+        for (String line : codes) {
+            fstream
+                .append("PartnerA_TesterBatch_Set1_1MonthPlus,")
+                .append(line)
+                .append(",2/5/20 21:41\n");
+        }
+
+        fstream.flush();
+        fstream.close();
+
+        byte[] fileContent = readVoucherFile();
+
+        MockMultipartFile file = new MockMultipartFile("file", "voucher_example.csv", "text/csv", fileContent);
+
+        resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/redeem")
             .file(file)
             .param("typeId", type)
             .characterEncoding("UTF-8"));
     }
 
-    @When("the operator wants to {string} the voucher file for the type {string} with the voucher {string}")
-    public void theOperatorWantsToRedeemTheVoucherFileForTheTypeTypeWithTheVoucherVoucher(String operation, String type, String code) throws Exception {
+    @When("the operator wants to 'upload' the voucher file with {int} vouchers for type {string} and the voucher file contain also {string}")
+    public void theOperatorWantsToUploadTheVoucherFileWithVouchersForTypeAndTheVoucherFileContain(int size, String type, String code) throws Exception {
+        MockMultipartFile file = buildVoucherFile(size, code);
+
+        resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/upload")
+            .file(file)
+            .param("typeId", type)
+            .characterEncoding("UTF-8"));
+    }
+
+    @When("the operator wants to 'redeem' the voucher file for the type {string} with the voucher {string}")
+    public void theOperatorWantsToTheVoucherFileForTheTypeTypeWithTheVoucherVoucher(String type, String code) throws Exception {
+        Writer fstream = new OutputStreamWriter(new FileOutputStream("voucher_example.csv"), StandardCharsets.UTF_8);
+
+        fstream.append("promo_campaign_name,promo_code,date_redeemed\n");
+
+        if (code != null) {
+            String[] codes = code.split(",");
+            for (String line : codes) {
+                fstream
+                    .append("PartnerA_TesterBatch_Set1_1MonthPlus,")
+                    .append(line)
+                    .append(",2/5/20 21:41")
+                    .append("\n");
+            }
+        }
+
+        fstream.flush();
+        fstream.close();
+
+        byte[] fileContent = readVoucherFile();
+
+        MockMultipartFile file = new MockMultipartFile("file", "voucher_example.csv", "text/csv", fileContent);
+
+        resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/redeem")
+            .file(file)
+            .param("typeId", type)
+            .characterEncoding("UTF-8"));
+
+    }
+
+    @When("the operator wants to 'upload' the voucher file for the type {string} with the voucher {string}")
+    public void theOperatorWantsToUploadTheVoucherFileForTheTypeTypeWithTheVoucherVoucher(String type, String code) throws Exception {
         MockMultipartFile file = buildVoucherFile(0, code);
 
-        resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/" + operation)
+        resultComponent.resultActions = mockMvc.perform(MockMvcRequestBuilders.multipart("/v1/voucher/upload")
             .file(file)
             .param("typeId", type)
             .characterEncoding("UTF-8"));
@@ -250,8 +321,8 @@ public class VoucherStepDefs extends StepDefs {
         List<VoucherError> voucherErrors = voucherErrorRepository.findAll();
         Assertions.assertThat(voucherErrors).hasSize(1);
         VoucherError voucherError = voucherErrors.get(0);
-        Assertions.assertThat(voucherError.getCode()).isNotNull();
-        Assertions.assertThat(voucherError.getLineNumber()).isEqualTo(1);
+        Assertions.assertThat(voucherError.getLine()).isNotNull();
+        Assertions.assertThat(voucherError.getLineNumber()).isEqualTo(operation.equalsIgnoreCase("REDEEM") ? 2 : 1);
         Assertions.assertThat(voucherError.getErrorCode()).isEqualTo(errorCode);
         Assertions.assertThat(voucherError.getErrorMessage()).isEqualTo(errorMessage);
 

@@ -30,5 +30,5 @@ public interface VoucherFileService {
      * @param voucherSingleProcessor processo for single lines
      * @return the Object with statistics data
      */
-    VoucherUpload uploadFile(MultipartFile file, VoucherType voucherType, UploadOperation uploadOperation, VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor);
+    VoucherUpload uploadFile(MultipartFile file, VoucherType voucherType, UploadOperation uploadOperation, VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor, boolean skipHeaderLine);
 }

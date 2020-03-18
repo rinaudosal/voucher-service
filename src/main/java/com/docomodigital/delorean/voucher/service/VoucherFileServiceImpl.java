@@ -56,7 +56,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
 
     @Override
     @Transactional
-    public VoucherUpload uploadFile(MultipartFile file, VoucherType type, UploadOperation uploadOperation, VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor) {
+    public VoucherUpload uploadFile(MultipartFile file, VoucherType type, UploadOperation uploadOperation, VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor, boolean skipHeaderLine) {
 
         VoucherFile voucherUpload = new VoucherFile();
         voucherUpload.setFilename(file.getOriginalFilename());
@@ -74,8 +74,11 @@ public class VoucherFileServiceImpl implements VoucherFileService {
 
             Scanner sc = new Scanner(file.getInputStream());
             while (sc.hasNextLine()) {
-                lineNumber += 1;
                 String line = sc.nextLine();
+                lineNumber += 1;
+
+                if (lineNumber==1 && skipHeaderLine) continue;
+
 
                 // this change from upload purchase or redeem
 
@@ -92,7 +95,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
             voucherUpload.setStatus(VoucherFileStatus.ERROR);
         }
 
-        voucherUpload.setTotal(lineNumber);
+        voucherUpload.setTotal(skipHeaderLine ? lineNumber - 1 : lineNumber);
         voucherUpload.setUploaded(uploaded);
         voucherUpload.setErrors(errors);
 
@@ -115,7 +118,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
             errors += 1;
             VoucherError voucherError = new VoucherError();
             voucherError.setVoucherFileId(voucherUpload.getId());
-            voucherError.setCode(line);
+            voucherError.setLine(line);
             voucherError.setLineNumber(lineNumber);
             voucherError.setErrorCode(e.getErrorCode());
             voucherError.setErrorMessage(e.getMessage());

@@ -37,4 +37,8 @@ public class UploadVoucherStrategyImpl extends AbstractVoucherStrategyImpl imple
         return voucher;
     }
 
+    @Override
+    public boolean skipHeaderLine() {
+        return false;
+    }
 }

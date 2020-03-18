@@ -89,7 +89,7 @@ public class VoucherServiceImpl implements VoucherService {
 
         VoucherType voucherType = processVoucherStrategy.getValidVoucherType(type);
 
-        return voucherFileService.uploadFile(file, voucherType, uploadOperation, processVoucherStrategy::processLine);
+        return voucherFileService.uploadFile(file, voucherType, uploadOperation, processVoucherStrategy::processLine, processVoucherStrategy.skipHeaderLine());
     }
 
 

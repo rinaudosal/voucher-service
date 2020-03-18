@@ -40,6 +40,7 @@ public class Voucher extends AbstractAuditingEntity {
     private LocalDateTime redeemDate;
     private String activationUrl;
     private String voucherFileId;
+    private String redeemFileId;
 
     public String getId() {
         return id;
@@ -159,5 +160,13 @@ public class Voucher extends AbstractAuditingEntity {
 
     public void setVoucherFileId(String voucherFileId) {
         this.voucherFileId = voucherFileId;
+    }
+
+    public String getRedeemFileId() {
+        return redeemFileId;
+    }
+
+    public void setRedeemFileId(String redeemFileId) {
+        this.redeemFileId = redeemFileId;
     }
 }

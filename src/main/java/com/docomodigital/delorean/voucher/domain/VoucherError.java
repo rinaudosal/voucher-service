@@ -18,9 +18,9 @@ public class VoucherError extends AbstractAuditingEntity {
 
     private String voucherFileId;
 
-    private Integer lineNumber;
+    private String line;
 
-    private String code;
+    private Integer lineNumber;
 
     private String errorCode;
 
@@ -42,12 +42,12 @@ public class VoucherError extends AbstractAuditingEntity {
         this.voucherFileId = voucherFileId;
     }
 
-    public String getCode() {
-        return code;
+    public String getLine() {
+        return line;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setLine(String line) {
+        this.line = line;
     }
 
     public Integer getLineNumber() {
