@@ -551,7 +551,9 @@ components:
         priority:
           type: integer
           example: 3
-
+        baseUrl:
+          type: string
+          example: www.tinder.com
     ReserveRequest:
       type: object
       required:

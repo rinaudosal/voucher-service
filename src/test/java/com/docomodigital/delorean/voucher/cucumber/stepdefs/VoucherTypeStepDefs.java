@@ -189,7 +189,10 @@ public class VoucherTypeStepDefs extends StepDefs {
 
     @Then("the operator create the voucher type correctly")
     public void theOperatorCreateTheVoucherTypeCorrectly() throws Exception {
-        resultComponent.resultActions.andExpect(status().isCreated());
+        resultComponent.resultActions.andExpect(status().isCreated())
+            .andExpect(jsonPath("$.typeId").isNotEmpty())
+            .andExpect(jsonPath("$.baseUrl").value("www.tinder.com"));
+
     }
 
     @Then("the operator reserve the voucher {string} correctly for typeId {string}")
@@ -284,6 +287,10 @@ public class VoucherTypeStepDefs extends StepDefs {
         }
         if (!StringUtils.equals(missingField, "priority")) {
             voucherType.setPriority(Integer.parseInt(firstRow.get("priority")));
+        }
+
+        if (!StringUtils.equals(missingField, "baseUrl")) {
+            voucherType.setBaseUrl(firstRow.get("baseUrl"));
         }
 
         return voucherType;

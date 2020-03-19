@@ -11,8 +11,8 @@ Feature: Create Voucher types
 
   Scenario: Voucher type created sale period
     When the operator wants to create the voucher type:
-      | typeId         | product    | description    | Promo | amount | currency | merchant | country | paymentProvider | shop  | enabled | startDate  | endDate    | priority |
-      | NEWVOUCHERCODE | Tinder 1 m | 1  Months sale |       | 6.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/01/2020 | 21/06/2020 | 3        |
+      | typeId         | product    | description    | Promo | amount | currency | merchant | country | paymentProvider | shop  | enabled | startDate  | endDate    | priority | baseUrl        |
+      | NEWVOUCHERCODE | Tinder 1 m | 1  Months sale |       | 6.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/01/2020 | 21/06/2020 | 3        | www.tinder.com |
     Then the operator create the voucher type correctly
 
 
