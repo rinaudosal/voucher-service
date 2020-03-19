@@ -1,6 +1,8 @@
 package com.docomodigital.delorean.voucher.cucumber;
 
+import com.docomodigital.delorean.client.merchant.MerchantClient;
 import com.docomodigital.delorean.voucher.VoucherServiceApplication;
+import com.docomodigital.delorean.voucher.config.SignatureComponent;
 import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherFileRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
@@ -24,7 +26,7 @@ import java.time.Clock;
 @WebAppConfiguration
 @ContextConfiguration(classes = VoucherServiceApplication.class)
 @AutoConfigureMockMvc
-@MockBean(classes = {Clock.class, RabbitTemplate.class})
+@MockBean(classes = {Clock.class, RabbitTemplate.class, MerchantClient.class, SignatureComponent.class})
 public class CucumberContextConfiguration {
     @Autowired
     private VoucherRepository voucherRepository;

@@ -88,16 +88,4 @@ public class VoucherTypeController implements VoucherTypeApi {
         return ResponseEntity.of(voucherType);
     }
 
-    @Override
-    public ResponseEntity<Vouchers> reserveVoucher(String typeId, @Valid ReserveRequest reserveRequest) {
-        Optional<Vouchers> voucherReserved = voucherTypeService.reserveVoucher(typeId, reserveRequest);
-
-        return ResponseEntity.of(voucherReserved);
-    }
-
-    @Override
-    public ResponseEntity<Vouchers> updateVoucher(String typeId, String code, @Valid VoucherRequest voucherRequest) {
-        Optional<Vouchers> voucher = voucherService.updateVoucher(code, typeId, voucherRequest);
-        return ResponseEntity.of(voucher);
-    }
 }

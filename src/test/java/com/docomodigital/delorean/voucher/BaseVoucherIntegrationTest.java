@@ -1,5 +1,8 @@
 package com.docomodigital.delorean.voucher;
 
+import com.docomodigital.delorean.client.merchant.MerchantClient;
+import com.docomodigital.delorean.client.merchant.model.ChannelResponse;
+import com.docomodigital.delorean.domain.resource.Shop;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +28,8 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.TimeZone;
 
+import static org.mockito.ArgumentMatchers.eq;
+
 /**
  * Base settings for rest integration tests
  * <p>
@@ -47,6 +52,9 @@ public abstract class BaseVoucherIntegrationTest {
     @MockBean
     protected Clock clock;
 
+    @MockBean
+    protected MerchantClient merchantClient;
+
     @Autowired
     protected ObjectMapper objectMapper;
 
@@ -56,6 +64,23 @@ public abstract class BaseVoucherIntegrationTest {
     @Autowired
     protected RabbitTemplate rabbitTemplate;
 
+
+    protected void setupMerchantClient(){
+        ChannelResponse channelResponse = new ChannelResponse();
+        channelResponse.setId("TEST_API_KEY");
+        channelResponse.setStatus("enabled");
+        channelResponse.setMerchantId("TINDER");
+        Shop shop = new Shop();
+        shop.setId("vfv");
+        shop.setName("Tinder Indonesia");
+        shop.setCountry("IN");
+        shop.setSignatureKey("TEST_SIGNATURE_KEY");
+        channelResponse.setShop(shop);
+
+        BDDMockito.given(merchantClient.getChannelByApiKey(eq("TEST_API_KEY")))
+            .willReturn(channelResponse);
+    }
+
     /**
      * Step before all integration test tha extends this class
      */
@@ -64,6 +89,8 @@ public abstract class BaseVoucherIntegrationTest {
         Instant instant = Instant.now();
         BDDMockito.when(clock.instant()).thenReturn(instant);
         BDDMockito.when(clock.getZone()).thenReturn(TimeZone.getTimeZone(ZoneOffset.UTC).toZoneId());
+
+        setupMerchantClient();
     }
 
     /**

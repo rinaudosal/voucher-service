@@ -22,7 +22,7 @@ tags:
     description: Provides API to manage vouchers (internal only)
 
 paths:
-  /voucher-type/{typeId}/reserve:
+  /external/voucher-type/{typeId}/reserve:
     post:
       tags:
         - Voucher API (external)
@@ -31,7 +31,7 @@ paths:
       description: reserve the voucher
       security:
         - ApiKeyAuth: []
-        - SignRequest: []
+          SignRequest: []
       parameters:
         - in: path
           name: typeId
@@ -75,7 +75,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
-  /voucher-type/{typeId}/voucher/{code}:
+  /external/voucher-type/{typeId}/voucher/{code}:
     patch:
       tags:
         - Voucher API (external)
@@ -566,7 +566,7 @@ components:
     VoucherRequest:
       allOf:
         - $ref: '#/components/schemas/ReserveRequest'
-        - type: objects
+        - type: object
           properties:
             userId:
               type: string
@@ -661,13 +661,10 @@ components:
     ApiKeyAuth:
       type: apiKey
       in: header
-      name: X-API-Key
+      name: X-Api-Key
       description: Authorization key
     SignRequest:
       type: apiKey
       in: header
       name: X-Signature
       description: Request signature hash
-
-security:
-  - ApiKeyAuth: []

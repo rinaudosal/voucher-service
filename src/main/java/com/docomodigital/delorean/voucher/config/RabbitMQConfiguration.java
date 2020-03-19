@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -18,6 +19,10 @@ import org.springframework.context.annotation.Profile;
  */
 @Configuration
 @EnableRabbit
+@ConditionalOnProperty(
+    value = "rabbit.enabled",
+    havingValue = "true",
+    matchIfMissing = true)
 public class RabbitMQConfiguration {
     private static final String INPUT_QUEUE_NAME = "tinder-api2plugin";
     private static final String OUTPUT_QUEUE_NAME = "tinder-plugin2api";

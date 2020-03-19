@@ -16,6 +16,8 @@ public final class Constants {
     public static final String VOUCHER_TYPE_NOT_FOUND_MESSAGE = "Voucher Type %s not found";
     public static final String EXISTING_TRANSACTION_ID_ERROR = "EXISTING_TRANSACTION_ID";
     public static final String WRONG_TRANSACTION_ID_ERROR = "WRONG_TRANSACTION_ID";
+    public static final String API_KEY_HEADER = "X-Api-Key";
+    public static final String SIGNATURE_HEADER_NAME = "X-Signature";
 
     private Constants() {
     }

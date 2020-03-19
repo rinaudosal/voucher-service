@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.cucumber.stepdefs;
 
+import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
@@ -82,7 +83,9 @@ public class VoucherTypeStepDefs extends StepDefs {
         ReserveRequest voucherRequest = new ReserveRequest();
         voucherRequest.setTransactionId(transactionId);
 
-        resultComponent.resultActions = mockMvc.perform(post("/v1/voucher-type/" + typeId + "/reserve")
+        resultComponent.resultActions = mockMvc.perform(post("/v1/external/voucher-type/" + typeId + "/reserve")
+            .header(Constants.API_KEY_HEADER, "TEST_API_KEY")
+            .header(Constants.SIGNATURE_HEADER_NAME, "TEST_SIGNATURE_KEY")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(objectMapper.writeValueAsString(voucherRequest))
             .accept(MediaType.APPLICATION_JSON));

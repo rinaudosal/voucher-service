@@ -1,17 +1,21 @@
 package com.docomodigital.delorean.voucher.cucumber.stepdefs;
 
+import com.docomodigital.delorean.client.merchant.MerchantClient;
+import com.docomodigital.delorean.client.merchant.model.ChannelResponse;
+import com.docomodigital.delorean.domain.resource.Shop;
 import com.docomodigital.delorean.voucher.config.Constants;
+import com.docomodigital.delorean.voucher.config.SignatureComponent;
 import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.docomodigital.delorean.voucher.service.VoucherQueueReceiverService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.annotation.PostConstruct;
@@ -28,15 +32,23 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public abstract class StepDefs {
 
+    @Autowired
     protected MockMvc mockMvc;
 
     @Autowired
     protected ResultComponent resultComponent;
+
+    @Autowired
+    protected MerchantClient merchantClient;
+
+    @Autowired
+    private SignatureComponent signatureComponent;
 
     @Autowired
     private WebApplicationContext context;
@@ -66,9 +78,31 @@ public abstract class StepDefs {
     public void init() {
         setupClockMock(LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC));
 
-        this.mockMvc = MockMvcBuilders
-            .webAppContextSetup(context)
-            .build();
+        setupMerchantClient();
+
+        BDDMockito.given(signatureComponent.validateSignature(
+            eq("TEST_API_KEY"),
+            eq("TEST_PRIVATE_KEY"),
+            eq("TEST_SIGNATURE_KEY"),
+            Mockito.any(byte[].class)))
+            .willReturn(true);
+
+    }
+
+    protected void setupMerchantClient() {
+        ChannelResponse channelResponse = new ChannelResponse();
+        channelResponse.setId("TEST_API_KEY");
+        channelResponse.setStatus("enabled");
+        channelResponse.setMerchantId("TINDER");
+        Shop shop = new Shop();
+        shop.setId("vfv");
+        shop.setName("Tinder Indonesia");
+        shop.setCountry("IN");
+        shop.setSignatureKey("TEST_PRIVATE_KEY");
+        channelResponse.setShop(shop);
+
+        BDDMockito.given(merchantClient.getChannelByApiKey(eq("TEST_API_KEY")))
+            .willReturn(channelResponse);
     }
 
     protected void setupClockMock(Instant instant) {
