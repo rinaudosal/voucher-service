@@ -14,13 +14,12 @@ import java.util.Base64;
 @Component
 public class SignatureComponent {
 
-    public boolean validateSignature(String apiKey, String privateKey, String signatureKey, byte[] body) {
+    public boolean validateSignature(String privateKey, String signatureKey, byte[] body) {
 
         String bodyEncoded = Base64.getEncoder()
             .encodeToString(body);
 
-        String content = String.format("%s.%s.%s",
-            apiKey,
+        String content = String.format("%s.%s",
             privateKey,
             bodyEncoded);
 

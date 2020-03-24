@@ -131,10 +131,10 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
     }
 
     @Override
-    public VoucherType getVoucherType(String merchantId, String paymentProvider, String country, String productId) {
+    public VoucherType getVoucherType(String shopId, String paymentProvider, String country, String productId) {
 
         VoucherType voucherType = new VoucherType();
-        voucherType.setMerchantId(merchantId);
+        voucherType.setShopId(shopId);
         voucherType.setPaymentProvider(paymentProvider);
         voucherType.setProduct(productId);
         voucherType.setCountry(country);
@@ -150,7 +150,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             })
             .max(Comparator.comparing(VoucherType::getPriority))
             .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND",
-                String.format("No Voucher Type available for merchant %s, paymentProvider %s, country %s and product %s", merchantId, paymentProvider, country, productId)));
+                String.format("No Voucher Type available for shop %s, paymentProvider %s, country %s and product %s", shopId, paymentProvider, country, productId)));
     }
 
     @Override

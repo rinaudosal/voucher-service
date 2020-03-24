@@ -81,7 +81,6 @@ public abstract class StepDefs {
         setupMerchantClient();
 
         BDDMockito.given(signatureComponent.validateSignature(
-            eq("TEST_API_KEY"),
             eq("TEST_PRIVATE_KEY"),
             eq("TEST_SIGNATURE_KEY"),
             Mockito.any(byte[].class)))

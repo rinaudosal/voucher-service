@@ -31,9 +31,10 @@ public class ConsumeVoucherServiceReadMessageTest extends BaseUnitTest {
         VoucherConsumer output = target.readMessage(exampleRequest);
 
         Assertions.assertThat(output.getMerchantId()).isEqualTo("MRNor1014793");
+        Assertions.assertThat(output.getShopId()).isEqualTo("STNor4937907");
         Assertions.assertThat(output.getPaymentProvider()).isEqualTo("VFONE");
         Assertions.assertThat(output.getCountry()).isEqualTo("AU");
-        Assertions.assertThat(output.getProductId()).isEqualTo("Product");
+        Assertions.assertThat(output.getProductId()).isEqualTo("VDFAU 1 Month");
         Assertions.assertThat(output.getUserId()).isEqualTo("5da85c48a0cf582e93858dc7");
         Assertions.assertThat(output.getTransactionId()).isEqualTo("7c24a089-d2fc-4011-b711-891d69");
         Assertions.assertThat(output.getRequestId()).isEqualTo("2372a681-2164-421a-99a1-c48d89301e6a");

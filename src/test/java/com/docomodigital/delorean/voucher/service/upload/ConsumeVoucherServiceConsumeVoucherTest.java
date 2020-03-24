@@ -50,7 +50,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
         voucherType.setId("my_type_id");
         voucherType.setBaseUrl("www.google.com/");
         BDDMockito.given(voucherTypeService.getVoucherType(
-            Mockito.eq("my_merchant_id"),
+            Mockito.eq("my_shop_id"),
             Mockito.eq("my_payment_provider"),
             Mockito.eq("my_country"),
             Mockito.eq("my_product_id"))).willReturn(voucherType);
@@ -65,7 +65,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
             .thenAnswer((Answer) invocation -> invocation.getArguments()[0]);
 
         input = new VoucherConsumer();
-        input.setMerchantId("my_merchant_id");
+        input.setShopId("my_shop_id");
         input.setPaymentProvider("my_payment_provider");
         input.setCountry("my_country");
         input.setProductId("my_product_id");
@@ -91,7 +91,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
     @Test
     public void voucherTypeNotFound() {
         BDDMockito.given(voucherTypeService.getVoucherType(
-            Mockito.eq("my_merchant_id"),
+            Mockito.eq("my_shop_id"),
             Mockito.eq("my_payment_provider"),
             Mockito.eq("my_country"),
             Mockito.eq("my_product_id"))).willReturn(null);

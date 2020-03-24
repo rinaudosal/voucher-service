@@ -32,13 +32,12 @@ public class SignedRequestFilter extends OncePerRequestFilter {
 
         AuthenticatedMerchant merchant = (AuthenticatedMerchant) SecurityContextHolder.getContext().getAuthentication();
 
-        String apiKey = request.getHeader(Constants.API_KEY_HEADER);
         String privateKey = ((Shop) merchant.getPrincipal()).getSignatureKey();
         String signatureKey = request.getHeader(Constants.SIGNATURE_HEADER_NAME);
 
         byte[] body = requestCacheWrapper.getContent().getBytes(StandardCharsets.UTF_8);
 
-        if (!signatureComponent.validateSignature(apiKey, privateKey, signatureKey, body)) {
+        if (!signatureComponent.validateSignature(privateKey, signatureKey, body)) {
             logger.error("Signature not valid");
             response.setStatus(HttpStatus.FORBIDDEN.value());
             return;

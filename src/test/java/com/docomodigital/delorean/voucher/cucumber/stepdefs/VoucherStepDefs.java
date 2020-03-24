@@ -389,16 +389,16 @@ public class VoucherStepDefs extends StepDefs {
         return voucher;
     }
 
-    @When("the operator wants to consume the voucher billed for merchant {string}, product {string}, country {string} and paymentProvider {string}")
-    public void theOperatorWantsToConsumeTheVoucher(String merchant, String product, String country, String paymentProvider) throws Exception {
-        String message = createJsonMessage(merchant, product, country, paymentProvider);
+    @When("the operator wants to consume the voucher billed for shop {string}, product {string}, country {string} and paymentProvider {string}")
+    public void theOperatorWantsToConsumeTheVoucher(String shopCode, String product, String country, String paymentProvider) throws Exception {
+        String message = createJsonMessage(shopCode, product, country, paymentProvider);
 
         voucherQueueReceiverService.handleMessage(message.getBytes());
     }
 
-    @When("the operator wants to consume the voucher billed for merchant {string}, product {string}, country {string} and paymentProvider {string} receiving the error code {string} and description {string}")
-    public void theOperatorWantsToConsumeTheVoucher(String merchant, String product, String country, String paymentProvider, String errorCode, String errorDescription) throws Exception {
-        String message = createJsonMessage(merchant, product, country, paymentProvider);
+    @When("the operator wants to consume the voucher billed for shop {string}, product {string}, country {string} and paymentProvider {string} receiving the error code {string} and description {string}")
+    public void theOperatorWantsToConsumeTheVoucher(String shopCode, String product, String country, String paymentProvider, String errorCode, String errorDescription) throws Exception {
+        String message = createJsonMessage(shopCode, product, country, paymentProvider);
 
         voucherQueueReceiverService.handleMessage(message.getBytes());
 
@@ -428,12 +428,12 @@ public class VoucherStepDefs extends StepDefs {
         Assertions.assertThat(voucherErrors.get(0).getErrorMessage()).isEqualTo(errorDescription);
     }
 
-    private String createJsonMessage(String merchant, String product, String country, String paymentProvider) throws Exception {
+    private String createJsonMessage(String shopCode, String product, String country, String paymentProvider) throws Exception {
         DocumentContext jsonContext = JsonPath.parse(FileUtils.readFileToString(new File("src/test/resources/exampleWLMRequestQueue.json"), StandardCharsets.UTF_8));
 
-        jsonContext.put("$['attributes'].['transaction'].['attributes'].['product'].['attributes']", "merchantCode", merchant);
+        jsonContext.put("$['attributes'].['transaction'].['attributes'].['product'].['attributes']", "siteCode", shopCode);
         jsonContext.put("$['attributes'].['transaction'].['attributes'].['telco'].['attributes']", "code", paymentProvider);
-        jsonContext.put("$['attributes'].['transaction'].['attributes'].['product']", "type", product);
+        jsonContext.put("$['attributes'].['transaction'].['attributes'].['product'].['attributes']", "code", product);
         jsonContext.put("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['country'].['attributes']", "code", country);
 
         return jsonContext.jsonString();

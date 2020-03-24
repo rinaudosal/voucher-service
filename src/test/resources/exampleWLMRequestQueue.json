@@ -12,6 +12,7 @@
           "type": "Product",
           "id": "7",
           "attributes": {
+            "code": "VDFAU 1 Month",
             "environment": {
               "type": "Environment",
               "id": "11",

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class VoucherConsumer {
 
     private String merchantId;
+    private String shopId;
     private String requestId;
     private String paymentProvider;
     private String country;

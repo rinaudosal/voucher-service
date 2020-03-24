@@ -52,8 +52,9 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         DocumentContext jsonContext = JsonPath.using(conf).parse(message);
         VoucherConsumer voucherConsumer = new VoucherConsumer();
         voucherConsumer.setMerchantId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['merchantCode']"));
+        voucherConsumer.setShopId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['siteCode']"));
         voucherConsumer.setPaymentProvider(jsonContext.read("$['attributes'].['transaction'].['attributes'].['telco'].['attributes'].['code']"));
-        voucherConsumer.setProductId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['type']"));
+        voucherConsumer.setProductId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['code']"));
 
         voucherConsumer.setCountry(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['country'].['attributes'].['code']"));
         voucherConsumer.setUserId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['userId'].['attributes'].['customerId']"));
@@ -76,7 +77,7 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         }
 
         VoucherType voucherType = Optional.ofNullable(voucherTypeService.getVoucherType(
-            voucherConsumer.getMerchantId(),
+            voucherConsumer.getShopId(),
             voucherConsumer.getPaymentProvider(),
             voucherConsumer.getCountry(),
             voucherConsumer.getProductId()))
