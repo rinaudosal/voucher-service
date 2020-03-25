@@ -3,7 +3,6 @@ package com.docomodigital.delorean.voucher.cucumber.stepdefs;
 import com.docomodigital.delorean.client.merchant.MerchantClient;
 import com.docomodigital.delorean.client.merchant.model.ChannelResponse;
 import com.docomodigital.delorean.domain.resource.Shop;
-import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.config.SignatureComponent;
 import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
@@ -15,7 +14,6 @@ import org.mockito.Mockito;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.annotation.PostConstruct;
@@ -114,10 +112,7 @@ public abstract class StepDefs {
     }
 
     protected void checkBadRequest(String errorCode, String errorMessage) throws Exception {
-        ResultMatcher resultMatcher = Constants.TYPE_NOT_FOUND_ERROR.equals(errorCode) || Constants.VOUCHER_NOT_FOUND_ERROR.equals(errorCode)
-            ? status().isNotFound() : status().isBadRequest();
-
-        resultComponent.resultActions.andExpect(resultMatcher)
+        resultComponent.resultActions.andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errorCode").value(errorCode))
             .andExpect(jsonPath("$.errorMessage").value(errorMessage));
     }

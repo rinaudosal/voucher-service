@@ -18,10 +18,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     @ResponseBody
     public ResponseEntity<ErrorDetails> handleBadRequest(BadRequestException exception) {
-        HttpStatus httpStatus = Constants.TYPE_NOT_FOUND_ERROR.equals(exception.getErrorCode()) || Constants.VOUCHER_NOT_FOUND_ERROR.equals(exception.getErrorCode())
-            ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
-
-        return ResponseEntity.status(httpStatus)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(new ErrorDetails(
                 exception.getErrorCode(),
                 exception.getMessage()));
