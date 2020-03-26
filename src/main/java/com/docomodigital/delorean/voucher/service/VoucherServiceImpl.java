@@ -198,7 +198,9 @@ public class VoucherServiceImpl implements VoucherService {
 
         if (VoucherRequest.TransactionStatusEnum.SUCCESS.equals(voucherRequest.getTransactionStatus())) {
             voucher.setTransactionId(voucherRequest.getTransactionId());
-            voucher.setTransactionDate(voucherRequest.getTransactionDate().toLocalDateTime());
+            if(voucherRequest.getTransactionDate()!=null) {
+                voucher.setTransactionDate(voucherRequest.getTransactionDate().toLocalDateTime());
+            }
             voucher.setStatus(VoucherStatus.PURCHASED);
             voucher.setPurchaseDate(LocalDateTime.now(clock));
             voucher.setAmount(voucherRequest.getAmount());
