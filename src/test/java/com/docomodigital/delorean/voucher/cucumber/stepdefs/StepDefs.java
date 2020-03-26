@@ -92,7 +92,7 @@ public abstract class StepDefs {
         channelResponse.setStatus("enabled");
         channelResponse.setMerchantId("TINDER");
         Shop shop = new Shop();
-        shop.setId("vfv");
+        shop.setId("my_shop_id");
         shop.setName("Tinder Indonesia");
         shop.setCountry("IN");
         shop.setSignatureKey("TEST_PRIVATE_KEY");

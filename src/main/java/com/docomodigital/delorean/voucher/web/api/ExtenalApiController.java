@@ -1,18 +1,16 @@
 package com.docomodigital.delorean.voucher.web.api;
 
-import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.service.VoucherService;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
-import com.docomodigital.delorean.voucher.web.api.model.*;
-import org.springframework.data.domain.Example;
+import com.docomodigital.delorean.voucher.web.api.model.ReserveRequest;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
+import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
 
-import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 /**

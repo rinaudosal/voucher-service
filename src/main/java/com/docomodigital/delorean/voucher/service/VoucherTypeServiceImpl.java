@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.service;
 
+import com.docomodigital.delorean.domain.resource.Shop;
 import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
@@ -15,6 +16,7 @@ import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -188,6 +190,15 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
         VoucherType voucherType = voucherTypeRepository.findByCode(type)
             .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR,
                 String.format("Voucher Type %s not found", type)));
+
+        // User not enabled to reserve
+        Shop shop = (Shop) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!shop.getId().equalsIgnoreCase(voucherType.getShopId())) {
+            throw new BadRequestException(Constants.UNAUTHORIZED_SHOP_NAME,
+                String.format("The shop %s is not enable to reserve vouchers of %s",
+                    shop.getId(),
+                    voucherType.getShopId()));
+        }
 
         if (!voucherType.getEnabled()) {
             throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", type));

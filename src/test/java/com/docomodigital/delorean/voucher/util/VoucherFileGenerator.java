@@ -14,12 +14,12 @@ import java.util.UUID;
 public class VoucherFileGenerator {
 
     public static void main(String[] args) throws Exception {
-        Writer fstream = new OutputStreamWriter(new FileOutputStream("DOCOMO_1_10000.csv"), StandardCharsets.UTF_8);
+        Writer fstream = new OutputStreamWriter(new FileOutputStream("DOCOMO_6_1000.csv"), StandardCharsets.UTF_8);
 
 //                fstream.append(code);
 //                fstream.append("\n");
 
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 1000; i++) {
             fstream.append(UUID.randomUUID().toString());
             fstream.append("\n");
         }
