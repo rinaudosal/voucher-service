@@ -5,6 +5,7 @@ import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.config.SignatureComponent;
 import com.docomodigital.microservice.api.logging.CachedHttpServletRequestWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -37,7 +38,14 @@ public class SignedRequestFilter extends OncePerRequestFilter {
 
         byte[] body = requestCacheWrapper.getContent().getBytes(StandardCharsets.UTF_8);
 
-        if (!signatureComponent.validateSignature(privateKey, signatureKey, body)) {
+        boolean requiredSignedSession = ((Shop) merchant.getPrincipal()).isRequireSignedSession();
+
+        if (requiredSignedSession && StringUtils.isBlank(signatureKey)) {
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), "No " + Constants.SIGNATURE_HEADER_NAME + " header provided");
+            return;
+        }
+
+        if (requiredSignedSession && !signatureComponent.validateSignature(privateKey, signatureKey, body)) {
             logger.error("Signature not valid");
             response.setStatus(HttpStatus.FORBIDDEN.value());
             return;

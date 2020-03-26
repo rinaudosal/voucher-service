@@ -75,6 +75,7 @@ public abstract class BaseVoucherIntegrationTest {
         shop.setName("Tinder Indonesia");
         shop.setCountry("IN");
         shop.setSignatureKey("TEST_SIGNATURE_KEY");
+        shop.setRequireSignedSession(true);
         channelResponse.setShop(shop);
 
         BDDMockito.given(merchantClient.getChannelByApiKey(eq("TEST_API_KEY")))

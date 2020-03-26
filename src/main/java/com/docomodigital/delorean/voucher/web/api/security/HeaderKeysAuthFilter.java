@@ -23,15 +23,9 @@ public class HeaderKeysAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             String apiKey = request.getHeader(Constants.API_KEY_HEADER);
-            String signatureKey = request.getHeader(Constants.SIGNATURE_HEADER_NAME);
 
             if (StringUtils.isBlank(apiKey)) {
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), "No " + Constants.API_KEY_HEADER + " header provided");
-                return;
-            }
-
-            if (StringUtils.isBlank(signatureKey)) {
-                response.sendError(HttpStatus.UNAUTHORIZED.value(), "No " + Constants.SIGNATURE_HEADER_NAME + " header provided");
                 return;
             }
 
