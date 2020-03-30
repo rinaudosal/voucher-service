@@ -564,6 +564,9 @@ components:
           example: TXN123445
 
     VoucherRequest:
+      required:
+        - amount
+        - currency
       allOf:
         - $ref: '#/components/schemas/ReserveRequest'
         - type: object

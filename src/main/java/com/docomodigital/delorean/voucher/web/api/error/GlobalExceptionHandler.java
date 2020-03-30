@@ -1,6 +1,5 @@
 package com.docomodigital.delorean.voucher.web.api.error;
 
-import com.docomodigital.delorean.voucher.config.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
@@ -56,6 +55,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<ErrorDetails> handleIllegalArgumentException(HttpMessageConversionException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(new ErrorDetails("MISSING_REQUEST_PARAM", exception.getLocalizedMessage()));
+            .body(new ErrorDetails(
+                "INVALID_REQUEST_PARAM", "The input request is invalid"));
     }
 }
