@@ -24,7 +24,7 @@ public class SignatureComponent {
         String bodyEncoded = Base64.getEncoder()
             .encodeToString(body);
         log.info(String.format("Body: %s", new String(body)));
-        log.info(String.format("BodyEncoded: %s", signatureKey));
+        log.info(String.format("BodyEncoded: %s", bodyEncoded));
 
         String content = String.format("%s.%s",
             privateKey,

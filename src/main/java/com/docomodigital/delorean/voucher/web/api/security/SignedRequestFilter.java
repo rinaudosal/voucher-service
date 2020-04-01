@@ -47,7 +47,7 @@ public class SignedRequestFilter extends OncePerRequestFilter {
 
         if (requiredSignedSession && !signatureComponent.validateSignature(privateKey, signatureKey, body)) {
             logger.error("Signature not valid");
-            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.sendError(HttpStatus.FORBIDDEN.value(), "Signature not valid");
             return;
         }
 
