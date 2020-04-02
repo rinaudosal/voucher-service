@@ -7,7 +7,7 @@ import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
-import com.docomodigital.delorean.voucher.web.controller.error.BadRequestException;
+import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;

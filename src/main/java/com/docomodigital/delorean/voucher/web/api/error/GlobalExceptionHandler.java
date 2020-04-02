@@ -1,4 +1,4 @@
-package com.docomodigital.delorean.voucher.web.controller.error;
+package com.docomodigital.delorean.voucher.web.api.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -5,7 +5,7 @@ import com.docomodigital.delorean.voucher.domain.VoucherConsumer;
 import com.docomodigital.delorean.voucher.domain.VoucherError;
 import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.service.upload.ConsumeVoucherService;
-import com.docomodigital.delorean.voucher.web.controller.error.BadRequestException;
+import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

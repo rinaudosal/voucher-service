@@ -9,7 +9,7 @@ import com.docomodigital.delorean.voucher.mapper.VoucherMapper;
 import com.docomodigital.delorean.voucher.mapper.VoucherTypeMapper;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
-import com.docomodigital.delorean.voucher.web.controller.error.BadRequestException;
+import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.ReserveRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;

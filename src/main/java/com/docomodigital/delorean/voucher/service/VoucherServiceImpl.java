@@ -11,7 +11,7 @@ import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherFactory;
 import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherStrategy;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
-import com.docomodigital.delorean.voucher.web.controller.error.BadRequestException;
+import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;

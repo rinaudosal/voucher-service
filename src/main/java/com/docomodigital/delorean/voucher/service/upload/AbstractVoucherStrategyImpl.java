@@ -4,7 +4,7 @@ import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
-import com.docomodigital.delorean.voucher.web.controller.error.BadRequestException;
+import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 
 import java.time.Clock;
 import java.time.LocalDate;

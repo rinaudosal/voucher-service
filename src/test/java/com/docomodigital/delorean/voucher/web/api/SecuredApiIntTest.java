@@ -1,4 +1,4 @@
-package com.docomodigital.delorean.voucher.web.controller;
+package com.docomodigital.delorean.voucher.web.api;
 
 import com.docomodigital.delorean.voucher.BaseVoucherIntegrationTest;
 import com.docomodigital.delorean.voucher.config.Constants;

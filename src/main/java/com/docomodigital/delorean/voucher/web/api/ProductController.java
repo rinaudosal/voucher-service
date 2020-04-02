@@ -1,7 +1,7 @@
-package com.docomodigital.delorean.voucher.web.controller;
+package com.docomodigital.delorean.voucher.web.api;
 
 import com.docomodigital.delorean.voucher.service.ProductService;
-import com.docomodigital.delorean.voucher.web.api.ProductsApi;
+import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +16,7 @@ import java.util.List;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Controller
+@Api(value = "product", tags = {"Voucher types configuration"})
 @RequestMapping("/v1")
 public class ProductController implements ProductsApi {
     private final ProductService productService;

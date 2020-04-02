@@ -1,11 +1,11 @@
-package com.docomodigital.delorean.voucher.web.controller;
+package com.docomodigital.delorean.voucher.web.api;
 
 import com.docomodigital.delorean.voucher.service.VoucherService;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
-import com.docomodigital.delorean.voucher.web.api.ExternalApi;
 import com.docomodigital.delorean.voucher.web.api.model.ReserveRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
+import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +22,7 @@ import java.util.Optional;
  */
 @Controller
 @RequestMapping("/v1")
+@Api(value = "external-api", tags = {"Voucher API (external)"})
 public class ExtenalApiController implements ExternalApi {
 
     private final VoucherTypeService voucherTypeService;

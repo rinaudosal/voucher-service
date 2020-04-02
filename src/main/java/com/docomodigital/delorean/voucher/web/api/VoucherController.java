@@ -1,10 +1,10 @@
-package com.docomodigital.delorean.voucher.web.controller;
+package com.docomodigital.delorean.voucher.web.api;
 
 import com.docomodigital.delorean.voucher.service.VoucherService;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
-import com.docomodigital.delorean.voucher.web.api.VoucherApi;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
+import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +21,7 @@ import java.util.List;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Controller
+@Api(value = "voucher-api", tags = {"Voucher Management API"})
 @RequestMapping("/v1")
 public class VoucherController implements VoucherApi {
 
