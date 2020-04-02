@@ -1,6 +1,7 @@
-package com.docomodigital.delorean.voucher.web.api;
+package com.docomodigital.delorean.voucher.web.controller;
 
 import com.docomodigital.delorean.voucher.service.ProductService;
+import com.docomodigital.delorean.voucher.web.api.ProductsApi;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

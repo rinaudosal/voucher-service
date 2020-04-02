@@ -41,7 +41,7 @@ public class LoggingAspect {
      */
     @Pointcut("within(com.docomodigital.delorean.voucher.repository..*)" +
         " || within(com.docomodigital.delorean.voucher.service..*)" +
-        " || within(com.docomodigital.delorean.voucher.web.api..*)"
+        " || within(com.docomodigital.delorean.voucher.web.controller..*)"
     )
     public void applicationPackagePointcut() {
         // Method is empty as this is just a Pointcut, the implementations are in the advices.

@@ -19,15 +19,6 @@ import java.util.Optional;
 public interface VoucherService {
 
     /**
-     * Create a single voucher by input parameters
-     *
-     * @param code the voucher code to upload
-     * @param type the voucher type of the voucher
-     * @return the voucher type created
-     */
-    Vouchers createVoucher(String code, String type);
-
-    /**
      * Upload a file containing list of files
      *
      * @param file            file to upload
@@ -62,4 +53,6 @@ public interface VoucherService {
     List<Vouchers> getVouchers(String typeId, String status, String userId, String merchantId, String transactionId);
 
     Optional<Vouchers> updateVoucher(String code, String typeId, VoucherRequest voucherRequest);
+
+    Optional<Vouchers> getVoucher(String code, String typeId);
 }

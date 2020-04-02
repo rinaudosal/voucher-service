@@ -1,4 +1,4 @@
-package com.docomodigital.delorean.voucher.web.api.security;
+package com.docomodigital.delorean.voucher.web.controller.security;
 
 import com.docomodigital.delorean.client.merchant.MerchantClient;
 import com.docomodigital.delorean.client.merchant.model.ChannelResponse;

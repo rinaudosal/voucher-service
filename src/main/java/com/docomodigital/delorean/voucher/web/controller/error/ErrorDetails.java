@@ -1,4 +1,4 @@
-package com.docomodigital.delorean.voucher.web.api.error;
+package com.docomodigital.delorean.voucher.web.controller.error;
 
 /**
  * 2020/01/28

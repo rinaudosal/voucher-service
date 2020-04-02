@@ -1,7 +1,8 @@
-package com.docomodigital.delorean.voucher.web.api;
+package com.docomodigital.delorean.voucher.web.controller;
 
 import com.docomodigital.delorean.voucher.service.VoucherService;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
+import com.docomodigital.delorean.voucher.web.api.VoucherApi;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -29,14 +28,6 @@ public class VoucherController implements VoucherApi {
 
     public VoucherController(VoucherService voucherService) {
         this.voucherService = voucherService;
-    }
-
-    @Override
-    public ResponseEntity<Vouchers> createVoucher(String code, @NotNull @Valid String type) {
-        Vouchers voucher = voucherService.createVoucher(code, type);
-
-        return ResponseEntity.created(URI.create("/v1/voucher/" + voucher.getCode()))
-            .body(voucher);
     }
 
     @Override

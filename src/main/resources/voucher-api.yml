@@ -33,12 +33,7 @@ paths:
         - ApiKeyAuth: []
           SignRequest: []
       parameters:
-        - in: path
-          name: typeId
-          description: the voucher type configured
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/TypeId'
       requestBody:
         content:
           application/json:
@@ -46,36 +41,18 @@ paths:
               $ref: '#/components/schemas/ReserveRequest'
       responses:
         '200':
-          description: Voucher reserved
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Vouchers'
-        '401':
-          description: Unauthorized requestor (X-signature header param is missed)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDetails'
-        '403':
-          description: Request forbidden (wrong X-signature header param or request is changed)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDetails'
+          $ref: '#/components/responses/VoucherResponse'
         '400':
-          description: wrong input type
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDetails'
-        '404':
-          description: no voucher ot typeId found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDetails'
+          $ref: '#/components/responses/ErrorDetails'
+        '401':
+          $ref: '#/components/responses/ErrorDetails'
+        '403':
+          $ref: '#/components/responses/ErrorDetails'
+
   /external/voucher-type/{typeId}/voucher/{code}:
+    parameters:
+      - $ref: '#/components/parameters/TypeId'
+      - $ref: '#/components/parameters/VoucherCode'
     patch:
       tags:
         - Voucher API (external)
@@ -85,56 +62,35 @@ paths:
       security:
         - ApiKeyAuth: []
           SignRequest: []
-      parameters:
-        - in: path
-          name: typeId
-          description: the voucher type configured
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: code
-          description: the vouchers code
-          required: true
-          schema:
-            type: string
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/VoucherRequest'
+        $ref: '#/components/requestBodies/VoucherRequest'
       responses:
         '200':
-          description: Voucher updated correctly
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Vouchers'
+          $ref: '#/components/responses/VoucherResponse'
         '401':
-          description: Unauthorized requestor (X-signature header param is missed)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDetails'
+          $ref: '#/components/responses/ErrorDetails'
         '403':
-          description: Request forbidden (wrong X-signature header param or request is changed)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDetails'
+          $ref: '#/components/responses/ErrorDetails'
         '400':
-          description: wrong input type
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDetails'
-        '404':
-          description: no voucher found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorDetails'
+          $ref: '#/components/responses/ErrorDetails'
+    get:
+      tags:
+        - Voucher API (external)
+      summary: get voucher
+      operationId: getVoucher
+      description: get the voucher data
+      security:
+        - ApiKeyAuth: []
+          SignRequest: []
+      responses:
+        '200':
+          $ref: '#/components/responses/VoucherResponse'
+        '401':
+          $ref: '#/components/responses/ErrorDetails'
+        '403':
+          $ref: '#/components/responses/ErrorDetails'
+        '400':
+          $ref: '#/components/responses/ErrorDetails'
 
   /voucher-type/available:
     get:
@@ -174,8 +130,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AvailableVoucherTypes'
-        '404':
-          description: voucher types not available
+        '400':
+          $ref: '#/components/responses/ErrorDetails'
 
   /products/available:
     get:
@@ -203,6 +159,7 @@ paths:
                 type: array
                 items:
                   type: string
+
   /voucher-type:
     get:
       tags:
@@ -270,48 +227,26 @@ paths:
               $ref: '#/components/schemas/VoucherTypes'
       responses:
         '201':
-          description: resulting Voucher type
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VoucherTypes'
+          $ref: '#/components/responses/VoucherTypeResponse'
 
   /voucher-type/{typeId}:
+    parameters:
+      - $ref: '#/components/parameters/TypeId'
     get:
       tags:
         - Voucher types configuration
       summary: search the voucher type by code
       operationId: getVoucherType
       description: voucher type with code passed
-      parameters:
-        - in: path
-          name: typeId
-          description: code of the voucher type
-          required: true
-          example: VOU1MONTH
-          schema:
-            type: string
       responses:
         '200':
-          description: resulting Voucher type
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VoucherTypes'
+          $ref: '#/components/responses/VoucherTypeResponse'
     put:
       tags:
         - Voucher types configuration
       summary: update the voucher type by code
       operationId: updateVoucherType
       description: voucher type with code passed
-      parameters:
-        - in: path
-          name: typeId
-          description: code of the voucher type
-          required: true
-          example: VOU1MONTH
-          schema:
-            type: string
       requestBody:
         required: true
         content:
@@ -320,39 +255,7 @@ paths:
               $ref: '#/components/schemas/VoucherTypes'
       responses:
         '200':
-          description: resulting Voucher type
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VoucherTypes'
-
-  /voucher/{code}:
-    post:
-      tags:
-        - Voucher API
-      summary: Create a new voucher code of specific type
-      operationId: createVoucher
-      description: create the voucher
-      parameters:
-        - in: path
-          name: code
-          description: the vouchers code
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: typeId
-          description: the voucher type configured
-          required: true
-          schema:
-            type: string
-      responses:
-        '201':
-          description: resulting Voucher type
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Vouchers'
+          $ref: '#/components/responses/VoucherTypeResponse'
 
   /voucher:
     get:
@@ -426,12 +329,8 @@ paths:
                 - file
                 - typeId
       responses:
-        '200':      # Response
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VoucherUpload'
+        '200':
+          $ref: '#/components/responses/UploadResponse'
 
   /voucher/redeem:
     post:
@@ -457,13 +356,58 @@ paths:
                 - typeId
       responses:
         '200':      # Response
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VoucherUpload'
+          $ref: '#/components/responses/UploadResponse'
 
 components:
+  parameters:
+    TypeId:
+      in: path
+      name: typeId
+      description: the voucher type configured
+      required: true
+      schema:
+        type: string
+    VoucherCode:
+      in: path
+      name: code
+      description: the vouchers code
+      required: true
+      schema:
+        type: string
+
+  requestBodies:
+    VoucherRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VoucherRequest'
+
+  responses:
+    ErrorDetails:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+    VoucherResponse:
+      description: Voucher retrieved correctly
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Vouchers'
+    VoucherTypeResponse:
+      description: resulting Voucher type
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VoucherTypes'
+    UploadResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VoucherUpload'
   schemas:
     AvailableVoucherTypes:
       type: object

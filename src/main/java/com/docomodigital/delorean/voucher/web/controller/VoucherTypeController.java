@@ -1,0 +1,87 @@
+package com.docomodigital.delorean.voucher.web.controller;
+
+import com.docomodigital.delorean.voucher.domain.VoucherType;
+import com.docomodigital.delorean.voucher.service.VoucherTypeService;
+import com.docomodigital.delorean.voucher.web.api.VoucherTypeApi;
+import org.springframework.data.domain.Example;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.validation.Valid;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Implementation of voucher-type endpoint to manage the voucher types
+ * 2020/01/23
+ *
+ * @author salvatore.rinaudo@docomodigital.com
+ */
+@Controller
+@RequestMapping("/v1")
+public class VoucherTypeController implements VoucherTypeApi {
+
+    private final VoucherTypeService voucherTypeService;
+
+    public VoucherTypeController(VoucherTypeService voucherTypeService) {
+        this.voucherTypeService = voucherTypeService;
+    }
+
+    @Override
+    public ResponseEntity<List<com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes>> getAvailableVoucherTypes(String merchant, String paymentProvider, String country) {
+
+        List<com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes> availableVoucherTypes = voucherTypeService.getAvailableVoucherTypes(merchant, paymentProvider, country);
+        if (availableVoucherTypes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(availableVoucherTypes);
+    }
+
+    @Override
+    public ResponseEntity<List<com.docomodigital.delorean.voucher.web.api.model.VoucherTypes>> getVoucherTypes(@Valid String merchant,
+                                                                                                               @Valid String country,
+                                                                                                               @Valid String paymentProvider,
+                                                                                                               @Valid String currency,
+                                                                                                               @Valid String shop,
+                                                                                                               @Valid Boolean enabled) {
+        VoucherType voucherType = new VoucherType();
+        voucherType.setCurrency(currency);
+        voucherType.setMerchantId(merchant);
+        voucherType.setPaymentProvider(paymentProvider);
+        voucherType.setCountry(country);
+        voucherType.setShopId(shop);
+        voucherType.setEnabled(enabled);
+
+        voucherType.setCreatedDate(null);
+        voucherType.setLastModifiedDate(null);
+        Example<VoucherType> example = Example.of(voucherType);
+        List<com.docomodigital.delorean.voucher.web.api.model.VoucherTypes> voucherTypes = voucherTypeService.getVoucherTypes(example);
+
+        return ResponseEntity.ok(voucherTypes);
+    }
+
+    @Override
+    public ResponseEntity<com.docomodigital.delorean.voucher.web.api.model.VoucherTypes> getVoucherType(String code) {
+        return ResponseEntity.of(voucherTypeService.getVoucherType(code));
+    }
+
+    @Override
+    public ResponseEntity<com.docomodigital.delorean.voucher.web.api.model.VoucherTypes> createVoucherType(@Valid com.docomodigital.delorean.voucher.web.api.model.VoucherTypes voucherTypes) {
+        com.docomodigital.delorean.voucher.web.api.model.VoucherTypes voucherType = voucherTypeService.createVoucherType(voucherTypes);
+
+        return ResponseEntity.created(URI.create("/v1/voucher-type/" + voucherType.getTypeId()))
+            .body(voucherType);
+    }
+
+    @Override
+    public ResponseEntity<com.docomodigital.delorean.voucher.web.api.model.VoucherTypes> updateVoucherType(String code, @Valid com.docomodigital.delorean.voucher.web.api.model.VoucherTypes voucherTypes) {
+        Optional<com.docomodigital.delorean.voucher.web.api.model.VoucherTypes> voucherType = voucherTypeService.updateVoucherType(code, voucherTypes);
+
+        return ResponseEntity.of(voucherType);
+    }
+
+}

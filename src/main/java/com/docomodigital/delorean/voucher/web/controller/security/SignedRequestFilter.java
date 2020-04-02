@@ -1,4 +1,4 @@
-package com.docomodigital.delorean.voucher.web.api.security;
+package com.docomodigital.delorean.voucher.web.controller.security;
 
 import com.docomodigital.delorean.domain.resource.Shop;
 import com.docomodigital.delorean.voucher.config.Constants;

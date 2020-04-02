@@ -14,13 +14,15 @@ transactionCode=$3
 transactionStatus=$4
 
 #check headers and body
-apiKey="5doxepApu54wyuZGGZCN2R"
+apiKey="5doxepApu54wyuZGGZCN2R" #stg telkomsel
+#apiKey="TfQpsC2YYFYJBcBiY6QNhx" #local
 bodyNotEncoded="{ \"amount\": 10, \"currency\": \"RP\", \"transactionId\": \"$transactionCode\", \"transactionStatus\": \"$transactionStatus\", \"userId\": \"MARIO\" }"
 bodyEncoded=$(printf '%s' "$bodyNotEncoded" | base64 -w 0 | cut -f1 -d' ')
 secretKey="b66ei9tv9p727ghwe049vv72351qi6rr7v24xh8e4h35te5krsx2o991jjh29s33"
 before=$secretKey'.'$bodyEncoded
 signatureKey="$(printf '%s' "$before" | sha256sum | cut -f1 -d' ')"
 host="http://stg-vch-tnd.docomodigital.com"
+#host="http://localhost:8085"
 
 echo "Calling Commit-Cancel voucher reserved API with voucher type $voucherType, voucher code $voucherCode, transactionCode $transactionCode and transactionStatus $transactionStatus"
 echo "Body Not Encoded: $bodyNotEncoded"

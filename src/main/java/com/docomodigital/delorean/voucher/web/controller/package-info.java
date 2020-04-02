@@ -3,4 +3,4 @@
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-package com.docomodigital.delorean.voucher.web.api;
+package com.docomodigital.delorean.voucher.web.controller;

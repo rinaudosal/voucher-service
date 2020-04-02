@@ -50,11 +50,27 @@ public class VoucherStepDefs extends StepDefs {
         saveVouchersFromDatatableData(datatable);
     }
 
-    @When("the operator wants to create the voucher {string} with type {string}")
-    public void theOperatorWantsToCreateTheVoucherCodeWithTypeType(String code, String type) throws Exception {
-        resultComponent.resultActions = mockMvc.perform(post("/v1/voucher/" + code)
-            .accept(MediaType.APPLICATION_JSON)
-            .param("typeId", type));
+    @When("the operator want to gets the voucher {string} with type {string}")
+    public void theOperatorWantToGetsTheVoucherCodeWithTypeTypeId(String code, String typeId) throws Exception {
+        resultComponent.resultActions = mockMvc.perform(get("/v1/external/voucher-type/" + typeId + "/voucher/" + code)
+            .header(Constants.API_KEY_HEADER, "TEST_API_KEY")
+            .header(Constants.SIGNATURE_HEADER_NAME, "TEST_SIGNATURE_KEY")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .accept(MediaType.APPLICATION_JSON));
+    }
+
+    @When("the operator want to gets the voucher without field {string}")
+    public void theOperatorWantToGetsTheVoucherWithoutFieldField(String field) throws Exception {
+        boolean typeId = field.equals("typeId");
+        String path = typeId ?
+            "/v1/external/voucher-type//voucher/VOUCHERPUR" :
+            "/v1/external/voucher-type/TIN1M/voucher/";
+
+        resultComponent.resultActions = mockMvc.perform(get(path)
+            .header(Constants.API_KEY_HEADER, "TEST_API_KEY")
+            .header(Constants.SIGNATURE_HEADER_NAME, "TEST_SIGNATURE_KEY")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .accept(MediaType.APPLICATION_JSON));
     }
 
     @When("the operator wants to {string} the voucher without field {string}")
@@ -83,23 +99,6 @@ public class VoucherStepDefs extends StepDefs {
                 .param("typeId", "TIN1M")
                 .characterEncoding("UTF-8"));
         }
-    }
-
-
-    @When("the operator wants to create the voucher without field {string}")
-    public void theOperatorWantsToCreateTheVoucherWithoutField(String missingField) throws Exception {
-        if (!missingField.equals("code")) {
-            resultComponent.resultActions = mockMvc.perform(post("/v1/voucher/VOUCHER21")
-                .accept(MediaType.APPLICATION_JSON));
-        }
-
-        if (!missingField.equals("typeId")) {
-            resultComponent.resultActions = mockMvc.perform(post("/v1/voucher/upload")
-                .accept(MediaType.APPLICATION_JSON)
-                .param("typeId", "TIN1M"));
-        }
-
-
     }
 
     @When("the operator wants to upload the voucher file with {int} vouchers for type {string}")
@@ -237,7 +236,6 @@ public class VoucherStepDefs extends StepDefs {
             .content(objectMapper.writeValueAsString(voucherRequest)));
     }
 
-
     @Then("the operator {string} the voucher {string} correctly for typeId {string}")
     public void theOperatorOperationTheVoucherCorrectlyForTypeIdTypeId(String operation, String voucherCode, String typeId) throws Exception {
         resultComponent.resultActions.andExpect(status().isOk())
@@ -267,18 +265,13 @@ public class VoucherStepDefs extends StepDefs {
         }
     }
 
-    @Then("the operator create the voucher correctly with {string} and type {string}")
-    public void theOperatorCreateTheVoucherCorrectlyWithCodeAndType(String code, String type) throws Exception {
-        resultComponent.resultActions.andExpect(status().isCreated())
+
+    @Then("the operator gets the voucher correctly with {string} and type {string}")
+    public void theOperatorGetsTheVoucherCorrectlyWithCodeAndTypeTypeId(String code, String typeId) throws Exception {
+        resultComponent.resultActions.andExpect(status().isOk())
             .andExpect(jsonPath("$.code").value(code))
-            .andExpect(jsonPath("$.typeId").value(type))
-            .andExpect(jsonPath("$.status").value("ACTIVE"))
-            .andExpect(jsonPath("$.userId").isEmpty())
-            .andExpect(jsonPath("$.transactionId").isEmpty())
-            .andExpect(jsonPath("$.transactionDate").isEmpty())
-            .andExpect(jsonPath("$.purchaseDate").isEmpty())
-            .andExpect(jsonPath("$.redeemDate").isEmpty())
-            .andExpect(jsonPath("$.activationUrl").isEmpty());
+            .andExpect(jsonPath("$.typeId").value(typeId));
+
     }
 
     @Then("the operator upload the {int} vouchers correctly for type {string}")

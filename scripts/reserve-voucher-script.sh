@@ -10,13 +10,15 @@ voucherType=$1
 transactionCode=$2
 
 #check headers and body
-apiKey="5doxepApu54wyuZGGZCN2R"
+apiKey="5doxepApu54wyuZGGZCN2R" #stg
+#apiKey="TfQpsC2YYFYJBcBiY6QNhx" #local
 bodyNotEncoded="{ \"transactionId\": \"$transactionCode\"}"
 bodyEncoded=$(printf '%s' "$bodyNotEncoded" | base64 | cut -f1 -d' ')
 secretKey="b66ei9tv9p727ghwe049vv72351qi6rr7v24xh8e4h35te5krsx2o991jjh29s33"
 before=$secretKey'.'$bodyEncoded
 signatureKey="$(printf '%s' "$before" | sha256sum | cut -f1 -d' ')"
 host="http://stg-vch-tnd.docomodigital.com"
+#host="http://localhost:8085"
 
 echo "Calling Reserve API with voucher-type $voucherType and transactionCode $transactionCode"
 echo "Body Not Encoded: $bodyNotEncoded"

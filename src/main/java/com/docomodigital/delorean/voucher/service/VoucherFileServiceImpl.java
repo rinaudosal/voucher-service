@@ -7,8 +7,8 @@ import com.docomodigital.delorean.voucher.repository.VoucherFileRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.service.upload.VoucherSingleProcessor;
-import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
+import com.docomodigital.delorean.voucher.web.controller.error.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,7 +77,7 @@ public class VoucherFileServiceImpl implements VoucherFileService {
                 String line = sc.nextLine();
                 lineNumber += 1;
 
-                if (lineNumber==1 && skipHeaderLine) continue;
+                if (lineNumber == 1 && skipHeaderLine) continue;
 
 
                 // this change from upload purchase or redeem
