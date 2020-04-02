@@ -84,7 +84,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
 
     private VoucherTypes getDto() {
         VoucherTypes voucherType = new VoucherTypes();
-        voucherType.setCode("my_code");
+        voucherType.setTypeId("my_code");
         voucherType.setProduct("Tinder 1 Month Gold");
         voucherType.setPromo("supersale");
         voucherType.setDescription("my_description");
@@ -140,7 +140,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
     }
 
     private void assertDto(VoucherTypes voucherTypes) {
-        Assertions.assertThat(voucherTypes.getCode()).isEqualTo("my_code");
+        Assertions.assertThat(voucherTypes.getTypeId()).isEqualTo("my_code");
         Assertions.assertThat(voucherTypes.getProduct()).isEqualTo("Tinder 1 Month Gold");
         Assertions.assertThat(voucherTypes.getPromo()).isEqualTo("supersale");
         Assertions.assertThat(voucherTypes.getDescription()).isEqualTo("my_description");

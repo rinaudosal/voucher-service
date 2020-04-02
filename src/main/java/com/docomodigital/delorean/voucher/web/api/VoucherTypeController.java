@@ -4,6 +4,7 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
+import io.swagger.annotations.Api;
 import org.springframework.data.domain.Example;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import java.util.Optional;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Controller
+@Api(value = "voucher-type", tags = {"Voucher types configuration"})
 @RequestMapping("/v1")
 public class VoucherTypeController implements VoucherTypeApi {
 
@@ -74,7 +76,7 @@ public class VoucherTypeController implements VoucherTypeApi {
     public ResponseEntity<VoucherTypes> createVoucherType(@Valid VoucherTypes voucherTypes) {
         VoucherTypes voucherType = voucherTypeService.createVoucherType(voucherTypes);
 
-        return ResponseEntity.created(URI.create("/v1/voucher-type/" + voucherType.getCode()))
+        return ResponseEntity.created(URI.create("/v1/voucher-type/" + voucherType.getTypeId()))
             .body(voucherType);
     }
 
@@ -84,4 +86,5 @@ public class VoucherTypeController implements VoucherTypeApi {
 
         return ResponseEntity.of(voucherType);
     }
+
 }

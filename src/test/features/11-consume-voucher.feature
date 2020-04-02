@@ -5,7 +5,7 @@ Feature: Consume Voucher
 
   Background:
     Given exist the voucher types:
-      | code    | product              | description           | Promo          | amount | currency | merchant | country | paymentProvider | shop  | enabled | startDate  | endDate    | priority |
+      | typeId  | product              | description           | Promo          | amount | currency | merchant | country | paymentProvider | shop  | enabled | startDate  | endDate    | priority |
       | TIN1M   | Tinder 1 Month Gold  | 1 Months              |                | 9.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/01/2020 | 31/12/2020 | 0        |
       | TIN1S   | Tinder 1 Month Gold  | 1 Months Sale!        | tnd1msale      | 7.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/02/2020 | 18/08/2020 | 1        |
       | TIN1SS  | Tinder 1 Month Gold  | 1 Months Super Sale!! | tnd1msupersale | 5.99   | INR      | tinder   | IN      | PAYTM           | shop1 | true    | 01/08/2020 | 15/08/2020 | 2        |
@@ -17,7 +17,7 @@ Feature: Consume Voucher
       | TIN6M   | Tinder 6 Month Gold  | 6 Months              |                | 39.99  | EUR      | tinder   | IN      | PAYTM           | shop3 | true    | 01/01/2020 | 21/04/2020 | 0        |
       | TIN9D   | Tinder 9 Month Gold  | Voucher not enabled   |                | 49.99  | EUR      | tinder   | US      | PAYTM           | shop3 | false   | 05/01/2020 | 21/02/2020 | 0        |
     And exist the voucher:
-      | code          | type    | status    |
+      | code          | typeId  | status    |
       | V1ACTIVE      | TIN1M   | ACTIVE    |
       | V1PURCHASED   | TIN1M   | PURCHASED |
       | V1SACTIVE     | TIN1S   | ACTIVE    |
@@ -33,7 +33,7 @@ Feature: Consume Voucher
 
   Scenario Outline: Voucher consumed
     And today is '<billedDate>'
-    When the operator wants to consume the voucher billed for merchant 'tinder', product 'Tinder 1 Month Gold', country 'IN' and paymentProvider 'PAYTM'
+    When the operator wants to consume the voucher billed for shop 'shop1', product 'Tinder 1 Month Gold', country 'IN' and paymentProvider 'PAYTM'
     Then the operator receive the voucher '<code>' correctly
     And notification will be sent to requestor without error
     Examples:
@@ -45,15 +45,15 @@ Feature: Consume Voucher
 
   Scenario Outline: Voucher consume in error
     And today is '<billedDate>'
-    When the operator wants to consume the voucher billed for merchant '<merchant>', product '<product>', country '<country>' and paymentProvider '<paymentProvider>' receiving the error code '<errorCode>' and description '<errorDescription>'
-    And notification will be sent to requestor with errors
+    When the operator wants to consume the voucher billed for shop '<shop>', product '<product>', country '<country>' and paymentProvider '<paymentProvider>' receiving the error code '<errorCode>' and description '<errorDescription>'
+    And notification will be sent to requestor with error code '<errorCode>' and description '<errorDescription>'
     Examples:
-      | merchant | product             | country | paymentProvider | billedDate | errorCode      | errorDescription                                                                                                  |
-      | bumble   | Tinder 1 Month Gold | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for merchant bumble, paymentProvider PAYTM, country IN and product Tinder 1 Month Gold  |
-      | tinder   | Tinder 122 Month    | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for merchant tinder, paymentProvider PAYTM, country IN and product Tinder 122 Month     |
-      | tinder   | Tinder 1 Month Gold | AU      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for merchant tinder, paymentProvider PAYTM, country AU and product Tinder 1 Month Gold  |
-      | tinder   | Tinder 1 Month Gold | IN      | VTCPAY          | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for merchant tinder, paymentProvider VTCPAY, country IN and product Tinder 1 Month Gold |
-      | tinder   | Tinder 1 Month Gold | IN      | PAYTM           | 31/12/2019 | TYPE_NOT_FOUND | No Voucher Type available for merchant tinder, paymentProvider PAYTM, country IN and product Tinder 1 Month Gold  |
-      | tinder   | Tinder 3 Month Gold | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for merchant tinder, paymentProvider PAYTM, country IN and product Tinder 3 Month Gold  |
-      | tinder   | Tinder 6 Month Gold | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for merchant tinder, paymentProvider PAYTM, country IN and product Tinder 6 Month Gold  |
-      | tinder   | Tinder 9 Month Gold | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for merchant tinder, paymentProvider PAYTM, country IN and product Tinder 9 Month Gold  |
+      | shop  | product             | country | paymentProvider | billedDate | errorCode      | errorDescription                                                                                              |
+      | shop3 | Tinder 1 Month Gold | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for shop shop3, paymentProvider PAYTM, country IN and product Tinder 1 Month Gold  |
+      | shop1 | Tinder 122 Month    | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for shop shop1, paymentProvider PAYTM, country IN and product Tinder 122 Month     |
+      | shop1 | Tinder 1 Month Gold | AU      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for shop shop1, paymentProvider PAYTM, country AU and product Tinder 1 Month Gold  |
+      | shop1 | Tinder 1 Month Gold | IN      | VTCPAY          | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for shop shop1, paymentProvider VTCPAY, country IN and product Tinder 1 Month Gold |
+      | shop1 | Tinder 1 Month Gold | IN      | PAYTM           | 31/12/2019 | TYPE_NOT_FOUND | No Voucher Type available for shop shop1, paymentProvider PAYTM, country IN and product Tinder 1 Month Gold  |
+      | shop1 | Tinder 3 Month Gold | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for shop shop1, paymentProvider PAYTM, country IN and product Tinder 3 Month Gold  |
+      | shop1 | Tinder 6 Month Gold | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for shop shop1, paymentProvider PAYTM, country IN and product Tinder 6 Month Gold  |
+      | shop1 | Tinder 9 Month Gold | IN      | PAYTM           | 31/01/2020 | TYPE_NOT_FOUND | No Voucher Type available for shop shop1, paymentProvider PAYTM, country IN and product Tinder 9 Month Gold  |

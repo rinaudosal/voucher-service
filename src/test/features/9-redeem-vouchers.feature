@@ -5,37 +5,37 @@ Feature: Redeem Voucher
 
   Background:
     Given exist the voucher types:
-      | code  | description | merchant | enabled | startDate  | endDate    |
-      | TIN1M | 1 Months    | tinder   | true    | 01/01/2020 | 31/12/2020 |
-      | TIN3M | 3 Months    | tinder   | true    | 01/01/2020 | 31/12/2020 |
-      | TIN3D | 3 Months D  | tinder   | false   | 01/01/2020 | 31/12/2020 |
-      | TIN3E | 3 Months E  | tinder   | false   | 01/01/2019 | 31/12/2019 |
+      | typeId | description | merchant | enabled | startDate  | endDate    |
+      | TIN1M  | 1 Months    | tinder   | true    | 01/01/2020 | 31/12/2020 |
+      | TIN3M  | 3 Months    | tinder   | true    | 01/01/2020 | 31/12/2020 |
+      | TIN3D  | 3 Months D  | tinder   | false   | 01/01/2020 | 31/12/2020 |
+      | TIN3E  | 3 Months E  | tinder   | false   | 01/01/2019 | 31/12/2019 |
     And exist the voucher:
-      | code     | type  | status    |
-      | VOU11PUR | TIN1M | PURCHASED |
-      | VOU12INA | TIN1M | INACTIVE  |
-      | VOU13ACT | TIN1M | ACTIVE    |
-      | VOU14RED | TIN1M | REDEEMED  |
-      | VOU31PUR | TIN3M | PURCHASED |
-      | VOU41PUR | TIN3D | PURCHASED |
-      | VOU51PUR | TIN3E | PURCHASED |
+      | code     | typeId | status    |
+      | VOU11PUR | TIN1M  | PURCHASED |
+      | VOU12INA | TIN1M  | INACTIVE  |
+      | VOU13ACT | TIN1M  | ACTIVE    |
+      | VOU14RED | TIN1M  | REDEEMED  |
+      | VOU31PUR | TIN3M  | PURCHASED |
+      | VOU41PUR | TIN3D  | PURCHASED |
+      | VOU51PUR | TIN3E  | PURCHASED |
 
   Scenario Outline: Voucher file redeemed
-    When the operator wants to 'redeem' the voucher file for the type '<type>' with the voucher '<voucher>'
-    Then the operator receive the voucher correctly for type '<type>'
+    When the operator wants to 'redeem' the voucher file for the type '<typeId>' with the voucher '<voucher>'
+    Then the operator receive the voucher correctly for type '<typeId>'
     Examples:
-      | type  | voucher  |
-      | TIN1M | VOU11PUR |
-      | TIN3M | VOU31PUR |
-      | TIN3D | VOU41PUR |
-      | TIN3E | VOU51PUR |
+      | typeId | voucher  |
+      | TIN1M  | VOU11PUR |
+      | TIN3M  | VOU31PUR |
+      | TIN3D  | VOU41PUR |
+      | TIN3E  | VOU51PUR |
 
   Scenario Outline: Voucher redeem in error
-    When the operator wants to 'redeem' the voucher file for the type '<type>' with the voucher '<voucher>'
+    When the operator wants to 'redeem' the voucher file for the type '<typeId>' with the voucher '<voucher>'
     Then the operator receive the error code '<errorCode>' and description '<errorDescription>'
     Examples:
-      | type  | voucher  | errorCode      | errorDescription             |
-      | PIPPO | VOU11PUR | TYPE_NOT_FOUND | Voucher Type PIPPO not found |
+      | typeId | voucher  | errorCode      | errorDescription             |
+      | PIPPO  | VOU11PUR | TYPE_NOT_FOUND | Voucher Type PIPPO not found |
 
   Scenario: Voucher redeem file malformed
     When the operator wants to 'redeem' the voucher file malformed for type 'TIN1M'
@@ -55,6 +55,6 @@ Feature: Redeem Voucher
     When the operator wants to 'redeem' the voucher without field '<field>'
     Then the operator receive the error 'Invalid request, parameter '<field>' is mandatory'
     Examples:
-      | field |
-      | type  |
-      | file  |
+      | field  |
+      | typeId |
+      | file   |

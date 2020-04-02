@@ -13,6 +13,8 @@ import java.util.Optional;
  */
 public interface VoucherTypeRepository extends MongoRepository<VoucherType, String> {
 
+    List<VoucherType> findAllVoucherTypeByProductIn(List<String> products);
+
     /**
      * Find specified voucher type by code (business id)
      *

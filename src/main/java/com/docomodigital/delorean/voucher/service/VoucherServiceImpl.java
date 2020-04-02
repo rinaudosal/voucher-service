@@ -1,5 +1,7 @@
 package com.docomodigital.delorean.voucher.service;
 
+import com.docomodigital.delorean.domain.resource.Shop;
+import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
@@ -10,19 +12,23 @@ import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherFactory;
 import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherStrategy;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +45,6 @@ public class VoucherServiceImpl implements VoucherService {
     private final VoucherFileService voucherFileService;
     private final VoucherMapper voucherMapper;
     private final Clock clock;
-    private static final String ENTITY_NAME = "Voucher Type ";
     private final ProcessVoucherFactory uploadFileFactory;
 
     public VoucherServiceImpl(VoucherRepository voucherRepository,
@@ -58,27 +63,6 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Vouchers createVoucher(String code, String type) {
-        ProcessVoucherStrategy processVoucherStrategy = uploadFileFactory.getUploadFileStrategy(UploadOperation.UPLOAD);
-
-        VoucherType voucherType = processVoucherStrategy.getValidVoucherType(type);
-
-        // check existing voucher code with the same merchant
-        List<String> typeIds = voucherTypeRepository.findAllByMerchantId(voucherType.getMerchantId()).stream()
-            .map(VoucherType::getId)
-            .collect(Collectors.toList());
-        if (voucherRepository.existsVoucherByCodeAndTypeIdIn(code, typeIds)) {
-            throw new BadRequestException("ALREADY_EXIST", "Voucher with code " + code + " already exist");
-        }
-
-        Vouchers vouchers = voucherMapper.toDto(
-            voucherRepository.save(
-                processVoucherStrategy.processLine(code, voucherType, null)));
-        vouchers.setType(type);
-        return vouchers;
-    }
-
-    @Override
     public VoucherUpload processVouchers(MultipartFile file, String type, UploadOperation uploadOperation) {
 
         voucherFileService.checkFileToUpload(file);
@@ -87,7 +71,7 @@ public class VoucherServiceImpl implements VoucherService {
 
         VoucherType voucherType = processVoucherStrategy.getValidVoucherType(type);
 
-        return voucherFileService.uploadFile(file, voucherType, uploadOperation, processVoucherStrategy::processLine);
+        return voucherFileService.uploadFile(file, voucherType, uploadOperation, processVoucherStrategy::processLine, processVoucherStrategy.skipHeaderLine());
     }
 
 
@@ -95,20 +79,21 @@ public class VoucherServiceImpl implements VoucherService {
     public Vouchers purchaseVoucher(String code, String transactionId, OffsetDateTime transactionDate, String userId) {
 
         Voucher voucher = voucherRepository.findByCode(code)
-            .orElseThrow(() -> new BadRequestException("VOUCHER_NOT_FOUND", "Voucher " + code + " not found"));
+            .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR, String.format("Voucher %s not found", code)));
+
         if (!VoucherStatus.ACTIVE.equals(voucher.getStatus())) {
-            throw new BadRequestException("VOUCHER_NOT_ACTIVE", "Voucher with code " + code + " is not in ACTIVE state");
+            throw new BadRequestException(Constants.VOUCHER_NOT_ACTIVE_ERROR, String.format("Voucher with code %s is not in ACTIVE state", code));
         }
 
         VoucherType voucherType = voucherTypeRepository.findById(voucher.getTypeId())
-            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", ENTITY_NAME + voucher.getTypeId() + " not found"));
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(Constants.VOUCHER_TYPE_NOT_FOUND_MESSAGE, voucher.getTypeId())));
 
         if (LocalDate.now(clock).isBefore(voucherType.getStartDate())) {
-            throw new BadRequestException("TYPE_NOT_YET_AVAILABLE", ENTITY_NAME + voucherType.getCode() + " is not yet available");
+            throw new BadRequestException(Constants.TYPE_NOT_YET_AVAILABLE_ERROR, String.format("Voucher Type %s is not yet available", voucherType.getCode()));
         }
 
         if (!voucherType.getEnabled()) {
-            throw new BadRequestException("TYPE_DISABLED", ENTITY_NAME + voucherType.getCode() + " is disabled");
+            throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", voucherType.getCode()));
         }
 
         voucher.setActivationUrl(voucherType.getBaseUrl() + voucher.getCode());
@@ -116,27 +101,32 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setUserId(userId);
         voucher.setTransactionId(transactionId);
         voucher.setTransactionDate(transactionDate.toLocalDateTime());
-        voucher.setPurchaseDate(LocalDate.now(clock));
+        voucher.setPurchaseDate(LocalDateTime.now(clock));
 
 
         return voucherMapper.toDto(voucherRepository.save(voucher));
     }
 
     @Override
-    public List<Vouchers> getVouchers(String typeCode, String status, String userId) {
+    public List<Vouchers> getVouchers(String typeCode, String status, String userId, String merchantId, String transactionId) {
         Voucher voucher = new Voucher();
         voucher.setUserId(StringUtils.trimToNull(userId));
-
+        voucher.setTransactionId(StringUtils.trimToNull(transactionId));
         if (StringUtils.isNotBlank(typeCode)) {
-            String typeId = voucherTypeRepository.findByCode(typeCode)
-                .map(VoucherType::getId)
-                .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", ENTITY_NAME + typeCode + " not found"));
-            voucher.setTypeId(StringUtils.trimToNull(typeId));
+
+            VoucherType type = voucherTypeRepository.findByCode(typeCode)
+                .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(Constants.VOUCHER_TYPE_NOT_FOUND_MESSAGE, typeCode)));
+
+            if (StringUtils.isBlank(merchantId) || type.getMerchantId().equals(merchantId)) {
+                voucher.setTypeId(StringUtils.trimToNull(type.getId()));
+            } else {
+                throw new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(Constants.VOUCHER_TYPE_NOT_FOUND_MESSAGE, typeCode));
+            }
         }
 
         if (StringUtils.isNotBlank(status)) {
             if (!EnumUtils.isValidEnum(VoucherStatus.class, status)) {
-                throw new BadRequestException("WRONG_STATUS", "Status " + status + " is wrong");
+                throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Status %s is wrong", status));
             }
             voucher.setStatus(VoucherStatus.valueOf(status));
         }
@@ -146,7 +136,106 @@ public class VoucherServiceImpl implements VoucherService {
         Example<Voucher> voucherExample = Example.of(voucher);
 
         return voucherRepository.findAll(voucherExample).stream()
-            .map(voucherMapper::toDto)
+            .map(v -> {
+                Vouchers vouchers = voucherMapper.toDto(v);
+                vouchers.setTypeId(voucherTypeRepository.findById(v.getTypeId()).map(VoucherType::getCode).orElse(null));
+                return vouchers;
+            })
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Vouchers> updateVoucher(String code, String typeId, VoucherRequest voucherRequest) {
+        VoucherType voucherType = voucherTypeRepository.findByCode(typeId)
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(Constants.VOUCHER_TYPE_NOT_FOUND_MESSAGE, typeId)));
+
+        // User not enabled to reserve
+        Shop shop = (Shop) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!shop.getId().equalsIgnoreCase(voucherType.getShopId())) {
+            throw new BadRequestException(Constants.UNAUTHORIZED_SHOP_NAME,
+                String.format("The shop %s is not enable to reserve vouchers of %s",
+                    shop.getId(),
+                    voucherType.getShopId()));
+        }
+
+        if (!voucherType.getEnabled()) {
+            throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", typeId));
+        }
+
+        Voucher voucher = voucherRepository.findByCode(code)
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format("Voucher %s not found for type %s", code, typeId)));
+
+        if (!VoucherStatus.RESERVED.equals(voucher.getStatus())) {
+            throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Voucher with code %s is not in RESERVED state", code));
+        }
+
+        if (!voucherRequest.getTransactionId().equalsIgnoreCase(voucher.getTransactionId())) {
+            throw new BadRequestException(Constants.WRONG_TRANSACTION_ID_ERROR,
+                String.format("Transaction id %s is different of reserved %s",
+                    voucherRequest.getTransactionId(),
+                    voucher.getTransactionId()));
+        }
+
+        if (VoucherRequest.TransactionStatusEnum.SUCCESS.equals(voucherRequest.getTransactionStatus())) {
+            voucher.setTransactionId(voucherRequest.getTransactionId());
+            if (voucherRequest.getTransactionDate() != null) {
+                voucher.setTransactionDate(voucherRequest.getTransactionDate().toLocalDateTime());
+            }
+            voucher.setStatus(VoucherStatus.PURCHASED);
+            voucher.setPurchaseDate(LocalDateTime.now(clock));
+            voucher.setAmount(voucherRequest.getAmount());
+            voucher.setCurrency(voucherRequest.getCurrency());
+            voucher.setUserId(voucherRequest.getUserId());
+        } else {
+            voucher.setTransactionId(null);
+            voucher.setTransactionDate(null);
+            voucher.setAmount(null);
+            voucher.setCurrency(null);
+            voucher.setStatus(VoucherStatus.ACTIVE);
+            voucher.setPurchaseDate(null);
+            voucher.setReserveDate(null);
+            voucher.setUserId(null);
+            voucher.setActivationUrl(null);
+        }
+
+        return Optional.of(voucherRepository.save(voucher))
+            .map(v -> {
+                Vouchers vouchers = voucherMapper.toDto(v);
+                vouchers.setTypeId(typeId);
+
+                return vouchers;
+            });
+    }
+
+    @Override
+    public Optional<Vouchers> getVoucher(String code, String typeId) {
+        VoucherType voucherType = voucherTypeRepository.findByCode(typeId)
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(Constants.VOUCHER_TYPE_NOT_FOUND_MESSAGE, typeId)));
+
+        // User not enabled to reserve
+        Shop shop = (Shop) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!shop.getId().equalsIgnoreCase(voucherType.getShopId())) {
+            throw new BadRequestException(Constants.UNAUTHORIZED_SHOP_NAME,
+                String.format("The shop %s is not enable to get vouchers of %s",
+                    shop.getId(),
+                    voucherType.getShopId()));
+        }
+
+        Voucher voucher = voucherRepository.findByCodeAndTypeId(code, voucherType.getId())
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format("Voucher %s not found for type %s", code, typeId)));
+
+        if (!(VoucherStatus.PURCHASED.equals(voucher.getStatus()) ||
+            VoucherStatus.RESERVED.equals(voucher.getStatus()) ||
+            VoucherStatus.REDEEMED.equals(voucher.getStatus()))) {
+            throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Voucher with code %s is not Billed", code));
+        }
+
+        return Optional.of(voucher)
+            .map(v -> {
+                Vouchers vouchers = voucherMapper.toDto(v);
+                vouchers.setTypeId(typeId);
+
+                return vouchers;
+            });
     }
 }

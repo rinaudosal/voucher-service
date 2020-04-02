@@ -71,4 +71,9 @@ server:
 info:
   # Comma separated list of profiles that will trigger the ribbon to show
   display-ribbon-on-profiles: 'dev'
+  
+merchant-client:
+   url: http://dev-mch-dlr.docomodigital.com
+   connectionTimeout: 10000
+   readTimeout: 10000 
 

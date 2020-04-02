@@ -84,7 +84,6 @@ public class VoucherFileMapperTest extends BaseUnitTest {
 
     @Test
     public void assertVoucherFileOperation() {
-        Assertions.assertThat(target.operationEnumToUploadOperation(VoucherUpload.OperationEnum.PURCHASE)).isEqualTo(UploadOperation.PURCHASE);
         Assertions.assertThat(target.operationEnumToUploadOperation(VoucherUpload.OperationEnum.REDEEM)).isEqualTo(UploadOperation.REDEEM);
         Assertions.assertThat(target.operationEnumToUploadOperation(VoucherUpload.OperationEnum.UPLOAD)).isEqualTo(UploadOperation.UPLOAD);
         Assertions.assertThat(target.operationEnumToUploadOperation(null)).isNull();
@@ -92,7 +91,6 @@ public class VoucherFileMapperTest extends BaseUnitTest {
 
     @Test
     public void assertVoucherUploadOperation() {
-        Assertions.assertThat(target.uploadOperationToOperationEnum(UploadOperation.PURCHASE)).isEqualTo(VoucherUpload.OperationEnum.PURCHASE);
         Assertions.assertThat(target.uploadOperationToOperationEnum(UploadOperation.REDEEM)).isEqualTo(VoucherUpload.OperationEnum.REDEEM);
         Assertions.assertThat(target.uploadOperationToOperationEnum(UploadOperation.UPLOAD)).isEqualTo(VoucherUpload.OperationEnum.UPLOAD);
         Assertions.assertThat(target.uploadOperationToOperationEnum(null)).isNull();
@@ -102,9 +100,9 @@ public class VoucherFileMapperTest extends BaseUnitTest {
     private VoucherUpload getDto() {
         VoucherUpload voucherUpload = new VoucherUpload();
         voucherUpload.setStatus(VoucherUpload.StatusEnum.UPLOADED);
-        voucherUpload.setOperation(VoucherUpload.OperationEnum.PURCHASE);
+        voucherUpload.setOperation(VoucherUpload.OperationEnum.REDEEM);
         voucherUpload.setFilename("my_filename");
-        voucherUpload.setType("my_code");
+        voucherUpload.setTypeId("my_code");
         voucherUpload.setTotal(42);
         voucherUpload.setUploaded(42);
         voucherUpload.setErrors(42);
@@ -122,7 +120,7 @@ public class VoucherFileMapperTest extends BaseUnitTest {
         voucherFile.setType(voucherType);
 
         voucherFile.setStatus(VoucherFileStatus.UPLOADED);
-        voucherFile.setOperation(UploadOperation.PURCHASE);
+        voucherFile.setOperation(UploadOperation.REDEEM);
         voucherFile.setTotal(42);
         voucherFile.setUploaded(42);
         voucherFile.setErrors(42);
@@ -135,7 +133,7 @@ public class VoucherFileMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherFile.getFilename()).isEqualTo("my_filename");
         Assertions.assertThat(voucherFile.getType().getCode()).isEqualTo("my_code");
         Assertions.assertThat(voucherFile.getStatus()).isEqualTo(VoucherFileStatus.UPLOADED);
-        Assertions.assertThat(voucherFile.getOperation()).isEqualTo(UploadOperation.PURCHASE);
+        Assertions.assertThat(voucherFile.getOperation()).isEqualTo(UploadOperation.REDEEM);
         Assertions.assertThat(voucherFile.getTotal()).isEqualTo(42);
         Assertions.assertThat(voucherFile.getUploaded()).isEqualTo(42);
         Assertions.assertThat(voucherFile.getErrors()).isEqualTo(42);
@@ -143,9 +141,9 @@ public class VoucherFileMapperTest extends BaseUnitTest {
 
     private void assertDto(VoucherUpload voucherUpload) {
         Assertions.assertThat(voucherUpload.getStatus()).isEqualTo(VoucherUpload.StatusEnum.UPLOADED);
-        Assertions.assertThat(voucherUpload.getOperation()).isEqualTo(VoucherUpload.OperationEnum.PURCHASE);
+        Assertions.assertThat(voucherUpload.getOperation()).isEqualTo(VoucherUpload.OperationEnum.REDEEM);
         Assertions.assertThat(voucherUpload.getFilename()).isEqualTo("my_filename");
-        Assertions.assertThat(voucherUpload.getType()).isEqualTo("my_code");
+        Assertions.assertThat(voucherUpload.getTypeId()).isEqualTo("my_code");
         Assertions.assertThat(voucherUpload.getTotal()).isEqualTo(42);
         Assertions.assertThat(voucherUpload.getUploaded()).isEqualTo(42);
         Assertions.assertThat(voucherUpload.getErrors()).isEqualTo(42);

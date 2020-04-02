@@ -8,5 +8,5 @@ package com.docomodigital.delorean.voucher.domain;
  * @author salvatore.rinaudo@docomodigital.com
  */
 public enum VoucherStatus {
-    ACTIVE, PURCHASED, REDEEMED, INACTIVE;
+    ACTIVE, PURCHASED, REDEEMED, INACTIVE, RESERVED;
 }

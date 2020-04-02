@@ -4,16 +4,14 @@ import com.docomodigital.delorean.voucher.service.VoucherService;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
+import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
-import java.net.URI;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -23,6 +21,7 @@ import java.util.List;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Controller
+@Api(value = "voucher-api", tags = {"Voucher Management API"})
 @RequestMapping("/v1")
 public class VoucherController implements VoucherApi {
 
@@ -33,16 +32,13 @@ public class VoucherController implements VoucherApi {
     }
 
     @Override
-    public ResponseEntity<Vouchers> createVoucher(String code, @NotNull @Valid String type) {
-        Vouchers voucher = voucherService.createVoucher(code, type);
-
-        return ResponseEntity.created(URI.create("/v1/voucher/" + voucher.getCode()))
-            .body(voucher);
-    }
-
-    @Override
-    public ResponseEntity<List<Vouchers>> getVouchers(@Valid String typeId, @Valid String status, @Valid String userId) {
-        return ResponseEntity.ok(voucherService.getVouchers(typeId, status, userId));
+    public ResponseEntity<List<Vouchers>> getVouchers(
+        @Valid String typeId,
+        @Valid String status,
+        @Valid String userId,
+        @Valid String merchantId,
+        @Valid String transactionId) {
+        return ResponseEntity.ok(voucherService.getVouchers(typeId, status, userId, merchantId, transactionId));
     }
 
     @Override
@@ -57,19 +53,5 @@ public class VoucherController implements VoucherApi {
         VoucherUpload vouchersUploaded = voucherService.processVouchers(file, type, UploadOperation.REDEEM);
 
         return ResponseEntity.ok(vouchersUploaded);
-    }
-
-    @Override
-    public ResponseEntity<VoucherUpload> purchaseFileVoucher(@Valid MultipartFile file, String type) {
-        VoucherUpload vouchersUploaded = voucherService.processVouchers(file, type, UploadOperation.PURCHASE);
-
-        return ResponseEntity.ok(vouchersUploaded);
-    }
-
-    @Override
-    public ResponseEntity<Vouchers> purchaseVoucher(String code, @NotNull @Valid String transactionId, @Valid OffsetDateTime transactionDate, @Valid String userId) {
-        Vouchers voucher = voucherService.purchaseVoucher(code, transactionId, transactionDate, userId);
-
-        return ResponseEntity.ok(voucher);
     }
 }

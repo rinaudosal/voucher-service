@@ -1,12 +1,14 @@
 package com.docomodigital.delorean.voucher.service;
 
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * * Business class that manage the vouchers
@@ -15,15 +17,6 @@ import java.util.List;
  * @author salvatore.rinaudo@docomodigital.com
  */
 public interface VoucherService {
-
-    /**
-     * Create a single voucher by input parameters
-     *
-     * @param code the voucher code to upload
-     * @param type the voucher type of the voucher
-     * @return the voucher type created
-     */
-    Vouchers createVoucher(String code, String type);
 
     /**
      * Upload a file containing list of files
@@ -50,10 +43,16 @@ public interface VoucherService {
     /**
      * Retrieve list of vouchers with the filters requested
      *
-     * @param typeId id of the voucher type
-     * @param status status would be find
-     * @param userId user would be find
+     * @param typeId        id of the voucher type
+     * @param status        status would be find
+     * @param userId        user would be find
+     * @param merchantId    merchant would be find
+     * @param transactionId transaction would be find
      * @return vouchers found
      */
-    List<Vouchers> getVouchers(String typeId, String status, String userId);
+    List<Vouchers> getVouchers(String typeId, String status, String userId, String merchantId, String transactionId);
+
+    Optional<Vouchers> updateVoucher(String code, String typeId, VoucherRequest voucherRequest);
+
+    Optional<Vouchers> getVoucher(String code, String typeId);
 }

@@ -12,6 +12,7 @@
           "type": "Product",
           "id": "7",
           "attributes": {
+            "code": "VDFAU 1 Month",
             "environment": {
               "type": "Environment",
               "id": "11",
@@ -59,10 +60,10 @@
         },
         "dateStarted": "2020-01-20 07:59:29",
         "dateLastUpdated": "2020-01-20 07:59:29",
-        "responseType": "SUBSCRIBE",
-        "status": null,
-        "subscriptionStatus": "SUBSCRIBED",
-        "billingStatus": "BILLED",
+        "responseType": "PURCHASE",
+        "status": "BILLED",
+        "subscriptionStatus": null,
+        "billingStatus": null,
         "mainErrorCode": null,
         "detailedErrorCode": null,
         "errorDescription": null,
@@ -73,7 +74,7 @@
         "subscriptions": null,
         "requestId": "dc4c3185-a7b8-49b5-80fb-2aa3672865d6",
         "targetTransaction": null,
-        "amountCharged": 0,
+        "amountCharged": "0.01",
         "amountRefunded": null,
         "amountCredited": null,
         "promo": {

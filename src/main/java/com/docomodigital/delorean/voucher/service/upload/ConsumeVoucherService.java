@@ -2,7 +2,6 @@ package com.docomodigital.delorean.voucher.service.upload;
 
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherConsumer;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * 2020/02/07
@@ -32,6 +31,6 @@ public interface ConsumeVoucherService {
      *
      * @param voucher the voucher billed
      */
-    void sendNotification(Voucher voucher) throws JsonProcessingException;
+    void sendNotification(Voucher voucher) throws Exception; //NOSONAR
 
 }

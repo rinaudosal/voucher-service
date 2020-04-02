@@ -7,7 +7,6 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
@@ -19,7 +18,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -53,13 +51,15 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         DocumentContext jsonContext = JsonPath.using(conf).parse(message);
         VoucherConsumer voucherConsumer = new VoucherConsumer();
         voucherConsumer.setMerchantId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['merchantCode']"));
+        voucherConsumer.setShopId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['siteCode']"));
         voucherConsumer.setPaymentProvider(jsonContext.read("$['attributes'].['transaction'].['attributes'].['telco'].['attributes'].['code']"));
-        voucherConsumer.setProductId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['type']"));
+        voucherConsumer.setProductId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['code']"));
 
         voucherConsumer.setCountry(jsonContext.read("$['attributes'].['transaction'].['attributes'].['product'].['attributes'].['country'].['attributes'].['code']"));
         voucherConsumer.setUserId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['userId'].['attributes'].['customerId']"));
         voucherConsumer.setTransactionId(jsonContext.read("$['attributes'].['transaction'].['attributes'].['transactionCode']"));
-        voucherConsumer.setBillingStatus(jsonContext.read("$['attributes'].['transaction'].['attributes'].['billingStatus']"));
+        voucherConsumer.setRequestId(jsonContext.read("$['attributes'].['code']"));
+        voucherConsumer.setBillingStatus(jsonContext.read("$['attributes'].['transaction'].['attributes'].['status']"));
 
         String transactionDateString = jsonContext.read("$['attributes'].['transaction'].['attributes'].['dateLastUpdated']");
         if (StringUtils.isNotBlank(transactionDateString)) {
@@ -76,11 +76,11 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         }
 
         VoucherType voucherType = Optional.ofNullable(voucherTypeService.getVoucherType(
-            voucherConsumer.getMerchantId(),
+            voucherConsumer.getShopId(),
             voucherConsumer.getPaymentProvider(),
             voucherConsumer.getCountry(),
             voucherConsumer.getProductId()))
-            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", "Voucher type not found"));
+            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", "Voucher Type not found"));
 
         Voucher voucherToBeConsume = voucherRepository.findFirstByTypeIdAndStatusEquals(voucherType.getId(), VoucherStatus.ACTIVE)
             .orElseThrow(() -> new BadRequestException("VOUCHER_NOT_FOUND", "Voucher with type " + voucherType.getId() + " and status ACTIVE not found"));
@@ -88,18 +88,22 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         voucherToBeConsume.setStatus(VoucherStatus.PURCHASED);
         voucherToBeConsume.setUserId(voucherConsumer.getUserId());
         voucherToBeConsume.setTransactionId(voucherConsumer.getTransactionId());
+        voucherToBeConsume.setRequestId(voucherConsumer.getRequestId());
         voucherToBeConsume.setTransactionDate(voucherConsumer.getTransactionDate());
-        voucherToBeConsume.setPurchaseDate(LocalDate.now(clock));
+        voucherToBeConsume.setPurchaseDate(LocalDateTime.now(clock));
         voucherToBeConsume.setActivationUrl(voucherType.getBaseUrl() + voucherToBeConsume.getCode());
 
         return voucherRepository.save(voucherToBeConsume);
     }
 
     @Override
-    public void sendNotification(Voucher voucher) throws JsonProcessingException {
+    public void sendNotification(Voucher voucher) throws Exception {
         String voucherString = new ObjectMapper().writeValueAsString(voucher);
         log.info(String.format("Sending response %s to tinder-plugin2api queue...", voucherString));
-        rabbitTemplate.convertAndSend("tinder-plugin2api", voucherString);
+        rabbitTemplate.convertAndSend("tinder-plugin2api", voucherString, m -> {
+            m.getMessageProperties().getHeaders().put("pluginCallCode", voucher.getRequestId());
+            return m;
+        });
         log.info("Message sent successfully");
     }
 }

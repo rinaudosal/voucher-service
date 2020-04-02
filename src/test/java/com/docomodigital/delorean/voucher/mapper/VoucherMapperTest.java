@@ -7,8 +7,8 @@ import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -26,6 +26,8 @@ public class VoucherMapperTest extends BaseUnitTest {
     @Before
     public void setUp() {
         target = new VoucherMapperImpl();
+
+        ReflectionTestUtils.setField(target, "commonMapper", new CommonMapperImpl());
     }
 
     @Test
@@ -37,26 +39,26 @@ public class VoucherMapperTest extends BaseUnitTest {
 
     @Test
     public void assertStatusEnum() {
-        Assertions.assertThat(((VoucherMapperImpl)target).statusEnumToVoucherStatus(Vouchers.StatusEnum.ACTIVE)).isEqualTo(VoucherStatus.ACTIVE);
-        Assertions.assertThat(((VoucherMapperImpl)target).statusEnumToVoucherStatus(Vouchers.StatusEnum.INACTIVE)).isEqualTo(VoucherStatus.INACTIVE);
-        Assertions.assertThat(((VoucherMapperImpl)target).statusEnumToVoucherStatus(Vouchers.StatusEnum.PURCHASED)).isEqualTo(VoucherStatus.PURCHASED);
-        Assertions.assertThat(((VoucherMapperImpl)target).statusEnumToVoucherStatus(Vouchers.StatusEnum.REDEEMED)).isEqualTo(VoucherStatus.REDEEMED);
-        Assertions.assertThat(((VoucherMapperImpl)target).statusEnumToVoucherStatus(null)).isNull();
+        Assertions.assertThat(((VoucherMapperImpl) target).statusEnumToVoucherStatus(Vouchers.StatusEnum.ACTIVE)).isEqualTo(VoucherStatus.ACTIVE);
+        Assertions.assertThat(((VoucherMapperImpl) target).statusEnumToVoucherStatus(Vouchers.StatusEnum.INACTIVE)).isEqualTo(VoucherStatus.INACTIVE);
+        Assertions.assertThat(((VoucherMapperImpl) target).statusEnumToVoucherStatus(Vouchers.StatusEnum.PURCHASED)).isEqualTo(VoucherStatus.PURCHASED);
+        Assertions.assertThat(((VoucherMapperImpl) target).statusEnumToVoucherStatus(Vouchers.StatusEnum.REDEEMED)).isEqualTo(VoucherStatus.REDEEMED);
+        Assertions.assertThat(((VoucherMapperImpl) target).statusEnumToVoucherStatus(null)).isNull();
     }
 
     @Test
     public void assertVoucherStatus() {
-        Assertions.assertThat(((VoucherMapperImpl)target).voucherStatusToStatusEnum(VoucherStatus.ACTIVE)).isEqualTo(Vouchers.StatusEnum.ACTIVE);
-        Assertions.assertThat(((VoucherMapperImpl)target).voucherStatusToStatusEnum(VoucherStatus.INACTIVE)).isEqualTo(Vouchers.StatusEnum.INACTIVE);
-        Assertions.assertThat(((VoucherMapperImpl)target).voucherStatusToStatusEnum(VoucherStatus.PURCHASED)).isEqualTo(Vouchers.StatusEnum.PURCHASED);
-        Assertions.assertThat(((VoucherMapperImpl)target).voucherStatusToStatusEnum(VoucherStatus.REDEEMED)).isEqualTo(Vouchers.StatusEnum.REDEEMED);
-        Assertions.assertThat(((VoucherMapperImpl)target).voucherStatusToStatusEnum(null)).isNull();
+        Assertions.assertThat(((VoucherMapperImpl) target).voucherStatusToStatusEnum(VoucherStatus.ACTIVE)).isEqualTo(Vouchers.StatusEnum.ACTIVE);
+        Assertions.assertThat(((VoucherMapperImpl) target).voucherStatusToStatusEnum(VoucherStatus.INACTIVE)).isEqualTo(Vouchers.StatusEnum.INACTIVE);
+        Assertions.assertThat(((VoucherMapperImpl) target).voucherStatusToStatusEnum(VoucherStatus.PURCHASED)).isEqualTo(Vouchers.StatusEnum.PURCHASED);
+        Assertions.assertThat(((VoucherMapperImpl) target).voucherStatusToStatusEnum(VoucherStatus.REDEEMED)).isEqualTo(Vouchers.StatusEnum.REDEEMED);
+        Assertions.assertThat(((VoucherMapperImpl) target).voucherStatusToStatusEnum(null)).isNull();
     }
 
     @Test
     public void assertNullMapLocalDate() {
-        Assertions.assertThat(target.map((LocalDateTime)null)).isNull();
-        Assertions.assertThat(target.map((OffsetDateTime) null)).isNull();
+        Assertions.assertThat(new CommonMapperImpl().map((LocalDateTime) null)).isNull();
+        Assertions.assertThat(new CommonMapperImpl().map((OffsetDateTime) null)).isNull();
     }
 
     @Test
@@ -96,13 +98,14 @@ public class VoucherMapperTest extends BaseUnitTest {
     private Vouchers getDto() {
         Vouchers voucher = new Vouchers();
         voucher.setCode("my_code");
-        voucher.setType("my_type");
+        voucher.setTypeId("my_type");
         voucher.setStatus(Vouchers.StatusEnum.ACTIVE);
         voucher.setUserId("my_user_id");
         voucher.setTransactionId("my_transaction_id");
         voucher.setTransactionDate(OffsetDateTime.of(LocalDateTime.of(2020, 2, 2, 22, 22), ZoneOffset.UTC));
-        voucher.setPurchaseDate(LocalDate.of(2020, 2, 2));
-        voucher.setRedeemDate(LocalDate.of(2020, 2, 2));
+        voucher.setReserveDate(LocalDateTime.of(2020, 2, 2, 12, 12).atOffset(ZoneOffset.UTC));
+        voucher.setPurchaseDate(LocalDateTime.of(2020, 2, 2, 12, 12).atOffset(ZoneOffset.UTC));
+        voucher.setRedeemDate(LocalDateTime.of(2020, 2, 2, 12, 12).atOffset(ZoneOffset.UTC));
         voucher.setActivationUrl("www.test.com");
 
         return voucher;
@@ -117,8 +120,9 @@ public class VoucherMapperTest extends BaseUnitTest {
         voucher.setUserId("my_user_id");
         voucher.setTransactionId("my_transaction_id");
         voucher.setTransactionDate(LocalDateTime.of(2020, 2, 2, 22, 22));
-        voucher.setPurchaseDate(LocalDate.of(2020, 2, 2));
-        voucher.setRedeemDate(LocalDate.of(2020, 2, 2));
+        voucher.setReserveDate(LocalDateTime.of(2020, 2, 2, 12, 12));
+        voucher.setPurchaseDate(LocalDateTime.of(2020, 2, 2, 12, 12));
+        voucher.setRedeemDate(LocalDateTime.of(2020, 2, 2, 12, 12));
         voucher.setActivationUrl("www.test.com");
         voucher.setVoucherFileId("my_file_id");
 
@@ -133,21 +137,23 @@ public class VoucherMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucher.getUserId()).isEqualTo("my_user_id");
         Assertions.assertThat(voucher.getTransactionId()).isEqualTo("my_transaction_id");
         Assertions.assertThat(voucher.getTransactionDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 22, 22));
-        Assertions.assertThat(voucher.getPurchaseDate()).isEqualTo(LocalDate.of(2020, 2, 2));
-        Assertions.assertThat(voucher.getRedeemDate()).isEqualTo(LocalDate.of(2020, 2, 2));
+        Assertions.assertThat(voucher.getReserveDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12));
+        Assertions.assertThat(voucher.getPurchaseDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12));
+        Assertions.assertThat(voucher.getRedeemDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12));
         Assertions.assertThat(voucher.getActivationUrl()).isEqualTo("www.test.com");
         Assertions.assertThat(voucher.getVoucherFileId()).isNull();
     }
 
     private void assertDto(Vouchers vouchers) {
         Assertions.assertThat(vouchers.getCode()).isEqualTo("my_code");
-        Assertions.assertThat(vouchers.getType()).isEqualTo("my_type_id");
+        Assertions.assertThat(vouchers.getTypeId()).isEqualTo("my_type_id");
         Assertions.assertThat(vouchers.getStatus()).isEqualTo(Vouchers.StatusEnum.ACTIVE);
         Assertions.assertThat(vouchers.getUserId()).isEqualTo("my_user_id");
         Assertions.assertThat(vouchers.getTransactionId()).isEqualTo("my_transaction_id");
         Assertions.assertThat(vouchers.getTransactionDate()).isEqualTo(OffsetDateTime.of(LocalDateTime.of(2020, 2, 2, 22, 22), ZoneOffset.UTC));
-        Assertions.assertThat(vouchers.getPurchaseDate()).isEqualTo(LocalDate.of(2020, 2, 2));
-        Assertions.assertThat(vouchers.getRedeemDate()).isEqualTo(LocalDate.of(2020, 2, 2));
+        Assertions.assertThat(vouchers.getReserveDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12).atOffset(ZoneOffset.UTC));
+        Assertions.assertThat(vouchers.getPurchaseDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12).atOffset(ZoneOffset.UTC));
+        Assertions.assertThat(vouchers.getRedeemDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12).atOffset(ZoneOffset.UTC));
         Assertions.assertThat(vouchers.getActivationUrl()).isEqualTo("www.test.com");
     }
 }

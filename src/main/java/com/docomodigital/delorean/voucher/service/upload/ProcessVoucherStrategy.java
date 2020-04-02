@@ -27,4 +27,11 @@ public interface ProcessVoucherStrategy {
      * @return the VoucherType if found and valid
      */
     VoucherType getValidVoucherType(String type);
+
+    /**
+     * Method that indicates if file to process contains header to skip or not
+     *
+     * @return true or false if skip to process lines
+     */
+    boolean skipHeaderLine();
 }

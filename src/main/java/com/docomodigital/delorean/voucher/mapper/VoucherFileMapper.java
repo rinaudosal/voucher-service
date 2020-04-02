@@ -14,10 +14,10 @@ import org.mapstruct.Mapping;
 public interface VoucherFileMapper extends EntityMapper<VoucherUpload, VoucherFile> {
 
     @Override
-    @Mapping(source = "type", target = "type.code")
+    @Mapping(source = "typeId", target = "type.code")
     VoucherFile toEntity(VoucherUpload dto);
 
     @Override
-    @Mapping(source = "type.code", target = "type")
+    @Mapping(source = "type.code", target = "typeId")
     VoucherUpload toDto(VoucherFile entity);
 }

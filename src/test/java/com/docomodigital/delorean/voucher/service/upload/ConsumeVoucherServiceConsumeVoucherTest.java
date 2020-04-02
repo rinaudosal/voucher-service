@@ -50,7 +50,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
         voucherType.setId("my_type_id");
         voucherType.setBaseUrl("www.google.com/");
         BDDMockito.given(voucherTypeService.getVoucherType(
-            Mockito.eq("my_merchant_id"),
+            Mockito.eq("my_shop_id"),
             Mockito.eq("my_payment_provider"),
             Mockito.eq("my_country"),
             Mockito.eq("my_product_id"))).willReturn(voucherType);
@@ -65,7 +65,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
             .thenAnswer((Answer) invocation -> invocation.getArguments()[0]);
 
         input = new VoucherConsumer();
-        input.setMerchantId("my_merchant_id");
+        input.setShopId("my_shop_id");
         input.setPaymentProvider("my_payment_provider");
         input.setCountry("my_country");
         input.setProductId("my_product_id");
@@ -91,7 +91,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
     @Test
     public void voucherTypeNotFound() {
         BDDMockito.given(voucherTypeService.getVoucherType(
-            Mockito.eq("my_merchant_id"),
+            Mockito.eq("my_shop_id"),
             Mockito.eq("my_payment_provider"),
             Mockito.eq("my_country"),
             Mockito.eq("my_product_id"))).willReturn(null);
@@ -99,7 +99,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
         Assertions.assertThatThrownBy(() -> target.consumeVoucher(input))
             .isInstanceOf(BadRequestException.class)
             .hasFieldOrPropertyWithValue("errorCode", "TYPE_NOT_FOUND")
-            .hasMessage("Voucher type not found");
+            .hasMessage("Voucher Type not found");
 
     }
 
@@ -137,6 +137,6 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
         Assertions.assertThat(voucher.getCode()).isEqualTo("PIPPO");
         Assertions.assertThat(voucher.getStatus()).isEqualTo(VoucherStatus.PURCHASED);
         Assertions.assertThat(voucher.getActivationUrl()).isEqualTo("www.google.com/PIPPO");
-        Assertions.assertThat(voucher.getPurchaseDate()).isEqualTo(LocalDate.of(2002, 12, 17));
+        Assertions.assertThat(voucher.getPurchaseDate()).isEqualTo(LocalDateTime.of(2002, 12, 17, 0, 0));
     }
 }

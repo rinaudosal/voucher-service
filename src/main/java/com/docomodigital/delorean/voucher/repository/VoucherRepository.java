@@ -25,6 +25,15 @@ public interface VoucherRepository extends MongoRepository<Voucher, String> {
     boolean existsVoucherByCodeAndTypeIdIn(String code, List<String> type);
 
     /**
+     * Method to check if exist a voucher for specified type ids
+     *
+     * @param transactionId the voucher transactionId
+     * @param type the types when search
+     * @return true if found, false otherwise
+     */
+    boolean existsVoucherByTransactionIdAndTypeIdIn(String transactionId, List<String> type);
+
+    /**
      * Find specified voucher by code (business id)
      *
      * @param code code of the voucher

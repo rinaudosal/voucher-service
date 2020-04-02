@@ -1,0 +1,728 @@
+# API-first development with OpenAPI
+# This file will be used at compile time to generate Spring-MVC endpoint stubs using openapi-generator
+openapi: '3.0.1'
+info:
+  title: Voucher API
+  version: 1.0.1
+  description: DOCOMO Digital Voucher API
+  contact:
+    email: product.facilitator@docomodigital.com
+
+servers:
+  - url: https://stg-ddp-api.docomodigital.com/v1
+    description: Test server
+  - url: https://ddp-api.docomodigital.com/v1
+    description: Live server
+tags:
+  - name: Voucher API
+    description: Provides API to consume voucher codes
+  - name: Voucher API (internal)
+    description: Provides API to create and manage voucher codes
+  - name: Voucher types configuration
+    description: Provides API to configure voucher mangement system (internal only)
+  - name: Voucher Bulk API
+    description: Provides API to manage vouchers (internal only)
+
+paths:
+  /voucher-type/{typeId}/reserve:
+    post:
+      tags:
+        - Voucher API
+      summary: reserve
+      operationId: reserveVoucher
+      description: reserve the voucher
+      security:
+        - ApiKeyAuth: []
+          SignRequest: []
+      parameters:
+        - in: path
+          name: typeId
+          description: the voucher type configured
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoucherRequest'
+      responses:
+        '200':
+          description: Voucher reserved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vouchers'
+        '401':
+          description: Unauthorized requestor (X-signature header param is missed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '403':
+          description: Request forbidden (wrong X-signature header param or request is changed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '400':
+          description: wrong input type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: no voucher ot typeId found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+  /voucher-type/{typeId}/voucher/{code}:
+    post:
+      tags:
+        - Voucher API (internal)
+      summary: Create a new voucher code of specific type
+      operationId: createVoucher
+      description: create the voucher
+      parameters:
+        - in: path
+          name: code
+          description: the vouchers code
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: typeId
+          description: the voucher type configured
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: resulting Voucher type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vouchers'
+    patch:
+      tags:
+        - Voucher API
+      summary: voucher update
+      operationId: updateVoucher
+      description: update the voucher data
+      security:
+        - ApiKeyAuth: []
+          SignRequest: []
+      parameters:
+        - in: path
+          name: typeId
+          description: the voucher type configured
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: code
+          description: the vouchers code
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoucherRequest'
+      responses:
+        '200':
+          description: Voucher updated correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vouchers'
+        '401':
+          description: Unauthorized requestor (X-signature header param is missed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '403':
+          description: Request forbidden (wrong X-signature header param or request is changed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '400':
+          description: wrong input type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: no voucher found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+  /voucher-type/{typeId}/voucher:
+    get:
+      tags:
+        - Voucher API (internal)
+      summary: search the vouchers
+      operationId: getVouchers
+      description: list of vouchers with optional filters
+      parameters:
+        - in: path
+          name: typeId
+          description: the type id of the category
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: status
+          description: status of the vouchers
+          required: false
+          schema:
+            type: string
+            enum: [ ACTIVE, PURCHASED, REDEEMED, INACTIVE]
+        - in: query
+          name: userId
+          description: user id that have consumed the vouchers
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: merchantId
+          description: merchant id
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: transactionId
+          description: transaction id that have consumed the vouchers
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: resulting Voucher list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vouchers'
+
+  /voucher-type/available:
+    get:
+      tags:
+        - Voucher types configuration
+      summary: search the voucher type available
+      operationId: getAvailableVoucherTypes
+      description: list of voucher types for specific merchant
+      parameters:
+        - in: query
+          name: merchant
+          description: merchant identifier
+          required: true
+          example: tinder
+          schema:
+            type: string
+        - in: query
+          name: paymentProvider
+          description: payment provider that can be consume the vouchers
+          required: true
+          example: PAYTM
+          schema:
+            type: string
+        - in: query
+          name: country
+          example: IN
+          description: country when the voucher can be consumed the vouchers
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: resulting Voucher types list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AvailableVoucherTypes'
+        '404':
+          description: voucher types not available
+
+  /products/available:
+    get:
+      tags:
+        - Voucher types configuration
+      summary: search the products available
+      operationId: getAvailableProducts
+      description: list of products available
+      parameters:
+        - in: query
+          name: products
+          description: list of products to check availability
+          required: false
+          example: Tinder 1 Month
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: resulting products list available
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /voucher-type:
+    get:
+      tags:
+        - Voucher types configuration
+      summary: search the voucher type
+      operationId: getVoucherTypes
+      description: list of voucher types with optional filters
+      parameters:
+        - in: query
+          name: merchant
+          description: merchant identifier
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: country
+          description: country where the vouchers are distributed
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: paymentProvider
+          description: payment provider that can be consume the vouchers
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: currency
+          description: currency how the voucher can be purchased
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: shop
+          description: distributor of the vouchers
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: enabled
+          description: distributor of the vouchers
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: resulting Voucher types list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VoucherTypes'
+    post:
+      tags:
+        - Voucher types configuration
+      summary: create the voucher type
+      operationId: createVoucherType
+      description: voucher type created
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoucherTypes'
+      responses:
+        '201':
+          description: resulting Voucher type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherTypes'
+
+  /voucher-type/{typeId}:
+    get:
+      tags:
+        - Voucher types configuration
+      summary: search the voucher type by code
+      operationId: getVoucherType
+      description: voucher type with code passed
+      parameters:
+        - in: path
+          name: typeId
+          description: code of the voucher type
+          required: true
+          example: VOU1MONTH
+          schema:
+            type: string
+      responses:
+        '200':
+          description: resulting Voucher type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherTypes'
+    put:
+      tags:
+        - Voucher types configuration
+      summary: update the voucher type by code
+      operationId: updateVoucherType
+      description: voucher type with code passed
+      parameters:
+        - in: path
+          name: typeId
+          description: code of the voucher type
+          required: true
+          example: VOU1MONTH
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoucherTypes'
+      responses:
+        '200':
+          description: resulting Voucher type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherTypes'
+
+  /voucher/{code}/purchase:
+    post:
+      tags:
+        - To drop
+      summary: purchase
+      operationId: purchaseVoucher
+      description: purchase the voucher
+      parameters:
+        - in: path
+          name: code
+          description: the vouchers code
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: transactionId
+          description: the id of the transaction executed to buy the voucher
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: transactionDate
+          description: the date when the transaction are executed
+          required: false
+          schema:
+            type: string
+            format: 'date-time'
+            example: 2017-07-21T17:32:28Z
+        - in: query
+          name: userId
+          description: who is the user that are buy the voucher
+          required: false
+          schema:
+            type: string
+      responses:
+        '201':
+          description: resulting Voucher type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vouchers'
+
+  /vouchers/upload:
+    post:
+      tags:
+        - Voucher Bulk API
+      summary: upload
+      operationId: uploadVoucher
+      description: upload the voucher
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                typeId:
+                  type: string
+                  example: VOU1M
+              required:
+                - file
+                - typeId
+      responses:
+        '200':      # Response
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherUpload'
+
+  /vouchers/redeem:
+    post:
+      tags:
+        - Voucher Bulk API
+      summary: redeem
+      operationId: redeemVoucher
+      description: redeem the voucher
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                typeId:
+                  type: string
+                  example: VOU1M
+              required:
+                - file
+                - typeId
+      responses:
+        '200':      # Response
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherUpload'
+
+  /vouchers/purchase:
+    post:
+      tags:
+        - Voucher Bulk API
+      summary: purchasefile
+      operationId: purchaseFileVoucher
+      description: purchase the voucher from file
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                typeId:
+                  type: string
+                  example: VOU1M
+              required:
+                - file
+                - typeId
+      responses:
+        '200':      # Response
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoucherUpload'
+
+components:
+  schemas:
+    AvailableVoucherTypes:
+      type: object
+      properties:
+        typeId:
+          type: string
+          example: VOU1MONTH
+        description:
+          type: string
+          example: 1 Month Voucher
+        amount:
+          type: number
+          example: 19.99
+        currency:
+          type: string
+          example: USD
+        voucherAvailable:
+          type: integer
+          example: 42
+
+    ErrorDetails:
+      type: object
+      properties:
+        typeId:
+          type: string
+          example: VOU1MONTH
+        description:
+          type: string
+          example: 1 Month Voucher
+
+    VoucherTypes:
+      type: object
+      required:
+        - description
+        - product
+        - amount
+        - currency
+        - merchant
+        - country
+        - paymentProvider
+        - shop
+        - priority
+      properties:
+        typeId:
+          type: string
+          example: VOU1MONTH
+        description:
+          type: string
+          example: 1 Month Voucher
+        product:
+          type: string
+          example: 1 Month Gold
+        amount:
+          type: number
+          example: 19.99
+        currency:
+          type: string
+          example: EUR
+        promo:
+          type: string
+          example: sale
+        merchant:
+          type: string
+          example: tinder
+        country:
+          type: string
+          example: IT
+        paymentProvider:
+          type: string
+          example: PAYTM
+        shop:
+          type: string
+          example: MNO1234
+        enabled:
+          type: boolean
+          example: IT
+        startDate:
+          type: string
+          format: date
+          example: 2020-01-01
+        endDate:
+          type: string
+          format: date
+          example: 2020-12-31
+        priority:
+          type: integer
+          example: 3
+
+    VoucherRequest:
+      type: object
+      required:
+        - status
+        - transactionId
+      properties:
+        status:
+          type: string
+          enum: [ ACTIVE, RESERVED, PURCHASED, REDEEMED, INACTIVE]
+        userId:
+          type: string
+          example: MARIO
+        transactionId:
+          type: string
+          example: TXN123445
+        transactionDate:
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        amount:
+          type: number
+          example: 10.00
+        currency:
+          type: string
+          example: AUD
+
+    Vouchers:
+      type: object
+      properties:
+        code:
+          type: string
+          example: VOU1MONTH
+        typeId:
+          type: string
+          example: TND1MGLD
+        status:
+          type: string
+          enum: [ ACTIVE, RESERVED, PURCHASED, REDEEMED, INACTIVE]
+        userId:
+          type: string
+          example: MARIO
+        transactionId:
+          type: string
+          example: TXN123445
+        transactionDate:
+          type: string
+          format: 'date-time'
+          example: 2017-07-21T17:32:28Z
+        reservedDate:
+          type: string
+          format: 'date-time'
+          example: 2017-07-21T17:32:28Z
+        purchaseDate:
+          type: string
+          format: date
+          example: 02/02/2018
+        redeemDate:
+          type: string
+          format: date
+          example: 02/02/2018
+        activationUrl:
+          type: string
+          example: www.test.com/vip/1234-5647
+
+    VoucherUpload:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UPLOADED, ERROR]
+        operation:
+          type: string
+          enum: [UPLOAD, PURCHASE, REDEEM]
+        filename:
+          type: string
+          example: file.csv
+        typeId:
+          type: string
+          example: TIN1M
+        total:
+          type: integer
+          example: 42
+        uploaded:
+          type: integer
+          example: 42
+        errors:
+          type: integer
+          example: 42
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Authorization key
+    SignRequest:
+      type: apiKey
+      in: header
+      name: X-Signature
+      description: Request signature hash
+
+security:
+  - ApiKeyAuth: []

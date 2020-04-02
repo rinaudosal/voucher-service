@@ -29,9 +29,7 @@ public class ProcessVoucherFactory {
             case UPLOAD:
                 return new UploadVoucherStrategyImpl(voucherTypeRepository, voucherRepository, clock);
             case REDEEM:
-                return new RedeemVoucherStrategyImpl(voucherTypeRepository, voucherRepository, clock);
-            case PURCHASE:
-                return new PurchaseVoucherStrategyImpl(voucherTypeRepository, voucherRepository, clock);
+                return new RedeemVoucherStrategyImpl(voucherTypeRepository, voucherRepository);
             default:
                 throw new UnsupportedOperationException("Operation non implemented for " + uploadOperation);
         }
