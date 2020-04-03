@@ -28,18 +28,6 @@ public interface VoucherService {
      */
     VoucherUpload processVouchers(MultipartFile file, String type, UploadOperation uploadOperation);
 
-
-    /**
-     * Purchase a single voucher by code in ACTIVE state
-     *
-     * @param code            the voucher code to be purchase
-     * @param transactionId   the id of the transaction executed to buy the voucher
-     * @param transactionDate the date when the transaction are executed
-     * @param userId          the user id of the user that are buyed
-     * @return the voucher purchased if found
-     */
-    Vouchers purchaseVoucher(String code, String transactionId, OffsetDateTime transactionDate, String userId);
-
     /**
      * Retrieve list of vouchers with the filters requested
      *
