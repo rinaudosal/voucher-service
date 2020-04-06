@@ -95,10 +95,6 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         voucher.setPurchaseDate(LocalDateTime.now());
         voucher.setRedeemDate(LocalDateTime.now());
         voucher.setActivationUrl("www.test.com");
-        voucher.setCreatedBy("me");
-        voucher.setCreatedDate(Instant.now());
-        voucher.setLastModifiedBy("you");
-        voucher.setLastModifiedDate(Instant.now());
         voucher.setVoucherFileId("123d546d");
 
         // when save the voucher
@@ -124,10 +120,6 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThat(returnValue.getActivationUrl()).isNotNull();
 
         Assertions.assertThat(returnValue.getId()).isNotNull();
-        Assertions.assertThat(returnValue.getCreatedBy()).isNotNull();
-        Assertions.assertThat(returnValue.getCreatedDate()).isNotNull();
-        Assertions.assertThat(returnValue.getLastModifiedBy()).isNotNull();
-        Assertions.assertThat(returnValue.getLastModifiedDate()).isNotNull();
         Assertions.assertThat(returnValue.getVoucherFileId()).isEqualTo("123d546d");
 
     }
@@ -158,10 +150,6 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThat(returnValue.getVoucherFileId()).isNull();
 
         Assertions.assertThat(returnValue.getId()).isNotNull();
-        Assertions.assertThat(returnValue.getCreatedBy()).isNull();
-        Assertions.assertThat(returnValue.getCreatedDate()).isNotNull();
-        Assertions.assertThat(returnValue.getLastModifiedBy()).isNull();
-        Assertions.assertThat(returnValue.getLastModifiedDate()).isNotNull();
     }
 
 }

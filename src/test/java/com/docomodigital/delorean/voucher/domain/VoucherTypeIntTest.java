@@ -105,9 +105,9 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThat(returnValue).isNotNull();
 
         Assertions.assertThat(returnValue.getId()).isNotNull();
-        Assertions.assertThat(returnValue.getCreatedBy()).isNull();
+        Assertions.assertThat(returnValue.getCreatedBy()).isEmpty();
         Assertions.assertThat(returnValue.getCreatedDate()).isNotNull();
-        Assertions.assertThat(returnValue.getLastModifiedBy()).isNull();
+        Assertions.assertThat(returnValue.getLastModifiedBy()).isEmpty();
         Assertions.assertThat(returnValue.getLastModifiedDate()).isNotNull();
 
         Assertions.assertThat(returnValue.getCode()).isEqualTo("my_voucher_type_code");

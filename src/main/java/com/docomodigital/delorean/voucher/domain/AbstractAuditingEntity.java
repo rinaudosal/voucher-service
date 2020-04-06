@@ -5,18 +5,17 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.domain.Auditable;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.io.Serializable;
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * Base abstract class for entities which will hold definitions for created, last modified by and created,
  * last modified by date.
  */
-public abstract class AbstractAuditingEntity implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public abstract class AbstractAuditingEntity implements Auditable<String, String, Instant> {
 
     @CreatedBy
     @Field("created_by")
@@ -26,7 +25,7 @@ public abstract class AbstractAuditingEntity implements Serializable {
     @CreatedDate
     @Field("created_date")
     @JsonIgnore
-    private Instant createdDate = Instant.now();
+    private Instant createdDate;
 
     @LastModifiedBy
     @Field("last_modified_by")
@@ -36,37 +35,48 @@ public abstract class AbstractAuditingEntity implements Serializable {
     @LastModifiedDate
     @Field("last_modified_date")
     @JsonIgnore
-    private Instant lastModifiedDate = Instant.now();
+    private Instant lastModifiedDate;
 
-    public String getCreatedBy() {
-        return createdBy;
+
+    @Override
+    public Optional<String> getCreatedBy() {
+        return Optional.ofNullable(createdBy);
     }
 
+    @Override
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Instant getCreatedDate() {
-        return createdDate;
+    @Override
+    public Optional<Instant> getCreatedDate() {
+        return Optional.ofNullable(createdDate);
     }
 
     public void setCreatedDate(Instant createdDate) {
         this.createdDate = createdDate;
     }
 
-    public String getLastModifiedBy() {
-        return lastModifiedBy;
+    @Override
+    public Optional<String> getLastModifiedBy() {
+        return Optional.ofNullable(lastModifiedBy);
     }
 
     public void setLastModifiedBy(String lastModifiedBy) {
         this.lastModifiedBy = lastModifiedBy;
     }
 
-    public Instant getLastModifiedDate() {
-        return lastModifiedDate;
+    @Override
+    public Optional<Instant> getLastModifiedDate() {
+        return Optional.ofNullable(lastModifiedDate);
     }
 
     public void setLastModifiedDate(Instant lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    @Override
+    public boolean isNew() {
+        return getId() == null;
     }
 }
