@@ -35,7 +35,7 @@ public class AbstractVoucherStrategyImpl {
         }
 
         LocalDate today = LocalDate.now(clock);
-        if (!voucherType.getEndDate().isAfter(today)) {
+        if (voucherType.getEndDate().isBefore(today)) {
             throw new BadRequestException(Constants.TYPE_EXPIRED_ERROR, String.format("Voucher Type %s is expired", type));
         }
 

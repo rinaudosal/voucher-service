@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -20,6 +21,7 @@ import java.util.Collections;
 @SpringBootApplication
 @EnableConfigurationProperties({MerchantClientConfiguration.class})
 @EnableFeignClients(basePackages = {"com.docomodigital.delorean.client"})
+@EnableMongoAuditing
 public class VoucherServiceApplication implements InitializingBean {
     private final Environment env;
 

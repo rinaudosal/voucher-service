@@ -40,14 +40,12 @@ public class ProductServiceImpl implements ProductService {
                 LocalDate now = LocalDate.now(clock);
                 int voucherAvailable = getVoucherAvailable(vou);
 
-                return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate())
+                return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate().minusDays(1))
                     && voucherAvailable > 0
                     && vou.getEnabled();
             })
-
-            .map(VoucherType::getProduct)
-            .collect(Collectors.toSet())
-            .stream().collect(Collectors.toList());
+            .map(VoucherType::getProduct).distinct()
+            .collect(Collectors.toList());
 
     }
 

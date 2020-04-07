@@ -24,9 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Clock;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,39 +70,6 @@ public class VoucherServiceImpl implements VoucherService {
         VoucherType voucherType = processVoucherStrategy.getValidVoucherType(type);
 
         return voucherFileService.uploadFile(file, voucherType, uploadOperation, processVoucherStrategy::processLine, processVoucherStrategy.skipHeaderLine());
-    }
-
-
-    @Override
-    public Vouchers purchaseVoucher(String code, String transactionId, OffsetDateTime transactionDate, String userId) {
-
-        Voucher voucher = voucherRepository.findByCode(code)
-            .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR, String.format("Voucher %s not found", code)));
-
-        if (!VoucherStatus.ACTIVE.equals(voucher.getStatus())) {
-            throw new BadRequestException(Constants.VOUCHER_NOT_ACTIVE_ERROR, String.format("Voucher with code %s is not in ACTIVE state", code));
-        }
-
-        VoucherType voucherType = voucherTypeRepository.findById(voucher.getTypeId())
-            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format(Constants.VOUCHER_TYPE_NOT_FOUND_MESSAGE, voucher.getTypeId())));
-
-        if (LocalDate.now(clock).isBefore(voucherType.getStartDate())) {
-            throw new BadRequestException(Constants.TYPE_NOT_YET_AVAILABLE_ERROR, String.format("Voucher Type %s is not yet available", voucherType.getCode()));
-        }
-
-        if (!voucherType.getEnabled()) {
-            throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", voucherType.getCode()));
-        }
-
-        voucher.setActivationUrl(voucherType.getBaseUrl() + voucher.getCode());
-        voucher.setStatus(VoucherStatus.PURCHASED);
-        voucher.setUserId(userId);
-        voucher.setTransactionId(transactionId);
-        voucher.setTransactionDate(transactionDate.toLocalDateTime());
-        voucher.setPurchaseDate(LocalDateTime.now(clock));
-
-
-        return voucherMapper.toDto(voucherRepository.save(voucher));
     }
 
     @Override

@@ -454,33 +454,43 @@ components:
         typeId:
           type: string
           example: VOU1MONTH
+          description: Logical identification of the voucher-type
         description:
           type: string
           example: 1 Month Voucher
+          description: Description of the voucher type can be shown
         product:
           type: string
           example: 1 Month Gold
+          description: Voucher type family to which it belongs
         amount:
           type: number
           example: 19.99
+          description: The wholesale price
         currency:
           type: string
           example: EUR
+          description: The wholesale currency
         promo:
           type: string
           example: sale
+          description: The promo code if present
         merchant:
           type: string
           example: tinder
+          description: Merchant identification value
         country:
           type: string
           example: IT
+          description: Country where the vouchers are distributed
         paymentProvider:
           type: string
           example: PAYTM
+          description: Who are eligible to the voucher distribution
         shop:
           type: string
           example: MNO1234
+          description: Technical id for identification of the purchase flow
         enabled:
           type: boolean
           example: IT
@@ -497,7 +507,7 @@ components:
           example: 3
         baseUrl:
           type: string
-          example: www.tinder.com
+          example: www.tinder.com/vip/
     ReserveRequest:
       type: object
       required:
@@ -518,19 +528,24 @@ components:
             userId:
               type: string
               example: MARIO
+              description: User to buy the voucher
             transactionStatus:
               type: string
               enum: [ SUCCESS, FAILED]
+              description: Status of the transaction
             transactionDate:
               type: string
               format: date-time
               example: 2017-07-21T17:32:28Z
+              description: Time of the transaction when are billed the voucher
             amount:
               type: number
               example: 10.00
+              description: Retail price
             currency:
               type: string
               example: AUD
+              description: Retail currency
 
     Vouchers:
       type: object
@@ -538,47 +553,59 @@ components:
         code:
           type: string
           example: VOU1MONTH
+          description: Voucher code
         typeId:
           type: string
           example: TND1MGLD
+          description: Logical type of the voucher
         voucherFileId:
           type: string
           example: 1234-5678-9123
+          description: Identification id of the upload id stored
         status:
           type: string
           enum: [ ACTIVE, RESERVED, PURCHASED, REDEEMED, INACTIVE]
+          description: status of the voucher
         userId:
           type: string
           example: MARIO
+          description: User to buy the voucher
         transactionId:
           type: string
           example: TXN123445
+          description: Id of the transaction  to bill the voucher
         transactionDate:
           type: string
           format: 'date-time'
           example: 2017-07-21T17:32:28Z
+          description: Time of the transaction when are billed the voucher
         amount:
           type: number
           example: 19.99
+          description: Retail price
         currency:
           type: string
-          example: USD
+          example: RM
+          description: Retail currency
         reserveDate:
           type: string
           format: 'date-time'
           example: 2017-07-21T17:32:28Z
+          description: Date of the reservation of voucher
         purchaseDate:
           type: string
           format: 'date-time'
           example: 2017-07-21T17:32:28Z
+          description: Purchase Date of voucher
         redeemDate:
           type: string
           format: 'date-time'
           example: 2017-07-21T17:32:28Z
+          description: Redeem Date of voucher
         activationUrl:
           type: string
           example: www.test.com/vip/1234-5647
-
+          description: Resirection url of the single voucher
     VoucherUpload:
       type: object
       properties:
