@@ -465,6 +465,7 @@ components:
           description: Voucher type family to which it belongs
         amount:
           type: number
+          minimum: 0
           example: 19.99
           description: The wholesale price
         currency:
@@ -521,6 +522,8 @@ components:
       required:
         - amount
         - currency
+        - transactionStatus
+        - transactionDate
       allOf:
         - $ref: '#/components/schemas/ReserveRequest'
         - type: object
@@ -541,10 +544,12 @@ components:
             amount:
               type: number
               example: 10.00
+              minimum: 0
               description: Retail price
             currency:
               type: string
               example: AUD
+              minLength: 1
               description: Retail currency
 
     Vouchers:
@@ -582,10 +587,12 @@ components:
         amount:
           type: number
           example: 19.99
+          minimum: 0
           description: Retail price
         currency:
           type: string
           example: RM
+          minLength: 1
           description: Retail currency
         reserveDate:
           type: string
