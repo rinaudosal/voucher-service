@@ -1,6 +1,6 @@
 # language: en
 
-@PI-1739 @get-voucher @only-you
+@PI-1739 @get-voucher
 Feature: Get Voucher
 
   Background:

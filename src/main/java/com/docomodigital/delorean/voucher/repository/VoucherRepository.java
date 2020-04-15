@@ -33,6 +33,8 @@ public interface VoucherRepository extends MongoRepository<Voucher, String> {
      */
     boolean existsVoucherByTransactionIdAndTypeIdIn(String transactionId, List<String> type);
 
+    Optional<Voucher> findByTypeIdAndTransactionId(String typeId, String transactionId);
+
     /**
      * Find specified voucher by code (business id)
      *
