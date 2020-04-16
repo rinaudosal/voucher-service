@@ -1,5 +1,20 @@
 package com.docomodigital.delorean.voucher.service;
 
+import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Example;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.docomodigital.delorean.domain.resource.Shop;
 import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
@@ -15,19 +30,14 @@ import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Example;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import com.google.common.base.Strings;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import net.netm.billing.library.AccountingConnection;
+import net.netm.billing.library.exception.AccountingException;
+import net.netm.billing.library.exception.CDRValidationException;
+import net.netm.billing.library.model.CDR;
+
 
 /**
  * 2020/01/29
@@ -37,13 +47,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class VoucherServiceImpl implements VoucherService {
-
-    private final VoucherRepository voucherRepository;
+	
+	private final VoucherRepository voucherRepository;
     private final VoucherTypeRepository voucherTypeRepository;
     private final VoucherFileService voucherFileService;
     private final VoucherMapper voucherMapper;
     private final Clock clock;
     private final ProcessVoucherFactory uploadFileFactory;
+    private AccountingConnection accsrv;
 
     public VoucherServiceImpl(VoucherRepository voucherRepository,
                               VoucherTypeRepository voucherTypeRepository,
@@ -58,6 +69,7 @@ public class VoucherServiceImpl implements VoucherService {
         this.voucherMapper = voucherMapper;
         this.clock = clock;
         this.uploadFileFactory = uploadFileFactory;
+        this.accsrv = new AccountingConnection();
     }
 
     @Override
@@ -151,6 +163,14 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setAmount(voucherRequest.getAmount());
             voucher.setCurrency(voucherRequest.getCurrency());
             voucher.setUserId(voucherRequest.getUserId());
+            try {
+            	CDR cdr = createCdr(voucher,voucherType,shop.getContractId());
+				if(cdr != null) {
+					accsrv.chargeOne(cdr);					
+				}
+            } catch (AccountingException e) {
+            	e.printStackTrace();
+            }
         } else {
             voucher.setTransactionId(null);
             voucher.setTransactionDate(null);
@@ -162,6 +182,7 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setUserId(null);
             voucher.setActivationUrl(null);
         }
+        
 
         return Optional.of(voucherRepository.save(voucher))
             .map(v -> {
@@ -203,4 +224,72 @@ public class VoucherServiceImpl implements VoucherService {
                 return vouchers;
             });
     }
+    
+    public CDR createCdr(Voucher voucher, VoucherType voucherType, String contractId) {
+    	CDR cdrtest = null;
+        try {
+				cdrtest = new CDR.Builder()
+						.withContractId(converContract(contractId))
+						.withInstanceId(0l)
+						.withCdrClass(Constants.CDR_CLASS)
+						.withCdrType(Constants.CDR_TYPE)
+						.withOrderEventTimestamp(convertDate(voucher.getTransactionDate()))
+						.withServiceEventTimestamp(convertDate(voucher.getPurchaseDate()))
+						.withCdrTimestamp(Date.from(clock.instant()))
+						.withServiceId(Constants.CDR_SERVICE_ID)
+						.withTariffClass(1l)
+						.withChargingAmount(Constants.CDR_CHARGING_AMOUNT)
+						.withCostCenter(voucherType.getShopId())
+						.withOriginAddress(voucher.getCode())
+						.withOriginProtocol(voucherType.getPromo())
+						.withOriginId(voucherType.getProduct())
+						.withSenderId(Constants.CDR_SENDER_ID)
+						.withDeliveryStatus(1)
+						.withPrice(convertAmount(voucherType.getAmount()))
+						.withIsPriceGross(true)
+						.withCurrency(voucherType.getCurrency())
+						.withUniqueMessageId(voucherType.getPaymentProvider() + "_" + voucher.getTransactionId())
+						.withSessionId(voucher.getCode()) 
+						.withDestination(voucher.getUserId())
+						.withDeliveryElement(voucherType.getPaymentProvider())
+						.withMachineId(voucher.getTransactionId())
+						.withCdrInfo1(Constants.CDR_INFO_1)
+						.withCdrInfo2(Constants.CDR_INFOR_2)
+						.withCdrInfo3(Constants.CDR_INFO_3)
+						.withCountryId(voucherType.getCountry())
+						//.withAdditionalInfo(null)
+						//.withDistanceTable(null)
+				        .build();
+			} catch (CDRValidationException e) {
+				log.error("exception trying to generate CDR notification of vocuher: {} with voucherType: {}", voucher.getCode(), voucherType.getCode());
+			}
+        return cdrtest;
+    }
+
+	private Long converContract(String contractId) {
+		Long result = 0l;
+		if(!Strings.isNullOrEmpty(contractId)) {
+			try {
+				result = Long.parseLong(contractId);							
+			} catch (Exception e) {
+				log.debug("Error trying to parse contractId {}", contractId);
+			}
+		}
+		return result;
+	}
+
+	private Date convertDate(LocalDateTime date) {
+		Date result = null;
+		try {
+		 result = Date.from(date.atZone(clock.getZone()).toInstant());
+		 } catch (Exception e) {
+			 log.debug("Error trying to convert to date {}", date);
+		}
+		return result;
+	}
+
+	private Integer convertAmount(BigDecimal voucherAmount){
+		BigDecimal result = voucherAmount.multiply(Constants.CDR_P_FACTOR);
+		return result.intValue();
+	}
 }
