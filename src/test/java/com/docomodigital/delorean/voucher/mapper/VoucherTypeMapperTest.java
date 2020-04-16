@@ -7,6 +7,7 @@ import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
     @Before
     public void setUp() {
         target = new VoucherTypeMapperImpl();
+        ReflectionTestUtils.setField(target, "commonMapper", new CommonMapperImpl());
     }
 
     @Test
@@ -120,8 +122,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setCountry("my_country");
         voucherType.setShopId("my_shop");
         voucherType.setEnabled(true);
-        voucherType.setStartDate(LocalDateTime.of(2016, 1, 1, 12, 37, 15));
-        voucherType.setEndDate(LocalDateTime.of(2016, 1, 2, 12, 37, 15));
+        voucherType.setStartDate(LocalDateTime.of(2020, 1, 1, 6, 6, 6));
+        voucherType.setEndDate(LocalDateTime.of(2020, 1, 2, 6, 6, 6));
         voucherType.setPriority(5);
         return voucherType;
     }
@@ -138,8 +140,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherType.getPaymentProvider()).isEqualTo("my_payment");
         Assertions.assertThat(voucherType.getShopId()).isEqualTo("my_shop");
         Assertions.assertThat(voucherType.getEnabled()).isTrue();
-        Assertions.assertThat(voucherType.getStartDate()).isEqualTo(LocalDate.of(2016, 1, 1));
-        Assertions.assertThat(voucherType.getEndDate()).isEqualTo(LocalDate.of(2016, 1, 2));
+        Assertions.assertThat(voucherType.getStartDate()).isEqualTo(LocalDateTime.of(2020, 1, 1, 6, 6, 6));
+        Assertions.assertThat(voucherType.getEndDate()).isEqualTo(LocalDateTime.of(2020, 1, 2, 6, 6, 6));
         Assertions.assertThat(voucherType.getPriority()).isEqualTo(5);
     }
 
@@ -155,8 +157,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherTypes.getPaymentProvider()).isEqualTo("my_payment");
         Assertions.assertThat(voucherTypes.getShop()).isEqualTo("my_shop");
         Assertions.assertThat(voucherTypes.getEnabled()).isTrue();
-        Assertions.assertThat(voucherTypes.getStartDate()).isEqualTo(LocalDate.of(2016, 1, 1));
-        Assertions.assertThat(voucherTypes.getEndDate()).isEqualTo(LocalDate.of(2016, 1, 2));
+        Assertions.assertThat(voucherTypes.getStartDate()).isEqualTo(LocalDateTime.of(2020, 1, 1, 6, 6, 6).atOffset(ZoneOffset.UTC));
+        Assertions.assertThat(voucherTypes.getEndDate()).isEqualTo(LocalDateTime.of(2020, 1, 2, 6, 6, 6).atOffset(ZoneOffset.UTC));
         Assertions.assertThat(voucherTypes.getPriority()).isEqualTo(5);
     }
 }
