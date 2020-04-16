@@ -56,6 +56,8 @@ public class VoucherType extends AbstractAuditingEntity {
     @NotNull
     private Integer priority;
 
+    private Integer expiryTimeReservation;
+
     public String getId() {
         return id;
     }
@@ -182,5 +184,13 @@ public class VoucherType extends AbstractAuditingEntity {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+    }
+
+    public Integer getExpiryTimeReservation() {
+        return expiryTimeReservation;
+    }
+
+    public void setExpiryTimeReservation(Integer expiryTimeReservation) {
+        this.expiryTimeReservation = expiryTimeReservation;
     }
 }

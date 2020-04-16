@@ -75,4 +75,11 @@ public interface VoucherTypeService {
 
     Optional<Vouchers> reserveVoucher(String typeId, ReserveRequest reserveRequest);
 
+    /**
+     * Find a voucherType if found
+     *
+     * @param id the type id
+     * @return VoucherType object if found
+     */
+    VoucherType findById(String id);
 }

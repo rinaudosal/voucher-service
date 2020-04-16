@@ -127,11 +127,11 @@ public class VoucherServiceImpl implements VoucherService {
             throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", typeId));
         }
 
-        Voucher voucher = voucherRepository.findByCode(code)
+        Voucher voucher = voucherRepository.findByCodeAndTypeId(code, voucherType.getId())
             .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format("Voucher %s not found for type %s", code, typeId)));
 
         if (!VoucherStatus.RESERVED.equals(voucher.getStatus())) {
-            throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Voucher with code %s is not in RESERVED state", code));
+            throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Reservation for the voucher code %s has expired or voucher it's already purchased", code));
         }
 
         if (!voucherRequest.getTransactionId().equalsIgnoreCase(voucher.getTransactionId())) {
@@ -152,15 +152,7 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setCurrency(voucherRequest.getCurrency());
             voucher.setUserId(voucherRequest.getUserId());
         } else {
-            voucher.setTransactionId(null);
-            voucher.setTransactionDate(null);
-            voucher.setAmount(null);
-            voucher.setCurrency(null);
-            voucher.setStatus(VoucherStatus.ACTIVE);
-            voucher.setPurchaseDate(null);
-            voucher.setReserveDate(null);
-            voucher.setUserId(null);
-            voucher.setActivationUrl(null);
+            resetToActive(voucher);
         }
 
         return Optional.of(voucherRepository.save(voucher))
@@ -202,5 +194,28 @@ public class VoucherServiceImpl implements VoucherService {
 
                 return vouchers;
             });
+    }
+
+    @Override
+    public void restoreToActive(Voucher voucherExpired) {
+        resetToActive(voucherExpired);
+        voucherRepository.save(voucherExpired);
+    }
+
+    @Override
+    public List<Voucher> findAllReservedVouchers() {
+        return voucherRepository.findAllByStatus(VoucherStatus.RESERVED);
+    }
+
+    private void resetToActive(Voucher voucher) {
+        voucher.setTransactionId(null);
+        voucher.setTransactionDate(null);
+        voucher.setAmount(null);
+        voucher.setCurrency(null);
+        voucher.setStatus(VoucherStatus.ACTIVE);
+        voucher.setPurchaseDate(null);
+        voucher.setReserveDate(null);
+        voucher.setUserId(null);
+        voucher.setActivationUrl(null);
     }
 }

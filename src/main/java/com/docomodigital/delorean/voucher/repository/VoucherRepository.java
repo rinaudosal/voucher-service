@@ -61,4 +61,11 @@ public interface VoucherRepository extends MongoRepository<Voucher, String> {
      */
     Optional<Voucher> findByCodeAndTypeId(String code, String type);
 
+    /**
+     * Find all voucher in a specific status
+     *
+     * @param voucherStatus the status to find
+     * @return A {@link List} of the voucher founds
+     */
+    List<Voucher> findAllByStatus(VoucherStatus voucherStatus);
 }
