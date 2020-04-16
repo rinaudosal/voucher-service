@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.mapper;
 
+
 import com.docomodigital.delorean.voucher.BaseUnitTest;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
@@ -9,6 +10,9 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 
@@ -95,8 +99,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setCountry("my_country");
         voucherType.setShop("my_shop");
         voucherType.setEnabled(true);
-        voucherType.setStartDate(LocalDate.of(2016, 1, 1));
-        voucherType.setEndDate(LocalDate.of(2016, 1, 2));
+        voucherType.setStartDate(OffsetDateTime.of(LocalDateTime.of(2020, 1, 1, 6, 6, 6), ZoneOffset.UTC));
+        voucherType.setEndDate(OffsetDateTime.of(LocalDateTime.of(2020, 1, 2, 6, 6, 6), ZoneOffset.UTC));
         voucherType.setPriority(5);
         return voucherType;
     }
@@ -116,8 +120,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setCountry("my_country");
         voucherType.setShopId("my_shop");
         voucherType.setEnabled(true);
-        voucherType.setStartDate(LocalDate.of(2016, 1, 1));
-        voucherType.setEndDate(LocalDate.of(2016, 1, 2));
+        voucherType.setStartDate(LocalDateTime.of(2016, 1, 1, 12, 37, 15));
+        voucherType.setEndDate(LocalDateTime.of(2016, 1, 2, 12, 37, 15));
         voucherType.setPriority(5);
         return voucherType;
     }

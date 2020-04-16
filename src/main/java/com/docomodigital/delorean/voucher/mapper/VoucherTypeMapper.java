@@ -12,7 +12,7 @@ import org.mapstruct.MappingTarget;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = CommonMapper.class)
 public interface VoucherTypeMapper extends EntityMapper<VoucherTypes, VoucherType> {
 
     @Override

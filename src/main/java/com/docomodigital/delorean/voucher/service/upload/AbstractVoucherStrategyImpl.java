@@ -8,6 +8,7 @@ import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 2020/02/05
@@ -34,8 +35,10 @@ public class AbstractVoucherStrategyImpl {
             throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", type));
         }
 
-        LocalDate today = LocalDate.now(clock);
+
+        LocalDateTime today = LocalDateTime.now(clock);
         if (voucherType.getEndDate().isBefore(today)) {
+
             throw new BadRequestException(Constants.TYPE_EXPIRED_ERROR, String.format("Voucher Type %s is expired", type));
         }
 

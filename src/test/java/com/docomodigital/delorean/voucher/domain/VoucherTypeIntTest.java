@@ -9,6 +9,7 @@ import javax.validation.ConstraintViolationException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -37,8 +38,8 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         voucherType.setCountry("INDIA");
         voucherType.setShopId("my_shop");
         voucherType.setEnabled(true);
-        voucherType.setStartDate(LocalDate.of(2020, 1, 1));
-        voucherType.setEndDate(LocalDate.of(2020, 11, 8));
+        voucherType.setStartDate(LocalDateTime.of(2020, 1, 1, 12, 37, 15));
+        voucherType.setEndDate(LocalDateTime.of(2020, 11, 8, 12, 37, 15));
         voucherType.setPriority(5);
         voucherType.setBaseUrl("www.test.com");
     }

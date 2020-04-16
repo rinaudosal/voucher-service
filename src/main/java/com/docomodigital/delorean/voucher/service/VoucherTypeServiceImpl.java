@@ -69,7 +69,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
         Map<String, List<VoucherType>> notGrouped = voucherTypeRepository.findAll(voucherTypeExample)
             .stream()
             .filter(vou -> {
-                LocalDate now = LocalDate.now(clock);
+            	LocalDateTime now = LocalDateTime.now(clock);
                 return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate());
             }).collect(Collectors.groupingBy(VoucherType::getProduct));
 
@@ -156,7 +156,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
 
         return voucherTypeRepository.findAll(exampleRequest).stream()
             .filter(vou -> {
-                LocalDate now = LocalDate.now(clock);
+            	LocalDateTime now = LocalDateTime.now(clock);
                 return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate()) && this.getVoucherAvailable(vou) > 0;
             })
             .max(Comparator.comparing(VoucherType::getPriority))
@@ -226,7 +226,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", type));
         }
 
-        LocalDate today = LocalDate.now(clock);
+        LocalDateTime today = LocalDateTime.now(clock);
         if (!voucherType.getEndDate().isAfter(today)) {
             throw new BadRequestException(Constants.TYPE_EXPIRED_ERROR, String.format("Voucher Type %s is expired", type));
         }

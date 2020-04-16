@@ -497,12 +497,12 @@ components:
           example: IT
         startDate:
           type: string
-          format: date
-          example: 2020-01-01
+          format: 'date-time'
+          example: 2020-01-01T17:32:28Z
         endDate:
           type: string
-          format: date
-          example: 2020-12-31
+          format: 'date-time'
+          example: 2020-01-01T17:32:28Z
         priority:
           type: integer
           example: 3

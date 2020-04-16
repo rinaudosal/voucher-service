@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
         return voucherTypeRepository.findAllVoucherTypeByProductIn(products)
             .stream()
             .filter(vou -> {
-                LocalDate now = LocalDate.now(clock);
+            	LocalDateTime now = LocalDateTime.now(clock);
                 int voucherAvailable = getVoucherAvailable(vou);
 
                 return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate().minusDays(1))
