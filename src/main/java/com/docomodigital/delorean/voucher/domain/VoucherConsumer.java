@@ -2,7 +2,7 @@ package com.docomodigital.delorean.voucher.domain;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * 2020/02/07
@@ -21,7 +21,7 @@ public class VoucherConsumer {
 
     private String userId;
     private String transactionId;
-    private LocalDateTime transactionDate;
+    private Instant transactionDate;
     private String billingStatus;
 
 }
