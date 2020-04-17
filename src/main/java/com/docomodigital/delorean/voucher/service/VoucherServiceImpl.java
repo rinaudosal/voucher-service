@@ -131,7 +131,7 @@ public class VoucherServiceImpl implements VoucherService {
             .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format("Voucher %s not found for type %s", code, typeId)));
 
         if (!VoucherStatus.RESERVED.equals(voucher.getStatus())) {
-            throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Reservation for the voucher code %s has expired or voucher it's already purchased", code));
+            throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Reservation for the voucher code %s has expired or voucher it is already purchased", code));
         }
 
         if (!voucherRequest.getTransactionId().equalsIgnoreCase(voucher.getTransactionId())) {

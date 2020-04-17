@@ -36,10 +36,10 @@ Feature: Confirm or Cancel Voucher Reserved
       | FAILED    | V1RESERVED  | WRONG  | txt1          | 13/01/2020 | TYPE_NOT_FOUND       | Voucher Type WRONG not found                                                               |
       | SUCCESS   | WRONG       | TIN1M  | txt1          | 13/01/2020 | TYPE_NOT_FOUND       | Voucher WRONG not found for type TIN1M                                                     |
       | FAILED    | WRONG       | TIN1M  | txt1          | 13/01/2020 | TYPE_NOT_FOUND       | Voucher WRONG not found for type TIN1M                                                     |
-      | SUCCESS   | V1ACTIVE    | TIN1M  | txt1          | 13/01/2020 | WRONG_STATUS         | Reservation for the voucher code V1ACTIVE has expired or voucher it's already purchased    |
-      | FAILED    | V1ACTIVE    | TIN1M  | txt1          | 13/01/2020 | WRONG_STATUS         | Reservation for the voucher code V1ACTIVE has expired or voucher it's already purchased    |
-      | SUCCESS   | V1PURCHASED | TIN1M  | txt1          | 13/01/2020 | WRONG_STATUS         | Reservation for the voucher code V1PURCHASED has expired or voucher it's already purchased |
-      | FAILED    | V1PURCHASED | TIN1M  | txt1          | 13/01/2020 | WRONG_STATUS         | Reservation for the voucher code V1PURCHASED has expired or voucher it's already purchased |
+      | SUCCESS   | V1ACTIVE    | TIN1M  | txt1          | 13/01/2020 | WRONG_STATUS         | Reservation for the voucher code V1ACTIVE has expired or voucher it is already purchased    |
+      | FAILED    | V1ACTIVE    | TIN1M  | txt1          | 13/01/2020 | WRONG_STATUS         | Reservation for the voucher code V1ACTIVE has expired or voucher it is already purchased    |
+      | SUCCESS   | V1PURCHASED | TIN1M  | txt1          | 13/01/2020 | WRONG_STATUS         | Reservation for the voucher code V1PURCHASED has expired or voucher it is already purchased |
+      | FAILED    | V1PURCHASED | TIN1M  | txt1          | 13/01/2020 | WRONG_STATUS         | Reservation for the voucher code V1PURCHASED has expired or voucher it is already purchased |
       | SUCCESS   | V9DRESERVED | TIN9D  | txt1          | 13/01/2020 | TYPE_DISABLED        | Voucher Type TIN9D is disabled                                                             |
       | FAILED    | V9DRESERVED | TIN9D  | txt1          | 13/01/2020 | TYPE_DISABLED        | Voucher Type TIN9D is disabled                                                             |
       | SUCCESS   | V1RESERVED  | TIN1M  | txt2          | 13/01/2020 | WRONG_TRANSACTION_ID | Transaction id txt2 is different of reserved txt1                                          |
