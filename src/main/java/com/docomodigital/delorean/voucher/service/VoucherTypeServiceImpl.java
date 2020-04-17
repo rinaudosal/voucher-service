@@ -14,8 +14,12 @@ import com.docomodigital.delorean.voucher.web.api.model.AvailableVoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.ReserveRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
+import com.mongodb.client.result.UpdateResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +29,15 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
+
 /**
  * 2020/01/23
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
+@Slf4j
 @Service
 public class VoucherTypeServiceImpl implements VoucherTypeService {
 
@@ -38,17 +46,20 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
     private final Clock clock;
     private final VoucherTypeMapper voucherTypeMapper;
     private final VoucherMapper voucherMapper;
+    private final MongoTemplate mongoTemplate;
 
     public VoucherTypeServiceImpl(VoucherTypeRepository voucherTypeRepository,
                                   VoucherRepository voucherRepository,
                                   Clock clock,
                                   VoucherTypeMapper voucherTypeMapper,
-                                  VoucherMapper voucherMapper) {
+                                  VoucherMapper voucherMapper,
+                                  MongoTemplate mongoTemplate) {
         this.voucherTypeRepository = voucherTypeRepository;
         this.voucherRepository = voucherRepository;
         this.clock = clock;
         this.voucherTypeMapper = voucherTypeMapper;
         this.voucherMapper = voucherMapper;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -163,21 +174,35 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             .map(VoucherType::getId)
             .collect(Collectors.toList());
 
-        if(voucherRepository.existsVoucherByTransactionIdAndTypeIdIn(reserveRequest.getTransactionId(), voucherTypeIdByMerchantId)) {
+        if (voucherRepository.existsVoucherByTransactionIdAndTypeIdIn(reserveRequest.getTransactionId(), voucherTypeIdByMerchantId)) {
             throw new BadRequestException(Constants.EXISTING_TRANSACTION_ID_ERROR,
                 String.format("Transaction id %s already exist for merchant %s", reserveRequest.getTransactionId(), type.getMerchantId()));
         }
 
-        Voucher voucherToBeReserve = voucherRepository.findFirstByTypeIdAndStatusEquals(type.getId(), VoucherStatus.ACTIVE)
+        UpdateResult updateResult = mongoTemplate.updateFirst(
+            query(
+                where("typeId").is(type.getId())
+                    .and("status").is(VoucherStatus.ACTIVE)
+            ),
+            new Update()
+                .set("status", VoucherStatus.RESERVED)
+                .set("transactionId", reserveRequest.getTransactionId())
+                .set("reserveDate", LocalDateTime.now(clock))
+            ,
+            Voucher.class
+        );
+
+        if (updateResult.getModifiedCount() != 1) {
+            throw new BadRequestException(Constants.TRANSACTIONAL_CONFLICT_ERROR, "Errors occurred on update voucher to reserve");
+        }
+
+        Voucher voucherUpdated = voucherRepository.findByTypeIdAndTransactionId(type.getId(), reserveRequest.getTransactionId())
             .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR,
-                String.format("Voucher with type %s and status ACTIVE not found", typeId)));
+                String.format("Voucher for Type %s and transaction %s not found ", type.getCode(), reserveRequest.getTransactionId())));
+        voucherUpdated.setActivationUrl(type.getBaseUrl() + voucherUpdated.getCode());
 
-        voucherToBeReserve.setStatus(VoucherStatus.RESERVED);
-        voucherToBeReserve.setTransactionId(reserveRequest.getTransactionId());
-        voucherToBeReserve.setReserveDate(LocalDateTime.now(clock));
-        voucherToBeReserve.setActivationUrl(type.getBaseUrl() + voucherToBeReserve.getCode());
-
-        return Optional.of(voucherRepository.save(voucherToBeReserve))
+        log.info(String.format("Reserved voucher %s for the transaction %s", voucherUpdated.getCode(), voucherUpdated.getTransactionId()));
+        return Optional.of(voucherRepository.save(voucherUpdated))
             .map(v -> {
                 Vouchers vouchers = voucherMapper.toDto(v);
                 vouchers.setTypeId(type.getCode());
@@ -185,6 +210,12 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             });
     }
 
+    @Override
+    public VoucherType findById(String id) {
+        return voucherTypeRepository.findById(id)
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR,
+                String.format("Voucher Type %s not found", id)));
+    }
 
     private VoucherType getValidVoucherType(String type) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type)
@@ -193,7 +224,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
 
         // User not enabled to reserve
         Shop shop = (Shop) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!shop.getId().equalsIgnoreCase(voucherType.getShopId())) {
+        if (!shop.getId().equalsIgnoreCase(voucherType.getShopId())) {
             throw new BadRequestException(Constants.UNAUTHORIZED_SHOP_NAME,
                 String.format("The shop %s is not enable to reserve vouchers of %s",
                     shop.getId(),

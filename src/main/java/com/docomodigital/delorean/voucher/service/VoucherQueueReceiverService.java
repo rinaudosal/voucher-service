@@ -44,10 +44,12 @@ public class VoucherQueueReceiverService {
             consumeVoucherService.sendNotification(voucherConsumed);
         } catch (BadRequestException be) {
             log.error("BadRequest while consuming queue message", be);
-            VoucherError voucherError = new VoucherError();
-            voucherError.setErrorCode(be.getErrorCode());
-            voucherError.setErrorMessage(be.getMessage());
-            voucherErrorRepository.save(voucherError);
+            if (!"REQUEST_NOT_BILLED".equals(be.getErrorCode())) {
+                VoucherError voucherError = new VoucherError();
+                voucherError.setErrorCode(be.getErrorCode());
+                voucherError.setErrorMessage(be.getMessage());
+                voucherErrorRepository.save(voucherError);
+            }
         } catch (Exception e) {
             log.error("Exception while consuming queue message", e);
             VoucherError voucherError = new VoucherError();

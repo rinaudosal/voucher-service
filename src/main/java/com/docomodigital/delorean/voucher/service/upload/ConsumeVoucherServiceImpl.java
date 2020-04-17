@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.service.upload;
 
+import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherConsumer;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
@@ -69,6 +70,7 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         return voucherConsumer;
     }
 
+    //FIXME CONFIGURE ATOMIC CALL
     @Override
     public Voucher consumeVoucher(VoucherConsumer voucherConsumer) {
         if (!"BILLED".equals(voucherConsumer.getBillingStatus())) {
@@ -80,10 +82,10 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
             voucherConsumer.getPaymentProvider(),
             voucherConsumer.getCountry(),
             voucherConsumer.getProductId()))
-            .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND", "Voucher Type not found"));
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, "Voucher Type not found"));
 
         Voucher voucherToBeConsume = voucherRepository.findFirstByTypeIdAndStatusEquals(voucherType.getId(), VoucherStatus.ACTIVE)
-            .orElseThrow(() -> new BadRequestException("VOUCHER_NOT_FOUND", "Voucher with type " + voucherType.getId() + " and status ACTIVE not found"));
+            .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR, "Voucher with type " + voucherType.getId() + " and status ACTIVE not found"));
 
         voucherToBeConsume.setStatus(VoucherStatus.PURCHASED);
         voucherToBeConsume.setUserId(voucherConsumer.getUserId());

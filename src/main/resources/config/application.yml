@@ -77,3 +77,6 @@ merchant-client:
    connectionTimeout: 10000
    readTimeout: 10000 
 
+job:
+  reservationExpired:
+    fixedRate-in-milliseconds: 900000

@@ -16,7 +16,7 @@ transactionStatus=$4
 #check headers and body
 apiKey="5doxepApu54wyuZGGZCN2R" #stg telkomsel
 #apiKey="TfQpsC2YYFYJBcBiY6QNhx" #local
-bodyNotEncoded="{ \"amount\": 10, \"currency\": \"RP\", \"transactionId\": \"$transactionCode\", \"transactionStatus\": \"$transactionStatus\", \"userId\": \"MARIO\" }"
+bodyNotEncoded="{ \"amount\": 10, \"currency\": \"RP\", \"transactionId\": \"$transactionCode\", \"transactionStatus\": \"$transactionStatus\", \"transactionDate\": \"2017-07-21T17:32:28Z\", \"userId\": \"MARIO\" }"
 bodyEncoded=$(printf '%s' "$bodyNotEncoded" | base64 -w 0 | cut -f1 -d' ')
 secretKey="b66ei9tv9p727ghwe049vv72351qi6rr7v24xh8e4h35te5krsx2o991jjh29s33"
 before=$secretKey'.'$bodyEncoded

@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.service;
 
+import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
@@ -42,4 +43,19 @@ public interface VoucherService {
     Optional<Vouchers> updateVoucher(String code, String typeId, VoucherRequest voucherRequest);
 
     Optional<Vouchers> getVoucher(String code, String typeId);
+
+    /**
+     * Rollback the voucher to ACTIVE state
+     *
+     * @param voucherExpired the voucher to rollback the reservation
+     */
+    void restoreToActive(Voucher voucherExpired);
+
+    /**
+     * This method retrieve all the vouchers in a specific status
+     *
+     * @return the List of vouchers RESERVED
+     */
+    List<Voucher> findAllReservedVouchers();
+
 }

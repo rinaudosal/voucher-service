@@ -13,6 +13,8 @@ public final class Constants {
     public static final String TYPE_EXPIRED_ERROR = "TYPE_EXPIRED";
     public static final String EXISTING_TRANSACTION_ID_ERROR = "EXISTING_TRANSACTION_ID";
     public static final String WRONG_TRANSACTION_ID_ERROR = "WRONG_TRANSACTION_ID";
+    public static final String TRANSACTIONAL_CONFLICT_ERROR = "TRANSACTIONAL_CONFLICT";
+
     public static final String UNAUTHORIZED_SHOP_NAME = "UNAUTHORIZED_SHOP";
     public static final String API_KEY_HEADER = "X-Api-Key";
     public static final String SIGNATURE_HEADER_NAME = "X-Signature";
