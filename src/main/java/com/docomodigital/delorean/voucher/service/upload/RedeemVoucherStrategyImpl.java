@@ -10,7 +10,9 @@ import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -37,7 +39,7 @@ public class RedeemVoucherStrategyImpl implements ProcessVoucherStrategy {
         }
 
         String code = voucherData[1];
-        LocalDateTime dateRedeemed = LocalDateTime.parse(voucherData[2], DateTimeFormatter.ofPattern("d/M/yy H:mm"));
+        Instant dateRedeemed = LocalDateTime.parse(voucherData[2], DateTimeFormatter.ofPattern("d/M/yy H:mm")).toInstant(ZoneOffset.UTC);
 
         Voucher voucher = voucherRepository.findByCodeAndTypeId(code, type.getId())
             .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR,

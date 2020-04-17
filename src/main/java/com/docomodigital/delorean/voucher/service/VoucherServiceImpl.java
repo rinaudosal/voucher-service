@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -143,11 +143,9 @@ public class VoucherServiceImpl implements VoucherService {
 
         if (VoucherRequest.TransactionStatusEnum.SUCCESS.equals(voucherRequest.getTransactionStatus())) {
             voucher.setTransactionId(voucherRequest.getTransactionId());
-            if (voucherRequest.getTransactionDate() != null) {
-                voucher.setTransactionDate(voucherRequest.getTransactionDate().toLocalDateTime());
-            }
+            voucher.setTransactionDate(voucherRequest.getTransactionDate().toInstant());
             voucher.setStatus(VoucherStatus.PURCHASED);
-            voucher.setPurchaseDate(LocalDateTime.now(clock));
+            voucher.setPurchaseDate(Instant.now(clock));
             voucher.setAmount(voucherRequest.getAmount());
             voucher.setCurrency(voucherRequest.getCurrency());
             voucher.setUserId(voucherRequest.getUserId());

@@ -2,7 +2,7 @@ package com.docomodigital.delorean.voucher.mapper;
 
 import org.mapstruct.Mapper;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -14,17 +14,17 @@ import java.time.ZoneOffset;
 @Mapper(componentModel = "spring")
 public interface CommonMapper {
 
-    default OffsetDateTime map(LocalDateTime localDateTime) {
-        if (localDateTime != null) {
-            return localDateTime.atOffset(ZoneOffset.UTC);
+    default OffsetDateTime map(Instant instant) {
+        if (instant != null) {
+            return instant.atOffset(ZoneOffset.UTC);
         }
 
         return null;
     }
 
-    default LocalDateTime map(OffsetDateTime localDateTime) {
-        if (localDateTime != null) {
-            return localDateTime.toLocalDateTime();
+    default Instant map(OffsetDateTime offsetDateTime) {
+        if (offsetDateTime != null) {
+            return offsetDateTime.toInstant();
         }
 
         return null;

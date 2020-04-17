@@ -70,13 +70,13 @@ public class VoucherScheduledJobsTest extends BaseUnitTest {
         Voucher voucher1 = new Voucher();
         voucher1.setCode("example_code");
         voucher1.setTypeId("type_id");
-        voucher1.setReserveDate(LocalDateTime.parse("2011-12-03T10:15:30.190", DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        voucher1.setReserveDate(LocalDateTime.parse("2011-12-03T10:15:30.190", DateTimeFormatter.ISO_LOCAL_DATE_TIME).toInstant(ZoneOffset.UTC));
         voucherList.add(voucher1);
 
         Voucher voucher = new Voucher();
         voucher.setCode("example_code2");
         voucher.setTypeId("type_id_2");
-        voucher.setReserveDate(LocalDateTime.parse("2011-12-03T10:15:30.191", DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        voucher.setReserveDate(LocalDateTime.parse("2011-12-03T10:15:30.191", DateTimeFormatter.ISO_LOCAL_DATE_TIME).toInstant(ZoneOffset.UTC));
         voucherList.add(voucher);
         BDDMockito.given(voucherService.findAllReservedVouchers())
             .willReturn(voucherList);
@@ -121,13 +121,13 @@ public class VoucherScheduledJobsTest extends BaseUnitTest {
         Voucher voucher1 = new Voucher();
         voucher1.setCode("example_code");
         voucher1.setTypeId("type_id");
-        voucher1.setReserveDate(LocalDateTime.parse("2011-12-03T10:15:30.190", DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        voucher1.setReserveDate(LocalDateTime.parse("2011-12-03T10:15:30.190", DateTimeFormatter.ISO_LOCAL_DATE_TIME).toInstant(ZoneOffset.UTC));
         voucherList.add(voucher1);
 
         Voucher voucher = new Voucher();
         voucher.setCode("example_code2");
         voucher.setTypeId("type_id_2");
-        voucher.setReserveDate(LocalDateTime.parse("2011-12-03T10:15:30.191", DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        voucher.setReserveDate(LocalDateTime.parse("2011-12-03T10:15:30.191", DateTimeFormatter.ISO_LOCAL_DATE_TIME).toInstant(ZoneOffset.UTC));
         voucherList.add(voucher);
 
         BDDMockito.given(voucherService.findAllReservedVouchers())
