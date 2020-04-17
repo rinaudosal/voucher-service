@@ -5,14 +5,14 @@ Feature: Reserve Voucher
 
   Background:
     Given exist the voucher types:
-      | typeId  | description           | enabled | startDate  | endDate    | baseUrl           | shop       |
-      | TIN1M   | 1 Months              | true    | 01/01/2020 | 31/12/2020 | www.test.com/vip/ | my_shop_id |
-      | TIN1MWR | 1 Months              | true    | 01/01/2020 | 31/12/2020 | www.test.com/vip/ | wrong      |
-      | TIN1S   | 1 Months Sale!        | true    | 01/02/2020 | 18/08/2020 | www.test.com/vip/ | my_shop_id |
-      | TIN1SS  | 1 Months Super Sale!! | true    | 01/08/2020 | 15/08/2020 | www.test.com/vip/ | my_shop_id |
-      | TIN3EX  | not in range          | true    | 01/01/2020 | 20/02/2020 | www.test.com/vip/ | my_shop_id |
-      | TIN3NO  | no available product  | true    | 01/01/2020 | 20/06/2020 | www.test.com/vip/ | my_shop_id |
-      | TIN9D   | Voucher not enabled   | false   | 05/01/2020 | 21/02/2020 | www.test.com/vip/ | my_shop_id |
+      | typeId  | description           | enabled | startDate  					| endDate    					| baseUrl           | shop       |
+      | TIN1M   | 1 Months              | true    | 01/01/2020 10:30:00 | 31/12/2020 10:30:00 | www.test.com/vip/ | my_shop_id |
+      | TIN1MWR | 1 Months              | true    | 01/01/2020 10:30:00 | 31/12/2020 10:30:00 | www.test.com/vip/ | wrong      |
+      | TIN1S   | 1 Months Sale!        | true    | 01/02/2020 10:30:00 | 18/08/2020 10:30:00 | www.test.com/vip/ | my_shop_id |
+      | TIN1SS  | 1 Months Super Sale!! | true    | 01/08/2020 10:30:00 | 15/08/2020 10:30:00 | www.test.com/vip/ | my_shop_id |
+      | TIN3EX  | not in range          | true    | 01/01/2020 10:30:00 | 20/02/2020 10:30:00 | www.test.com/vip/ | my_shop_id |
+      | TIN3NO  | no available product  | true    | 01/01/2020 10:30:00 | 20/06/2020 10:30:00 | www.test.com/vip/ | my_shop_id |
+      | TIN9D   | Voucher not enabled   | false   | 05/01/2020 10:30:00 | 21/02/2020 10:30:00 | www.test.com/vip/ | my_shop_id |
     And exist the voucher:
       | code          | typeId | status    | transactionId |
       | V1ACTIVE      | TIN1M  | ACTIVE    |               |

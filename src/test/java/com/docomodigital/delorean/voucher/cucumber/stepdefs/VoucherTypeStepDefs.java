@@ -286,10 +286,10 @@ public class VoucherTypeStepDefs extends StepDefs {
             voucherType.setEnabled(firstRow.get("enabled").equals("true"));
         }
         if (!StringUtils.equals(missingField, "startDate")) {
-            voucherType.setStartDate(OffsetDateTime.parse(firstRow.get("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            voucherType.setStartDate(OffsetDateTime.parse(firstRow.get("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).withOffsetSameInstant(ZoneOffset.UTC));
         }
         if (!StringUtils.equals(missingField, "endDate")) {
-            voucherType.setEndDate(OffsetDateTime.parse(firstRow.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            voucherType.setEndDate(OffsetDateTime.parse(firstRow.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).withOffsetSameInstant(ZoneOffset.UTC));
         }
         if (!StringUtils.equals(missingField, "priority")) {
             voucherType.setPriority(Integer.parseInt(firstRow.get("priority")));
@@ -319,8 +319,8 @@ public class VoucherTypeStepDefs extends StepDefs {
             voucherType.setCountry(getElementOrDefault(row, "country", "IN"));
             voucherType.setShopId(getElementOrDefault(row, "shop", "shop2"));
             voucherType.setEnabled(getElementOrDefault(row, "enabled", "true").equals("true"));
-            voucherType.setStartDate(LocalDateTime.parse(getElementOrDefault(row, "startDate", "01/01/2020"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            voucherType.setEndDate(LocalDateTime.parse(getElementOrDefault(row, "endDate", "31/12/2020"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            voucherType.setStartDate(LocalDateTime.parse(getElementOrDefault(row, "startDate", "01/01/2020 22:00:00"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneOffset.UTC)));
+            voucherType.setEndDate(LocalDateTime.parse(getElementOrDefault(row, "endDate", "31/12/2020 22:00:00"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneOffset.UTC)));
             voucherType.setPriority(Integer.parseInt(getElementOrDefault(row, "priority", "5")));
             voucherType.setBaseUrl("www.test.com/vip/");
 

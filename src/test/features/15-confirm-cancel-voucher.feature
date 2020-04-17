@@ -5,9 +5,9 @@ Feature: Confirm or Cancel Voucher Reserved
 
   Background:
     Given exist the voucher types:
-      | typeId | description         | enabled | startDate  | endDate    | shop       |
-      | TIN1M  | 1 Months            | true    | 01/01/2020 | 31/12/2020 | my_shop_id |
-      | TIN9D  | Voucher not enabled | false   | 01/01/2020 | 31/12/2020 | my_shop_id |
+      | typeId | description         | enabled | startDate  				 | endDate    				 | shop       |
+      | TIN1M  | 1 Months            | true    | 01/01/2020 12:30:00 | 31/12/2020 12:30:00 | my_shop_id |
+      | TIN9D  | Voucher not enabled | false   | 01/01/2020 12:30:00 | 31/12/2020 12:30:00 | my_shop_id |
     And exist the voucher:
       | code        | typeId | status    | activationUrl | reserveDate | transactionId |
       | V1ACTIVE    | TIN1M  | ACTIVE    |               |             |               |
