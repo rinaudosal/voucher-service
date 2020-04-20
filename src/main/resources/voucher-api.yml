@@ -513,6 +513,10 @@ components:
           type: integer
           example: 900000
           default: 900000
+        bypassStatusCheck:
+          type: boolean
+          example: false
+          default: false
     ReserveRequest:
       type: object
       required:

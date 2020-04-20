@@ -58,6 +58,8 @@ public class VoucherType extends AbstractAuditingEntity {
 
     private Integer expiryTimeReservation;
 
+    private Boolean bypassStatusCheck;
+
     public String getId() {
         return id;
     }
@@ -192,5 +194,13 @@ public class VoucherType extends AbstractAuditingEntity {
 
     public void setExpiryTimeReservation(Integer expiryTimeReservation) {
         this.expiryTimeReservation = expiryTimeReservation;
+    }
+
+    public Boolean getBypassStatusCheck() {
+        return bypassStatusCheck;
+    }
+
+    public void setBypassStatusCheck(Boolean bypassStatusCheck) {
+        this.bypassStatusCheck = bypassStatusCheck;
     }
 }
