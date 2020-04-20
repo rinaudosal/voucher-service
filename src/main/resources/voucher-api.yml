@@ -509,6 +509,10 @@ components:
         baseUrl:
           type: string
           example: www.tinder.com/vip/
+        expiryTimeReservation:
+          type: integer
+          example: 900000
+          default: 900000
     ReserveRequest:
       type: object
       required:

@@ -43,9 +43,6 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
     public void setUp() {
         target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, clock, null);
 
-        Instant instant = LocalDate.parse("17/12/2002", DateTimeFormatter.ofPattern("dd/MM/yyyy")).atStartOfDay().toInstant(ZoneOffset.UTC);
-        setupClockMock(instant);
-
         VoucherType voucherType = new VoucherType();
         voucherType.setId("my_type_id");
         voucherType.setBaseUrl("www.google.com/");
@@ -71,12 +68,14 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
         input.setProductId("my_product_id");
         input.setUserId("my_user_id");
         input.setTransactionId("my_transaction_id");
-        input.setTransactionDate(LocalDateTime.of(2020, 2, 2, 2, 2, 2));
+        input.setTransactionDate(LocalDateTime.of(2020, 2, 2, 2, 2, 2).toInstant(ZoneOffset.UTC));
         input.setBillingStatus("BILLED");
     }
 
     @Test
     public void voucherConsumedCorrectly() {
+        Instant instant = LocalDate.parse("17/12/2002", DateTimeFormatter.ofPattern("dd/MM/yyyy")).atStartOfDay().toInstant(ZoneOffset.UTC);
+        BDDMockito.when(clock.instant()).thenReturn(instant);
 
         Voucher voucherReturned = target.consumeVoucher(input);
 
@@ -137,6 +136,6 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
         Assertions.assertThat(voucher.getCode()).isEqualTo("PIPPO");
         Assertions.assertThat(voucher.getStatus()).isEqualTo(VoucherStatus.PURCHASED);
         Assertions.assertThat(voucher.getActivationUrl()).isEqualTo("www.google.com/PIPPO");
-        Assertions.assertThat(voucher.getPurchaseDate()).isEqualTo(LocalDateTime.of(2002, 12, 17, 0, 0));
+        Assertions.assertThat(voucher.getPurchaseDate()).isEqualTo(LocalDateTime.of(2002, 12, 17, 0, 0).toInstant(ZoneOffset.UTC));
     }
 }

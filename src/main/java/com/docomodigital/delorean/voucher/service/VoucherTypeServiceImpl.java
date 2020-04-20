@@ -15,6 +15,7 @@ import com.docomodigital.delorean.voucher.web.api.model.ReserveRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import com.mongodb.client.result.UpdateResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -36,6 +37,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
+@Slf4j
 @Service
 public class VoucherTypeServiceImpl implements VoucherTypeService {
 
@@ -199,6 +201,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
                 String.format("Voucher for Type %s and transaction %s not found ", type.getCode(), reserveRequest.getTransactionId())));
         voucherUpdated.setActivationUrl(type.getBaseUrl() + voucherUpdated.getCode());
 
+        log.info(String.format("Reserved voucher %s for the transaction %s", voucherUpdated.getCode(), voucherUpdated.getTransactionId()));
         return Optional.of(voucherRepository.save(voucherUpdated))
             .map(v -> {
                 Vouchers vouchers = voucherMapper.toDto(v);
@@ -207,6 +210,12 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             });
     }
 
+    @Override
+    public VoucherType findById(String id) {
+        return voucherTypeRepository.findById(id)
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR,
+                String.format("Voucher Type %s not found", id)));
+    }
 
     private VoucherType getValidVoucherType(String type) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type)

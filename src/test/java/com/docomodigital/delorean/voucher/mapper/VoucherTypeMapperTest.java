@@ -104,6 +104,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setStartDate(OffsetDateTime.of(LocalDateTime.of(2020, 1, 1, 6, 6, 6), ZoneOffset.UTC));
         voucherType.setEndDate(OffsetDateTime.of(LocalDateTime.of(2020, 1, 2, 6, 6, 6), ZoneOffset.UTC));
         voucherType.setPriority(5);
+        voucherType.setExpiryTimeReservation(15000);
         return voucherType;
     }
 
@@ -125,6 +126,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setStartDate(LocalDateTime.of(2020, 1, 1, 6, 6, 6));
         voucherType.setEndDate(LocalDateTime.of(2020, 1, 2, 6, 6, 6));
         voucherType.setPriority(5);
+        voucherType.setExpiryTimeReservation(15000);
         return voucherType;
     }
 
@@ -143,6 +145,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherType.getStartDate()).isEqualTo(LocalDateTime.of(2020, 1, 1, 6, 6, 6));
         Assertions.assertThat(voucherType.getEndDate()).isEqualTo(LocalDateTime.of(2020, 1, 2, 6, 6, 6));
         Assertions.assertThat(voucherType.getPriority()).isEqualTo(5);
+        Assertions.assertThat(voucherType.getExpiryTimeReservation()).isEqualTo(15000);
     }
 
     private void assertDto(VoucherTypes voucherTypes) {
@@ -160,5 +163,6 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherTypes.getStartDate()).isEqualTo(LocalDateTime.of(2020, 1, 1, 6, 6, 6).atOffset(ZoneOffset.UTC));
         Assertions.assertThat(voucherTypes.getEndDate()).isEqualTo(LocalDateTime.of(2020, 1, 2, 6, 6, 6).atOffset(ZoneOffset.UTC));
         Assertions.assertThat(voucherTypes.getPriority()).isEqualTo(5);
+        Assertions.assertThat(voucherTypes.getExpiryTimeReservation()).isEqualTo(15000);
     }
 }

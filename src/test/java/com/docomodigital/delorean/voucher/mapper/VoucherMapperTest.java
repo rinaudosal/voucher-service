@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -57,7 +58,7 @@ public class VoucherMapperTest extends BaseUnitTest {
 
     @Test
     public void assertNullMapLocalDate() {
-        Assertions.assertThat(new CommonMapperImpl().map((LocalDateTime) null)).isNull();
+        Assertions.assertThat(new CommonMapperImpl().map((Instant) null)).isNull();
         Assertions.assertThat(new CommonMapperImpl().map((OffsetDateTime) null)).isNull();
     }
 
@@ -119,10 +120,10 @@ public class VoucherMapperTest extends BaseUnitTest {
         voucher.setTypeId("my_type_id");
         voucher.setUserId("my_user_id");
         voucher.setTransactionId("my_transaction_id");
-        voucher.setTransactionDate(LocalDateTime.of(2020, 2, 2, 22, 22));
-        voucher.setReserveDate(LocalDateTime.of(2020, 2, 2, 12, 12));
-        voucher.setPurchaseDate(LocalDateTime.of(2020, 2, 2, 12, 12));
-        voucher.setRedeemDate(LocalDateTime.of(2020, 2, 2, 12, 12));
+        voucher.setTransactionDate(LocalDateTime.of(2020, 2, 2, 22, 22).toInstant(ZoneOffset.UTC));
+        voucher.setReserveDate(LocalDateTime.of(2020, 2, 2, 12, 12).toInstant(ZoneOffset.UTC));
+        voucher.setPurchaseDate(LocalDateTime.of(2020, 2, 2, 12, 12).toInstant(ZoneOffset.UTC));
+        voucher.setRedeemDate(LocalDateTime.of(2020, 2, 2, 12, 12).toInstant(ZoneOffset.UTC));
         voucher.setActivationUrl("www.test.com");
         voucher.setVoucherFileId("my_file_id");
 
@@ -136,10 +137,10 @@ public class VoucherMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucher.getTypeId()).isEqualTo("my_type");
         Assertions.assertThat(voucher.getUserId()).isEqualTo("my_user_id");
         Assertions.assertThat(voucher.getTransactionId()).isEqualTo("my_transaction_id");
-        Assertions.assertThat(voucher.getTransactionDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 22, 22));
-        Assertions.assertThat(voucher.getReserveDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12));
-        Assertions.assertThat(voucher.getPurchaseDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12));
-        Assertions.assertThat(voucher.getRedeemDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12));
+        Assertions.assertThat(voucher.getTransactionDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 22, 22).toInstant(ZoneOffset.UTC));
+        Assertions.assertThat(voucher.getReserveDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12).toInstant(ZoneOffset.UTC));
+        Assertions.assertThat(voucher.getPurchaseDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12).toInstant(ZoneOffset.UTC));
+        Assertions.assertThat(voucher.getRedeemDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12).toInstant(ZoneOffset.UTC));
         Assertions.assertThat(voucher.getActivationUrl()).isEqualTo("www.test.com");
         Assertions.assertThat(voucher.getVoucherFileId()).isNull();
     }
@@ -150,7 +151,7 @@ public class VoucherMapperTest extends BaseUnitTest {
         Assertions.assertThat(vouchers.getStatus()).isEqualTo(Vouchers.StatusEnum.ACTIVE);
         Assertions.assertThat(vouchers.getUserId()).isEqualTo("my_user_id");
         Assertions.assertThat(vouchers.getTransactionId()).isEqualTo("my_transaction_id");
-        Assertions.assertThat(vouchers.getTransactionDate()).isEqualTo(OffsetDateTime.of(LocalDateTime.of(2020, 2, 2, 22, 22), ZoneOffset.UTC));
+        Assertions.assertThat(vouchers.getTransactionDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 22, 22).atOffset(ZoneOffset.UTC));
         Assertions.assertThat(vouchers.getReserveDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12).atOffset(ZoneOffset.UTC));
         Assertions.assertThat(vouchers.getPurchaseDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12).atOffset(ZoneOffset.UTC));
         Assertions.assertThat(vouchers.getRedeemDate()).isEqualTo(LocalDateTime.of(2020, 2, 2, 12, 12).atOffset(ZoneOffset.UTC));

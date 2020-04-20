@@ -4,12 +4,16 @@ import com.docomodigital.delorean.voucher.BaseVoucherIntegrationTest;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * 2020/02/03
@@ -21,17 +25,37 @@ public class VoucherRepositoryIntTest extends BaseVoucherIntegrationTest {
     @Test
     public void findByCodeWorks() {
         VoucherType voucherType = saveVoucherType();
-        saveVoucher(voucherType.getId());
+        saveVoucher(voucherType.getId(), VoucherStatus.ACTIVE, "my_voucher_code");
 
-        Assertions.assertThat(voucherRepository.existsVoucherByCodeAndTypeIdIn("my_voucher_code", Arrays.asList(voucherType.getId(), "BLABLA"))).isTrue();
-        Assertions.assertThat(voucherRepository.existsVoucherByCodeAndTypeIdIn("not_my_voucher_code", Arrays.asList(voucherType.getId(), "BLABLA"))).isFalse();
-        Assertions.assertThat(voucherRepository.existsVoucherByCodeAndTypeIdIn("my_voucher_code", Arrays.asList("not_my_voucher_type_code", "BLABLA"))).isFalse();
+        assertThat(voucherRepository.existsVoucherByCodeAndTypeIdIn("my_voucher_code", Arrays.asList(voucherType.getId(), "BLABLA"))).isTrue();
+        assertThat(voucherRepository.existsVoucherByCodeAndTypeIdIn("not_my_voucher_code", Arrays.asList(voucherType.getId(), "BLABLA"))).isFalse();
+        assertThat(voucherRepository.existsVoucherByCodeAndTypeIdIn("my_voucher_code", Arrays.asList("not_my_voucher_type_code", "BLABLA"))).isFalse();
     }
 
-    private void saveVoucher(String typeId) {
+    @Test
+    public void findByStatusWorks() {
+        VoucherType voucherType = saveVoucherType();
+        saveVoucher(voucherType.getId(), VoucherStatus.ACTIVE, "my_voucher_code");
+        saveVoucher(voucherType.getId(), VoucherStatus.PURCHASED, "my_voucher_code2");
+        saveVoucher(voucherType.getId(), VoucherStatus.RESERVED, "my_voucher_code3");
+        saveVoucher(voucherType.getId(), VoucherStatus.ACTIVE, "my_voucher_code4");
+
+        checkCollectionByStatus(VoucherStatus.ACTIVE, Arrays.asList("my_voucher_code", "my_voucher_code4"));
+        checkCollectionByStatus(VoucherStatus.PURCHASED, Collections.singletonList("my_voucher_code2"));
+        checkCollectionByStatus(VoucherStatus.RESERVED, Collections.singletonList("my_voucher_code3"));
+    }
+
+    private void checkCollectionByStatus(VoucherStatus voucherStatus, List<String> voucherNames) {
+        List<Voucher> voucherList = voucherRepository.findAllByStatus(voucherStatus);
+        assertThat(voucherList).hasSize(voucherNames.size());
+        List<String> voucherCodes = voucherList.stream().map(Voucher::getCode).collect(Collectors.toList());
+        assertThat(voucherCodes).containsExactlyInAnyOrderElementsOf(voucherNames);
+    }
+
+    private void saveVoucher(String typeId, VoucherStatus status, String code) {
         Voucher voucher = new Voucher();
-        voucher.setCode("my_voucher_code");
-        voucher.setStatus(VoucherStatus.ACTIVE);
+        voucher.setCode(code);
+        voucher.setStatus(status);
         voucher.setTypeId(typeId);
 
         voucherRepository.save(voucher);
