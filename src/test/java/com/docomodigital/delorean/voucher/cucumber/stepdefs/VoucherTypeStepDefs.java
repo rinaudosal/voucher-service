@@ -322,8 +322,8 @@ public class VoucherTypeStepDefs extends StepDefs {
             voucherType.setCountry(getElementOrDefault(row, "country", "IN"));
             voucherType.setShopId(getElementOrDefault(row, "shop", "shop2"));
             voucherType.setEnabled(getElementOrDefault(row, "enabled", "true").equals("true"));
-            voucherType.setStartDate(LocalDateTime.parse(getElementOrDefault(row, "startDate", "01/01/2020 22:00:00"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
-            voucherType.setEndDate(LocalDateTime.parse(getElementOrDefault(row, "endDate", "31/12/2020 22:00:00"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+            voucherType.setStartDate(LocalDateTime.parse(getElementOrDefault(row, "startDate", "01/01/2020 22:00:00"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).toInstant(ZoneOffset.UTC));
+            voucherType.setEndDate(LocalDateTime.parse(getElementOrDefault(row, "endDate", "31/12/2020 22:00:00"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).toInstant(ZoneOffset.UTC));
             voucherType.setPriority(Integer.parseInt(getElementOrDefault(row, "priority", "5")));
             voucherType.setBaseUrl("www.test.com/vip/");
             voucherType.setBypassStatusCheck(getElementOrDefault(row, "bypassStatusCheck", "true").equals("true"));

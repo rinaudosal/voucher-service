@@ -124,8 +124,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setCountry("my_country");
         voucherType.setShopId("my_shop");
         voucherType.setEnabled(true);
-        voucherType.setStartDate(LocalDateTime.of(2020, 1, 1, 6, 6, 6));
-        voucherType.setEndDate(LocalDateTime.of(2020, 1, 2, 6, 6, 6));
+        voucherType.setStartDate(LocalDateTime.of(2020, 1, 1, 6, 6, 6).toInstant(ZoneOffset.UTC));
+        voucherType.setEndDate(LocalDateTime.of(2020, 1, 2, 6, 6, 6).toInstant(ZoneOffset.UTC));
         voucherType.setPriority(5);
         voucherType.setExpiryTimeReservation(15000);
         voucherType.setBypassStatusCheck(true);
@@ -144,8 +144,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherType.getPaymentProvider()).isEqualTo("my_payment");
         Assertions.assertThat(voucherType.getShopId()).isEqualTo("my_shop");
         Assertions.assertThat(voucherType.getEnabled()).isTrue();
-        Assertions.assertThat(voucherType.getStartDate()).isEqualTo(LocalDateTime.of(2020, 1, 1, 6, 6, 6));
-        Assertions.assertThat(voucherType.getEndDate()).isEqualTo(LocalDateTime.of(2020, 1, 2, 6, 6, 6));
+        Assertions.assertThat(voucherType.getStartDate()).isEqualTo(LocalDateTime.of(2020, 1, 1, 6, 6, 6).toInstant(ZoneOffset.UTC));
+        Assertions.assertThat(voucherType.getEndDate()).isEqualTo(LocalDateTime.of(2020, 1, 2, 6, 6, 6).toInstant(ZoneOffset.UTC));
         Assertions.assertThat(voucherType.getPriority()).isEqualTo(5);
         Assertions.assertThat(voucherType.getExpiryTimeReservation()).isEqualTo(15000);
         Assertions.assertThat(voucherType.getBypassStatusCheck()).isTrue();

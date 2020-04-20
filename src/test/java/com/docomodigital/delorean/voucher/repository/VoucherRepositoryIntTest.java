@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -75,8 +76,8 @@ public class VoucherRepositoryIntTest extends BaseVoucherIntegrationTest {
         voucherType.setCountry("INDIA");
         voucherType.setShopId("my_shop");
         voucherType.setEnabled(true);
-        voucherType.setStartDate(LocalDateTime.of(2020, 1, 1, 12, 37, 15));
-        voucherType.setEndDate(LocalDateTime.of(2020, 11, 8, 12, 37, 15));
+        voucherType.setStartDate(LocalDateTime.of(2020, 1, 1, 12, 37, 15).toInstant(ZoneOffset.UTC));
+        voucherType.setEndDate(LocalDateTime.of(2020, 11, 8, 12, 37, 15).toInstant(ZoneOffset.UTC));
         voucherType.setPriority(5);
         voucherType.setBaseUrl("www.test.com");
 

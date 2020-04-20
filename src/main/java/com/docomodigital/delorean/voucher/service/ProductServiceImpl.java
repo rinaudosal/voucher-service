@@ -9,8 +9,10 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,10 +40,10 @@ public class ProductServiceImpl implements ProductService {
         return voucherTypeRepository.findAllVoucherTypeByProductIn(products)
             .stream()
             .filter(vou -> {
-            	LocalDateTime now = LocalDateTime.now(clock);
+                Instant now = Instant.now(clock);
                 int voucherAvailable = getVoucherAvailable(vou);
 
-                return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate().minusDays(1))
+                return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate().minus(1, ChronoUnit.DAYS))
                     && voucherAvailable > 0
                     && vou.getEnabled();
             })

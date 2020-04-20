@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -71,7 +72,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
         Map<String, List<VoucherType>> notGrouped = voucherTypeRepository.findAll(voucherTypeExample)
             .stream()
             .filter(vou -> {
-            	LocalDateTime now = LocalDateTime.now(clock);
+                Instant now = Instant.now(clock);
                 return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate());
             }).collect(Collectors.groupingBy(VoucherType::getProduct));
 
@@ -158,7 +159,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
 
         return voucherTypeRepository.findAll(exampleRequest).stream()
             .filter(vou -> {
-            	LocalDateTime now = LocalDateTime.now(clock);
+                Instant now = Instant.now(clock);
                 return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate()) && this.getVoucherAvailable(vou) > 0;
             })
             .max(Comparator.comparing(VoucherType::getPriority))
@@ -235,7 +236,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", type));
         }
 
-        LocalDateTime today = LocalDateTime.now(clock);
+        Instant today = Instant.now(clock);
         if (!voucherType.getEndDate().isAfter(today)) {
             throw new BadRequestException(Constants.TYPE_EXPIRED_ERROR, String.format("Voucher Type %s is expired", type));
         }
