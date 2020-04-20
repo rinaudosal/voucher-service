@@ -5,11 +5,13 @@ Feature: Redeem Voucher
 
   Background:
     Given exist the voucher types:
-      | typeId | description | merchant | enabled | startDate  					| endDate    					|
-      | TIN1M  | 1 Months    | tinder   | true    | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 |
-      | TIN3M  | 3 Months    | tinder   | true    | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 |
-      | TIN3D  | 3 Months D  | tinder   | false   | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 |
-      | TIN3E  | 3 Months E  | tinder   | false   | 01/01/2019 08:15:00 | 31/12/2019 08:15:00 |
+      | typeId | description | merchant | enabled | startDate           | endDate             | bypassStatusCheck |
+      | TIN1M  | 1 Months    | tinder   | true    | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 | false             |
+      | TIN3M  | 3 Months    | tinder   | true    | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 | false             |
+      | TIN3D  | 3 Months D  | tinder   | false   | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 | false             |
+      | TIN3E  | 3 Months E  | tinder   | false   | 01/01/2019 08:15:00 | 31/12/2019 08:15:00 | false             |
+      | TIN3S  | 3 Months S  | tinder   | true    | 01/01/2019 08:15:00 | 31/12/2019 08:15:00 | true              |
+
     And exist the voucher:
       | code     | typeId | status    |
       | VOU11PUR | TIN1M  | PURCHASED |
@@ -19,6 +21,8 @@ Feature: Redeem Voucher
       | VOU31PUR | TIN3M  | PURCHASED |
       | VOU41PUR | TIN3D  | PURCHASED |
       | VOU51PUR | TIN3E  | PURCHASED |
+      | VOU61PUR | TIN3S  | PURCHASED |
+      | VOU62ACT | TIN3S  | ACTIVE    |
 
   Scenario Outline: Voucher file redeemed
     When the operator wants to 'redeem' the voucher file for the type '<typeId>' with the voucher '<voucher>'
@@ -29,6 +33,8 @@ Feature: Redeem Voucher
       | TIN3M  | VOU31PUR |
       | TIN3D  | VOU41PUR |
       | TIN3E  | VOU51PUR |
+      | TIN3S  | VOU61PUR |
+      | TIN3S  | VOU62ACT |
 
   Scenario Outline: Voucher redeem in error
     When the operator wants to 'redeem' the voucher file for the type '<typeId>' with the voucher '<voucher>'

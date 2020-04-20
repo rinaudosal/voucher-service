@@ -285,6 +285,9 @@ public class VoucherTypeStepDefs extends StepDefs {
         if (!StringUtils.equals(missingField, "enabled")) {
             voucherType.setEnabled(firstRow.get("enabled").equals("true"));
         }
+        if (!StringUtils.equals(missingField, "bypassStatusCheck")) {
+            voucherType.setEnabled("true".equals(firstRow.get("bypassStatusCheck")));
+        }
         if (!StringUtils.equals(missingField, "startDate")) {
             voucherType.setStartDate(LocalDateTime.parse(firstRow.get("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).atOffset(ZoneOffset.UTC));
         }
@@ -323,6 +326,7 @@ public class VoucherTypeStepDefs extends StepDefs {
             voucherType.setEndDate(LocalDateTime.parse(getElementOrDefault(row, "endDate", "31/12/2020 22:00:00"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
             voucherType.setPriority(Integer.parseInt(getElementOrDefault(row, "priority", "5")));
             voucherType.setBaseUrl("www.test.com/vip/");
+            voucherType.setBypassStatusCheck(getElementOrDefault(row, "bypassStatusCheck", "true").equals("true"));
 
             int voucherPurchased = StringUtils.isBlank(row.get("Voucher Purchased")) ? 0 : Integer.parseInt(row.get("Voucher Purchased"));
             int voucherActive = StringUtils.isBlank(row.get("Voucher Active")) ? 0 : Integer.parseInt(row.get("Voucher Active"));
