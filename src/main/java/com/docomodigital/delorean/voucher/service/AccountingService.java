@@ -81,7 +81,7 @@ public class AccountingService {
             .withCostCenter(voucherType.getShopId())
             .withOriginAddress(voucher.getCode())
             .withOriginProtocol(voucherType.getPromo())
-            .withOriginId(voucherType.getProduct())
+            .withOriginId(voucherType.getCode())
             .withSenderId(CDR_SENDER_ID)
             .withDeliveryStatus(1)
             .withPrice(convertAmount(voucherType.getAmount()))
