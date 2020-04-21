@@ -229,7 +229,7 @@ public class VoucherServiceImpl implements VoucherService {
     	CDR cdrtest = null;
         try {
 				cdrtest = new CDR.Builder()
-						.withContractId(converContract(contractId))
+						.withContractId(converContract(contractId).get())
 						.withInstanceId(0l)
 						.withCdrClass(Constants.CDR_CLASS)
 						.withCdrType(Constants.CDR_TYPE)
@@ -242,7 +242,7 @@ public class VoucherServiceImpl implements VoucherService {
 						.withCostCenter(voucherType.getShopId())
 						.withOriginAddress(voucher.getCode())
 						.withOriginProtocol(voucherType.getPromo())
-						.withOriginId(voucherType.getProduct())
+						.withOriginId(voucherType.getCode())
 						.withSenderId(Constants.CDR_SENDER_ID)
 						.withDeliveryStatus(1)
 						.withPrice(convertAmount(voucherType.getAmount()))
@@ -262,19 +262,15 @@ public class VoucherServiceImpl implements VoucherService {
 				        .build();
 			} catch (CDRValidationException e) {
 				log.error("exception trying to generate CDR notification of vocuher: {} with voucherType: {}", voucher.getCode(), voucherType.getCode());
-			}
+    }
         return cdrtest;
     }
 
-	private Long converContract(String contractId) {
-		Long result = 0l;
+	private Optional<Long> converContract(String contractId) {
+		Optional<Long> result = null;
 		if(!Strings.isNullOrEmpty(contractId)) {
-			try {
-				result = Long.parseLong(contractId);							
-			} catch (Exception e) {
-				log.debug("Error trying to parse contractId {}", contractId);
-			}
-		}
+            result = Optional.of(Long.parseLong(contractId));
+        }
 		return result;
 	}
 
