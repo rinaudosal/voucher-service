@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * Voucher collection
@@ -34,10 +34,10 @@ public class Voucher extends AbstractAuditingEntity {
     private String requestId;
     private BigDecimal amount;
     private String currency;
-    private LocalDateTime transactionDate;
-    private LocalDateTime reserveDate;
-    private LocalDateTime purchaseDate;
-    private LocalDateTime redeemDate;
+    private Instant transactionDate;
+    private Instant reserveDate;
+    private Instant purchaseDate;
+    private Instant redeemDate;
     private String activationUrl;
     private String voucherFileId;
     private String redeemFileId;
@@ -114,35 +114,35 @@ public class Voucher extends AbstractAuditingEntity {
         this.currency = currency;
     }
 
-    public LocalDateTime getTransactionDate() {
+    public Instant getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(LocalDateTime transactionDate) {
+    public void setTransactionDate(Instant transactionDate) {
         this.transactionDate = transactionDate;
     }
 
-    public LocalDateTime getReserveDate() {
+    public Instant getReserveDate() {
         return reserveDate;
     }
 
-    public void setReserveDate(LocalDateTime reserveDate) {
+    public void setReserveDate(Instant reserveDate) {
         this.reserveDate = reserveDate;
     }
 
-    public LocalDateTime getPurchaseDate() {
+    public Instant getPurchaseDate() {
         return purchaseDate;
     }
 
-    public void setPurchaseDate(LocalDateTime purchaseDate) {
+    public void setPurchaseDate(Instant purchaseDate) {
         this.purchaseDate = purchaseDate;
     }
 
-    public LocalDateTime getRedeemDate() {
+    public Instant getRedeemDate() {
         return redeemDate;
     }
 
-    public void setRedeemDate(LocalDateTime redeemDate) {
+    public void setRedeemDate(Instant redeemDate) {
         this.redeemDate = redeemDate;
     }
 

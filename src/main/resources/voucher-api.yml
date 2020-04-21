@@ -509,6 +509,14 @@ components:
         baseUrl:
           type: string
           example: www.tinder.com/vip/
+        expiryTimeReservation:
+          type: integer
+          example: 900000
+          default: 900000
+        bypassStatusCheck:
+          type: boolean
+          example: false
+          default: false
     ReserveRequest:
       type: object
       required:

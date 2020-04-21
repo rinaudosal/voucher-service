@@ -19,7 +19,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -64,7 +66,7 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
 
         String transactionDateString = jsonContext.read("$['attributes'].['transaction'].['attributes'].['dateLastUpdated']");
         if (StringUtils.isNotBlank(transactionDateString)) {
-            voucherConsumer.setTransactionDate(LocalDateTime.parse(transactionDateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            voucherConsumer.setTransactionDate(LocalDateTime.parse(transactionDateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toInstant(ZoneOffset.UTC));
         }
 
         return voucherConsumer;
@@ -92,7 +94,7 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         voucherToBeConsume.setTransactionId(voucherConsumer.getTransactionId());
         voucherToBeConsume.setRequestId(voucherConsumer.getRequestId());
         voucherToBeConsume.setTransactionDate(voucherConsumer.getTransactionDate());
-        voucherToBeConsume.setPurchaseDate(LocalDateTime.now(clock));
+        voucherToBeConsume.setPurchaseDate(Instant.now(clock));
         voucherToBeConsume.setActivationUrl(voucherType.getBaseUrl() + voucherToBeConsume.getCode());
 
         return voucherRepository.save(voucherToBeConsume);

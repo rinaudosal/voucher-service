@@ -23,16 +23,14 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -161,7 +159,7 @@ public class VoucherStepDefs extends StepDefs {
                 fstream
                     .append("PartnerA_TesterBatch_Set1_1MonthPlus,")
                     .append(line)
-                    .append(",2/5/20 21:41")
+                    .append(",2/25/20 21:41")
                     .append("\n");
             }
         }
@@ -352,7 +350,8 @@ public class VoucherStepDefs extends StepDefs {
     private void saveVouchersFromDatatableData(List<Map<String, String>> datatable) {
         datatable.forEach(row -> {
             VoucherStatus voucherStatus = row.get("status") != null ? VoucherStatus.valueOf(row.get("status")) : VoucherStatus.ACTIVE;
-            LocalDateTime reserveDate = StringUtils.trimToNull(row.get("reserveDate")) != null ? LocalDate.parse(row.get("reserveDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")).atStartOfDay() : null;
+            Instant reserveDate = StringUtils.trimToNull(row.get("reserveDate")) != null ?
+                LocalDate.parse(row.get("reserveDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")).atStartOfDay().toInstant(ZoneOffset.UTC) : null;
 
             Voucher voucher = getVoucher(
                 StringUtils.trimToNull(row.get("code")),
@@ -369,7 +368,8 @@ public class VoucherStepDefs extends StepDefs {
 
     }
 
-    private Voucher getVoucher(String code, String type, VoucherStatus status, String userId, String transactionId, String activationUrl, LocalDateTime reserveDate) {
+    private Voucher getVoucher(String code, String type, VoucherStatus status, String userId, String transactionId, String activationUrl,
+                               Instant reserveDate) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type).get();
         Voucher voucher = new Voucher();
         voucher.setStatus(status);

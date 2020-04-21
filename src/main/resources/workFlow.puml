@@ -5,14 +5,15 @@ note "Voucher status flow" as N1
 
 [*] --> ACTIVE : uploadVouchers()
 
-ACTIVE --> PURCHASED : purchaseVoucher()
 ACTIVE --> RESERVED : reserveVoucher()
+ACTIVE --> PURCHASED : purchaseVoucher()
 
-RESERVED --> ACTIVE : timeout()
-RESERVED --> PURCHASED : confirmVoucherReserved()
+RESERVED --> ACTIVE : reservationExpired()
+RESERVED --> ACTIVE : cancelReservation()
+RESERVED --> PURCHASED : confirmReservation()
 PURCHASED --> REDEEMED : redeemVouchers()
 
-ACTIVE --> INACTIVE : terminateCampaign()
-RESERVED --> INACTIVE : terminateCampaign()
+ACTIVE --> INACTIVE : voucherExpired()
+RESERVED --> INACTIVE : voucherExpired()
 
 @enduml

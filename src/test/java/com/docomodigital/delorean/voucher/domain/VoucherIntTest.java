@@ -91,9 +91,9 @@ public class VoucherIntTest extends BaseVoucherIntegrationTest {
         voucher.setId("vvdvfdv");
         voucher.setUserId("my_user_id");
         voucher.setTransactionId("my_trans_id");
-        voucher.setTransactionDate(LocalDateTime.now());
-        voucher.setPurchaseDate(LocalDateTime.now());
-        voucher.setRedeemDate(LocalDateTime.now());
+        voucher.setTransactionDate(Instant.now());
+        voucher.setPurchaseDate(Instant.now());
+        voucher.setRedeemDate(Instant.now());
         voucher.setActivationUrl("www.test.com");
         voucher.setVoucherFileId("123d546d");
 

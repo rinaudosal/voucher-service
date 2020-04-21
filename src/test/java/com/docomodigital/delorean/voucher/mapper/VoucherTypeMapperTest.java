@@ -98,6 +98,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setStartDate(LocalDate.of(2016, 1, 1));
         voucherType.setEndDate(LocalDate.of(2016, 1, 2));
         voucherType.setPriority(5);
+        voucherType.setExpiryTimeReservation(15000);
+        voucherType.setBypassStatusCheck(true);
         return voucherType;
     }
 
@@ -119,6 +121,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setStartDate(LocalDate.of(2016, 1, 1));
         voucherType.setEndDate(LocalDate.of(2016, 1, 2));
         voucherType.setPriority(5);
+        voucherType.setExpiryTimeReservation(15000);
+        voucherType.setBypassStatusCheck(true);
         return voucherType;
     }
 
@@ -137,6 +141,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherType.getStartDate()).isEqualTo(LocalDate.of(2016, 1, 1));
         Assertions.assertThat(voucherType.getEndDate()).isEqualTo(LocalDate.of(2016, 1, 2));
         Assertions.assertThat(voucherType.getPriority()).isEqualTo(5);
+        Assertions.assertThat(voucherType.getExpiryTimeReservation()).isEqualTo(15000);
+        Assertions.assertThat(voucherType.getBypassStatusCheck()).isTrue();
     }
 
     private void assertDto(VoucherTypes voucherTypes) {
@@ -154,5 +160,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherTypes.getStartDate()).isEqualTo(LocalDate.of(2016, 1, 1));
         Assertions.assertThat(voucherTypes.getEndDate()).isEqualTo(LocalDate.of(2016, 1, 2));
         Assertions.assertThat(voucherTypes.getPriority()).isEqualTo(5);
+        Assertions.assertThat(voucherTypes.getExpiryTimeReservation()).isEqualTo(15000);
+        Assertions.assertThat(voucherTypes.getBypassStatusCheck()).isTrue();
     }
 }

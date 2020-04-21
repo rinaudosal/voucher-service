@@ -7,10 +7,13 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -37,12 +40,12 @@ public class RedeemVoucherStrategyImpl implements ProcessVoucherStrategy {
         }
 
         String code = voucherData[1];
-        LocalDateTime dateRedeemed = LocalDateTime.parse(voucherData[2], DateTimeFormatter.ofPattern("d/M/yy H:mm"));
+        Instant dateRedeemed = LocalDateTime.parse(voucherData[2], DateTimeFormatter.ofPattern("M/d/yy H:mm")).toInstant(ZoneOffset.UTC);
 
         Voucher voucher = voucherRepository.findByCodeAndTypeId(code, type.getId())
             .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR,
                 String.format("Voucher %s not found for Type %s", code, type.getCode())));
-        if (!VoucherStatus.PURCHASED.equals(voucher.getStatus())) {
+        if (!VoucherStatus.PURCHASED.equals(voucher.getStatus()) && BooleanUtils.isNotTrue(type.getBypassStatusCheck())) {
             throw new BadRequestException(Constants.WRONG_STATUS_ERROR,
                 String.format("Voucher %s not redeemed, the status is %s", code, voucher.getStatus()));
         }

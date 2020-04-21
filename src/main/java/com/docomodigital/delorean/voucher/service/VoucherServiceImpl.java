@@ -38,6 +38,11 @@ import net.netm.billing.library.exception.AccountingException;
 import net.netm.billing.library.exception.CDRValidationException;
 import net.netm.billing.library.model.CDR;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 2020/01/29
@@ -47,8 +52,8 @@ import net.netm.billing.library.model.CDR;
 @Slf4j
 @Service
 public class VoucherServiceImpl implements VoucherService {
-	
-	private final VoucherRepository voucherRepository;
+
+    private final VoucherRepository voucherRepository;
     private final VoucherTypeRepository voucherTypeRepository;
     private final VoucherFileService voucherFileService;
     private final VoucherMapper voucherMapper;
@@ -139,11 +144,11 @@ public class VoucherServiceImpl implements VoucherService {
             throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", typeId));
         }
 
-        Voucher voucher = voucherRepository.findByCode(code)
+        Voucher voucher = voucherRepository.findByCodeAndTypeId(code, voucherType.getId())
             .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format("Voucher %s not found for type %s", code, typeId)));
 
         if (!VoucherStatus.RESERVED.equals(voucher.getStatus())) {
-            throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Voucher with code %s is not in RESERVED state", code));
+            throw new BadRequestException(Constants.WRONG_STATUS_ERROR, String.format("Reservation for the voucher code %s has expired or voucher it is already purchased", code));
         }
 
         if (!voucherRequest.getTransactionId().equalsIgnoreCase(voucher.getTransactionId())) {
@@ -155,34 +160,24 @@ public class VoucherServiceImpl implements VoucherService {
 
         if (VoucherRequest.TransactionStatusEnum.SUCCESS.equals(voucherRequest.getTransactionStatus())) {
             voucher.setTransactionId(voucherRequest.getTransactionId());
-            if (voucherRequest.getTransactionDate() != null) {
-                voucher.setTransactionDate(voucherRequest.getTransactionDate().toLocalDateTime());
-            }
+            voucher.setTransactionDate(voucherRequest.getTransactionDate().toInstant());
             voucher.setStatus(VoucherStatus.PURCHASED);
-            voucher.setPurchaseDate(LocalDateTime.now(clock));
+            voucher.setPurchaseDate(Instant.now(clock));
             voucher.setAmount(voucherRequest.getAmount());
             voucher.setCurrency(voucherRequest.getCurrency());
             voucher.setUserId(voucherRequest.getUserId());
             try {
             	CDR cdr = createCdr(voucher,voucherType,shop.getContractId());
 				if(cdr != null) {
-					accsrv.chargeOne(cdr);					
+					accsrv.chargeOne(cdr);
 				}
             } catch (AccountingException e) {
             	e.printStackTrace();
             }
         } else {
-            voucher.setTransactionId(null);
-            voucher.setTransactionDate(null);
-            voucher.setAmount(null);
-            voucher.setCurrency(null);
-            voucher.setStatus(VoucherStatus.ACTIVE);
-            voucher.setPurchaseDate(null);
-            voucher.setReserveDate(null);
-            voucher.setUserId(null);
-            voucher.setActivationUrl(null);
+            resetToActive(voucher);
         }
-        
+
 
         return Optional.of(voucherRepository.save(voucher))
             .map(v -> {
@@ -224,7 +219,7 @@ public class VoucherServiceImpl implements VoucherService {
                 return vouchers;
             });
     }
-    
+
     public CDR createCdr(Voucher voucher, VoucherType voucherType, String contractId) {
     	CDR cdrtest = null;
         try {
@@ -249,7 +244,7 @@ public class VoucherServiceImpl implements VoucherService {
 						.withIsPriceGross(true)
 						.withCurrency(voucherType.getCurrency())
 						.withUniqueMessageId(voucherType.getPaymentProvider() + "_" + voucher.getTransactionId())
-						.withSessionId(voucher.getCode()) 
+						.withSessionId(voucher.getCode())
 						.withDestination(voucher.getUserId())
 						.withDeliveryElement(voucherType.getPaymentProvider())
 						.withMachineId(voucher.getTransactionId())
@@ -270,7 +265,7 @@ public class VoucherServiceImpl implements VoucherService {
 		Long result = 0l;
 		if(!Strings.isNullOrEmpty(contractId)) {
 			try {
-				result = Long.parseLong(contractId);							
+				result = Long.parseLong(contractId);
 			} catch (Exception e) {
 				log.debug("Error trying to parse contractId {}", contractId);
 			}
@@ -292,4 +287,27 @@ public class VoucherServiceImpl implements VoucherService {
 		BigDecimal result = voucherAmount.multiply(Constants.CDR_P_FACTOR);
 		return result.intValue();
 	}
+
+    @Override
+    public void restoreToActive(Voucher voucherExpired) {
+        resetToActive(voucherExpired);
+        voucherRepository.save(voucherExpired);
+    }
+
+    @Override
+    public List<Voucher> findAllReservedVouchers() {
+        return voucherRepository.findAllByStatus(VoucherStatus.RESERVED);
+    }
+
+    private void resetToActive(Voucher voucher) {
+        voucher.setTransactionId(null);
+        voucher.setTransactionDate(null);
+        voucher.setAmount(null);
+        voucher.setCurrency(null);
+        voucher.setStatus(VoucherStatus.ACTIVE);
+        voucher.setPurchaseDate(null);
+        voucher.setReserveDate(null);
+        voucher.setUserId(null);
+        voucher.setActivationUrl(null);
+    }
 }
