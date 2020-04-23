@@ -85,7 +85,7 @@ public class AccountingService {
             .withSenderId(CDR_SENDER_ID)
             .withDeliveryStatus(1)
             .withPrice(convertAmount(voucherType.getAmount()))
-            .withIsPriceGross(true)
+            .withIsPriceGross(false)
             .withCurrency(voucherType.getCurrency())
             .withUniqueMessageId(voucherType.getPaymentProvider() + "_" + voucher.getTransactionId())
             .withSessionId(voucher.getCode())
