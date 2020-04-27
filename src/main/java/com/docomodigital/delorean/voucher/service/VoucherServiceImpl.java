@@ -15,6 +15,7 @@ import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -151,8 +152,9 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setAmount(voucherRequest.getAmount());
             voucher.setCurrency(voucherRequest.getCurrency());
             voucher.setUserId(voucherRequest.getUserId());
-
-            accountingService.call(voucher, voucherType, shop.getContractId());
+            if(!Strings.isNullOrEmpty(shop.getContractId())){
+                accountingService.call(voucher, voucherType, shop.getContractId());
+            }
         } else {
             resetToActive(voucher);
         }
