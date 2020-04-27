@@ -15,5 +15,6 @@ public class Shop {
     private String country;
     private String signatureKey;
     private boolean requireSignedSession;
+    private String contractId;
 
 }

@@ -1,5 +1,7 @@
 package com.docomodigital.delorean.voucher.config;
 
+import java.math.BigDecimal;
+
 /**
  * Application constants.
  */
@@ -14,6 +16,8 @@ public final class Constants {
     public static final String EXISTING_TRANSACTION_ID_ERROR = "EXISTING_TRANSACTION_ID";
     public static final String WRONG_TRANSACTION_ID_ERROR = "WRONG_TRANSACTION_ID";
     public static final String TRANSACTIONAL_CONFLICT_ERROR = "TRANSACTIONAL_CONFLICT";
+    public static final String CDR_ACCOUNTING_ERROR = "CDR_ACCOUNTING_ERROR";
+    public static final String CDR_VALIDATION_ERROR = "CDR_VALIDATION_ERROR";
 
     public static final String UNAUTHORIZED_SHOP_NAME = "UNAUTHORIZED_SHOP";
     public static final String API_KEY_HEADER = "X-Api-Key";
