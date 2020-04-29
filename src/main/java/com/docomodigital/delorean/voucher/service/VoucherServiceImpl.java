@@ -15,6 +15,7 @@ import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,20 +45,22 @@ public class VoucherServiceImpl implements VoucherService {
     private final VoucherMapper voucherMapper;
     private final Clock clock;
     private final ProcessVoucherFactory uploadFileFactory;
+    private final AccountingService accountingService;
 
     public VoucherServiceImpl(VoucherRepository voucherRepository,
                               VoucherTypeRepository voucherTypeRepository,
                               VoucherFileService voucherFileService,
                               VoucherMapper voucherMapper,
                               Clock clock,
-                              ProcessVoucherFactory uploadFileFactory
-    ) {
+                              ProcessVoucherFactory uploadFileFactory,
+                              AccountingService accountingService) {
         this.voucherRepository = voucherRepository;
         this.voucherTypeRepository = voucherTypeRepository;
         this.voucherFileService = voucherFileService;
         this.voucherMapper = voucherMapper;
         this.clock = clock;
         this.uploadFileFactory = uploadFileFactory;
+        this.accountingService = accountingService;
     }
 
     @Override
@@ -149,6 +152,9 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setAmount(voucherRequest.getAmount());
             voucher.setCurrency(voucherRequest.getCurrency());
             voucher.setUserId(voucherRequest.getUserId());
+            if(!Strings.isNullOrEmpty(shop.getContractId())){
+                accountingService.call(voucher, voucherType, shop.getContractId());
+            }
         } else {
             resetToActive(voucher);
         }

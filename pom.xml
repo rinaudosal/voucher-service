@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.docomodigital.delorean</groupId>
     <artifactId>voucher-service</artifactId>
-    <version>1.0.1.15-SNAPSHOT</version>
+    <version>1.0.1.16-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>voucher-service</name>
     <description>Microservice that manage the Vouchers</description>
@@ -150,7 +150,13 @@
 			<artifactId>feign-jackson</artifactId>
 			<version>8.18.0</version>
 		</dependency>
-		
+		<!-- accounting-library-rest -->
+		<dependency>
+			<groupId>net.netm.billing</groupId>
+			<artifactId>accounting-library-rest</artifactId>
+			<version>1.7.1</version>
+		</dependency>
+
         <!-- Apache Commons libraries -->
         <dependency>
             <groupId>org.apache.commons</groupId>
