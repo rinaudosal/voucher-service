@@ -8,6 +8,7 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
 
     @Before
     public void setUp() {
-        target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, clock, null);
+        target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, clock, null, new ObjectMapper());
 
         VoucherType voucherType = new VoucherType();
         voucherType.setId("my_type_id");
