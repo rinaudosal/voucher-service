@@ -641,6 +641,7 @@
                             <exclude>**/*IT*</exclude>
                             <exclude>**/*IntTest*</exclude>
                         </excludes>
+                        <argLine>-Xms4096m -Xmx4096m -Duser.language=en -Duser.timezone=UTC ${argLine}</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -651,6 +652,7 @@
                         <!-- Due to spring-boot repackage, without adding this property test classes are not found
                              See https://github.com/spring-projects/spring-boot/issues/6254 -->
                         <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+                        <argLine>-Xms4096m -Xmx4096m -Duser.language=en -Duser.timezone=UTC ${argLine}</argLine>
                         <!-- Force alphabetical order to have a reproducible build -->
                         <runOrder>alphabetical</runOrder>
                         <reportsDirectory>${junit.itReportFolder}</reportsDirectory>
