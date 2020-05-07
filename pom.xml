@@ -490,6 +490,8 @@
                     <configuration>
                         <excludes>
                             <exclude>**/config/**/*.class</exclude>
+                            <exclude>**/client/merchant/*.class</exclude>
+                            <exclude>**/client/merchant/model/*.class</exclude>
                             <exclude>**/aop/logging/*.class</exclude>
                             <exclude>**/**Exception.class</exclude>
                             <exclude>**/VoucherServiceApplication.class</exclude>

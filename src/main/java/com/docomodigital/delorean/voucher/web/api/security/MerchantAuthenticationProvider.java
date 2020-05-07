@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class MerchantAuthenticationProvider implements AuthenticationProvider {
+    private static final String AUTHENTICATION_MESSAGE = "Unable to authenticate";
     private final MerchantClient merchantClient;
 
     public MerchantAuthenticationProvider(MerchantClient merchantClient) {
@@ -36,10 +37,10 @@ public class MerchantAuthenticationProvider implements AuthenticationProvider {
             if (e.getCause() instanceof FeignException) {
                 handleFeignException((FeignException) e.getCause());
             } else {
-                throw new AuthenticationServiceException("Unable to authenticate", e);
+                throw new AuthenticationServiceException(AUTHENTICATION_MESSAGE, e);
             }
         } catch (Exception e) {
-            throw new AuthenticationServiceException("Unable to authenticate", e);
+            throw new AuthenticationServiceException(AUTHENTICATION_MESSAGE, e);
         }
 
         return authMerchant;
@@ -49,7 +50,7 @@ public class MerchantAuthenticationProvider implements AuthenticationProvider {
         if (e.status() == 404)
             throw new BadCredentialsException("Invalid credentials", e);
         else
-            throw new AuthenticationServiceException("Unable to authenticate", e);
+            throw new AuthenticationServiceException(AUTHENTICATION_MESSAGE, e);
     }
 
     @Override

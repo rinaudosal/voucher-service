@@ -48,9 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.exceptionHandling()
-            .accessDeniedHandler((request, response, accessDeniedException) -> {
-                sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, accessDeniedException);
-            })
+            .accessDeniedHandler((request, response, accessDeniedException) -> sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, accessDeniedException))
             .authenticationEntryPoint((request, response, authenticationException) -> {
                 if (authenticationException instanceof AuthenticationServiceException) {
                     sendErrorResponse(response, HttpServletResponse.SC_BAD_GATEWAY, authenticationException);

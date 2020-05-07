@@ -1,4 +1,4 @@
-package com.docomodigital.delorean.domain.resource;
+package com.docomodigital.delorean.client.merchant.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

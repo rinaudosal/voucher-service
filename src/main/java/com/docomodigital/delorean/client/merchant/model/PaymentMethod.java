@@ -1,4 +1,4 @@
-package com.docomodigital.delorean.domain.resource;
+package com.docomodigital.delorean.client.merchant.model;
 
 import java.util.Map;
 

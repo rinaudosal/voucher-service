@@ -1,6 +1,6 @@
 package com.docomodigital.delorean.voucher.service;
 
-import com.docomodigital.delorean.domain.resource.Shop;
+import com.docomodigital.delorean.client.merchant.model.Shop;
 import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,6 +1,6 @@
 package com.docomodigital.delorean.voucher.web.api.security;
 
-import com.docomodigital.delorean.domain.resource.Shop;
+import com.docomodigital.delorean.client.merchant.model.Shop;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 import java.util.Collections;

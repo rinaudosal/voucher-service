@@ -72,7 +72,6 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         return voucherConsumer;
     }
 
-    //FIXME CONFIGURE ATOMIC CALL
     @Override
     public Voucher consumeVoucher(VoucherConsumer voucherConsumer) {
         if (!"BILLED".equals(voucherConsumer.getBillingStatus())) {

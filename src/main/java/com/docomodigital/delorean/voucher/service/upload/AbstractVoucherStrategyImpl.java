@@ -8,8 +8,6 @@ import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * 2020/02/05
