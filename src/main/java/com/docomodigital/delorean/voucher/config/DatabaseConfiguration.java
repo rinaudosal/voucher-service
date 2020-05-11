@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
@@ -46,23 +47,27 @@ public class DatabaseConfiguration {
 
     @Bean
     public MongoCustomConversions mongoCustomConversions() {
-        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
         return new MongoCustomConversions(Arrays.asList(
-            new Converter<LocalDate, String>() {
-                @Override
-                public String convert(@NonNull LocalDate source) {
-                    return source.format(dateTimeFormatter);
-                }
-            },
-            new Converter<String, LocalDate>() {
-                @Override
-                public LocalDate convert(@NonNull String source) {
-                    return LocalDate.parse(source, dateTimeFormatter);
-                }
-            }
+            new LocalDateToStringTimeConverter(),
+            new StringToLocalDateTimeConverter()
         ));
 
-
     }
+
+    @ReadingConverter
+    static class StringToLocalDateTimeConverter implements Converter<String, LocalDate> {
+        @Override
+        public LocalDate convert(@NonNull String source) {
+            return LocalDate.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+    }
+
+    @ReadingConverter
+    static class LocalDateToStringTimeConverter implements Converter<LocalDate, String> {
+        @Override
+        public String convert(@NonNull LocalDate source) {
+            return source.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+    }
+
 }

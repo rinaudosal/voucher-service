@@ -19,6 +19,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -286,10 +289,10 @@ public class VoucherTypeStepDefs extends StepDefs {
             voucherType.setEnabled("true".equals(firstRow.get("bypassStatusCheck")));
         }
         if (!StringUtils.equals(missingField, "startDate")) {
-            voucherType.setStartDate(LocalDate.parse(firstRow.get("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            voucherType.setStartDate(LocalDateTime.parse(firstRow.get("startDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).atOffset(ZoneOffset.UTC));
         }
         if (!StringUtils.equals(missingField, "endDate")) {
-            voucherType.setEndDate(LocalDate.parse(firstRow.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            voucherType.setEndDate(LocalDateTime.parse(firstRow.get("endDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).atOffset(ZoneOffset.UTC));
         }
         if (!StringUtils.equals(missingField, "priority")) {
             voucherType.setPriority(Integer.parseInt(firstRow.get("priority")));
@@ -319,8 +322,8 @@ public class VoucherTypeStepDefs extends StepDefs {
             voucherType.setCountry(getElementOrDefault(row, "country", "IN"));
             voucherType.setShopId(getElementOrDefault(row, "shop", "shop2"));
             voucherType.setEnabled(getElementOrDefault(row, "enabled", "true").equals("true"));
-            voucherType.setStartDate(LocalDate.parse(getElementOrDefault(row, "startDate", "01/01/2020"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            voucherType.setEndDate(LocalDate.parse(getElementOrDefault(row, "endDate", "31/12/2020"), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            voucherType.setStartDate(LocalDateTime.parse(getElementOrDefault(row, "startDate", "01/01/2020 22:00:00"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).toInstant(ZoneOffset.UTC));
+            voucherType.setEndDate(LocalDateTime.parse(getElementOrDefault(row, "endDate", "31/12/2020 22:00:00"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).toInstant(ZoneOffset.UTC));
             voucherType.setPriority(Integer.parseInt(getElementOrDefault(row, "priority", "5")));
             voucherType.setBaseUrl("www.test.com/vip/");
             voucherType.setBypassStatusCheck(getElementOrDefault(row, "bypassStatusCheck", "true").equals("true"));

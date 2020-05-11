@@ -5,12 +5,12 @@ Feature: Upload Voucher
 
   Background:
     Given exist the voucher types:
-      | typeId | description       | merchant | enabled | startDate  | endDate    |
-      | TIN1M  | 1 Months          | tinder   | true    | 01/01/2020 | 31/12/2020 |
-      | TIN3M  | 3 Months to be    | tinder   | true    | 01/03/2020 | 31/12/2020 |
-      | TIN6M  | 6 Months disabled | tinder   | false   | 01/01/2020 | 31/12/2020 |
-      | TIN9M  | 9 Months expired  | tinder   | true    | 01/01/2020 | 21/01/2020 |
-      | BUM9M  | 9 Months          | bumble   | true    | 01/01/2020 | 31/12/2020 |
+      | typeId | description       | merchant | enabled | startDate  					| endDate    					|
+      | TIN1M  | 1 Months          | tinder   | true    | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 |
+      | TIN3M  | 3 Months to be    | tinder   | true    | 01/03/2020 08:15:00 | 31/12/2020 08:15:00 |
+      | TIN6M  | 6 Months disabled | tinder   | false   | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 |
+      | TIN9M  | 9 Months expired  | tinder   | true    | 01/01/2020 08:15:00 | 21/01/2020 08:15:00 |
+      | BUM9M  | 9 Months          | bumble   | true    | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 |
     And exist the voucher:
       | code            | typeId |
       | EXISTINGVOUCHER | TIN1M  |

@@ -1,7 +1,5 @@
 package com.docomodigital.delorean.client.merchant.model;
 
-import com.docomodigital.delorean.domain.resource.Shop;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

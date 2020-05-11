@@ -1,6 +1,6 @@
 package com.docomodigital.delorean.voucher.service;
 
-import com.docomodigital.delorean.domain.resource.Shop;
+import com.docomodigital.delorean.client.merchant.model.Shop;
 import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
@@ -24,7 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,7 +71,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
         Map<String, List<VoucherType>> notGrouped = voucherTypeRepository.findAll(voucherTypeExample)
             .stream()
             .filter(vou -> {
-                LocalDate now = LocalDate.now(clock);
+                Instant now = Instant.now(clock);
                 return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate());
             }).collect(Collectors.groupingBy(VoucherType::getProduct));
 
@@ -158,7 +158,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
 
         return voucherTypeRepository.findAll(exampleRequest).stream()
             .filter(vou -> {
-                LocalDate now = LocalDate.now(clock);
+                Instant now = Instant.now(clock);
                 return now.isBefore(vou.getEndDate()) && now.isAfter(vou.getStartDate()) && this.getVoucherAvailable(vou) > 0;
             })
             .max(Comparator.comparing(VoucherType::getPriority))
@@ -235,7 +235,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", type));
         }
 
-        LocalDate today = LocalDate.now(clock);
+        Instant today = Instant.now(clock);
         if (!voucherType.getEndDate().isAfter(today)) {
             throw new BadRequestException(Constants.TYPE_EXPIRED_ERROR, String.format("Voucher Type %s is expired", type));
         }

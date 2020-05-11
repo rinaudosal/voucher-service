@@ -38,12 +38,18 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
     private final VoucherRepository voucherRepository;
     private final Clock clock;
     private final RabbitTemplate rabbitTemplate;
+    private final ObjectMapper objectMapper;
 
-    public ConsumeVoucherServiceImpl(VoucherTypeService voucherTypeService, VoucherRepository voucherRepository, Clock clock, RabbitTemplate rabbitTemplate) {
+    public ConsumeVoucherServiceImpl(VoucherTypeService voucherTypeService,
+                                     VoucherRepository voucherRepository,
+                                     Clock clock,
+                                     RabbitTemplate rabbitTemplate,
+                                     ObjectMapper objectMapper) {
         this.voucherTypeService = voucherTypeService;
         this.voucherRepository = voucherRepository;
         this.clock = clock;
         this.rabbitTemplate = rabbitTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -72,7 +78,6 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         return voucherConsumer;
     }
 
-    //FIXME CONFIGURE ATOMIC CALL
     @Override
     public Voucher consumeVoucher(VoucherConsumer voucherConsumer) {
         if (!"BILLED".equals(voucherConsumer.getBillingStatus())) {
@@ -102,7 +107,7 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
 
     @Override
     public void sendNotification(Voucher voucher) throws Exception {
-        String voucherString = new ObjectMapper().writeValueAsString(voucher);
+        String voucherString = objectMapper.writeValueAsString(voucher);
         log.info(String.format("Sending response %s to tinder-plugin2api queue...", voucherString));
         rabbitTemplate.convertAndSend("tinder-plugin2api", voucherString, m -> {
             m.getMessageProperties().getHeaders().put("pluginCallCode", voucher.getRequestId());

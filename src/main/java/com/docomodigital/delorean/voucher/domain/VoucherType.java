@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.Instant;
 
 /**
  * 2020/01/21
@@ -47,9 +47,9 @@ public class VoucherType extends AbstractAuditingEntity {
 
     private Boolean enabled;
 
-    private LocalDate startDate;
+    private Instant startDate;
 
-    private LocalDate endDate;
+    private Instant endDate;
 
     private String baseUrl;
 
@@ -156,19 +156,19 @@ public class VoucherType extends AbstractAuditingEntity {
         this.enabled = enabled;
     }
 
-    public LocalDate getStartDate() {
+    public Instant getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(Instant startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
+    public Instant getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(Instant endDate) {
         this.endDate = endDate;
     }
 

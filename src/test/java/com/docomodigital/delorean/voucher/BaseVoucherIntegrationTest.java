@@ -2,7 +2,7 @@ package com.docomodigital.delorean.voucher;
 
 import com.docomodigital.delorean.client.merchant.MerchantClient;
 import com.docomodigital.delorean.client.merchant.model.ChannelResponse;
-import com.docomodigital.delorean.domain.resource.Shop;
+import com.docomodigital.delorean.client.merchant.model.Shop;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.docomodigital.delorean.voucher.service.AccountingService;

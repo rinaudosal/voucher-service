@@ -9,6 +9,8 @@ import javax.validation.ConstraintViolationException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -37,8 +39,8 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         voucherType.setCountry("INDIA");
         voucherType.setShopId("my_shop");
         voucherType.setEnabled(true);
-        voucherType.setStartDate(LocalDate.of(2020, 1, 1));
-        voucherType.setEndDate(LocalDate.of(2020, 11, 8));
+        voucherType.setStartDate(LocalDateTime.of(2020, 1, 1, 12, 37, 15).toInstant(ZoneOffset.UTC));
+        voucherType.setEndDate(LocalDateTime.of(2020, 11, 8, 12, 37, 15).toInstant(ZoneOffset.UTC));
         voucherType.setPriority(5);
         voucherType.setBaseUrl("www.test.com");
     }
@@ -119,8 +121,8 @@ public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
         Assertions.assertThat(returnValue.getCountry()).isEqualTo("INDIA");
         Assertions.assertThat(returnValue.getShopId()).isEqualTo("my_shop");
         Assertions.assertThat(returnValue.getEnabled()).isTrue();
-        Assertions.assertThat(returnValue.getStartDate()).isEqualTo(LocalDate.of(2020, 1, 1));
-        Assertions.assertThat(returnValue.getEndDate()).isEqualTo(LocalDate.of(2020, 11, 8));
+        Assertions.assertThat(returnValue.getStartDate()).isEqualTo(LocalDateTime.of(2020, 1, 1, 12, 37, 15).toInstant(ZoneOffset.UTC));
+        Assertions.assertThat(returnValue.getEndDate()).isEqualTo(LocalDateTime.of(2020, 11, 8, 12, 37, 15).toInstant(ZoneOffset.UTC));
         Assertions.assertThat(returnValue.getBaseUrl()).isEqualTo("www.test.com");
     }
 

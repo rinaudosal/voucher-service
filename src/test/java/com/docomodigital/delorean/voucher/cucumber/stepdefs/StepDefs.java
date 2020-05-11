@@ -2,7 +2,7 @@ package com.docomodigital.delorean.voucher.cucumber.stepdefs;
 
 import com.docomodigital.delorean.client.merchant.MerchantClient;
 import com.docomodigital.delorean.client.merchant.model.ChannelResponse;
-import com.docomodigital.delorean.domain.resource.Shop;
+import com.docomodigital.delorean.client.merchant.model.Shop;
 import com.docomodigital.delorean.voucher.config.SignatureComponent;
 import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;

@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.web.api;
 
+
 import com.docomodigital.delorean.voucher.BaseVoucherIntegrationTest;
 import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;

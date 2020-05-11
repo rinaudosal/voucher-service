@@ -1,6 +1,6 @@
 package com.docomodigital.delorean.voucher.web.api.security;
 
-import com.docomodigital.delorean.domain.resource.Shop;
+import com.docomodigital.delorean.client.merchant.model.Shop;
 import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.config.SignatureComponent;
 import com.docomodigital.microservice.api.logging.CachedHttpServletRequestWrapper;

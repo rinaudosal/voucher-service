@@ -454,14 +454,17 @@ components:
         typeId:
           type: string
           example: VOU1MONTH
+          minLength: 1
           description: Logical identification of the voucher-type
         description:
           type: string
           example: 1 Month Voucher
+          minLength: 1
           description: Description of the voucher type can be shown
         product:
           type: string
           example: 1 Month Gold
+          minLength: 1
           description: Voucher type family to which it belongs
         amount:
           type: number
@@ -471,6 +474,7 @@ components:
         currency:
           type: string
           example: EUR
+          minLength: 1
           description: The wholesale currency
         promo:
           type: string
@@ -479,30 +483,34 @@ components:
         merchant:
           type: string
           example: tinder
+          minLength: 1
           description: Merchant identification value
         country:
           type: string
           example: IT
+          minLength: 1
           description: Country where the vouchers are distributed
         paymentProvider:
           type: string
           example: PAYTM
+          minLength: 1
           description: Who are eligible to the voucher distribution
         shop:
           type: string
           example: MNO1234
+          minLength: 1
           description: Technical id for identification of the purchase flow
         enabled:
           type: boolean
           example: IT
         startDate:
           type: string
-          format: date
-          example: 2020-01-01
+          format: 'date-time'
+          example: 2020-01-01T17:32:28Z
         endDate:
           type: string
-          format: date
-          example: 2020-12-31
+          format: 'date-time'
+          example: 2020-01-01T17:32:28Z
         priority:
           type: integer
           example: 3

@@ -1,14 +1,19 @@
 package com.docomodigital.delorean.voucher.mapper;
 
+
 import com.docomodigital.delorean.voucher.BaseUnitTest;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherTypes;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,6 +28,7 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
     @Before
     public void setUp() {
         target = new VoucherTypeMapperImpl();
+        ReflectionTestUtils.setField(target, "commonMapper", new CommonMapperImpl());
     }
 
     @Test
@@ -95,8 +101,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setCountry("my_country");
         voucherType.setShop("my_shop");
         voucherType.setEnabled(true);
-        voucherType.setStartDate(LocalDate.of(2016, 1, 1));
-        voucherType.setEndDate(LocalDate.of(2016, 1, 2));
+        voucherType.setStartDate(OffsetDateTime.of(LocalDateTime.of(2020, 1, 1, 6, 6, 6), ZoneOffset.UTC));
+        voucherType.setEndDate(OffsetDateTime.of(LocalDateTime.of(2020, 1, 2, 6, 6, 6), ZoneOffset.UTC));
         voucherType.setPriority(5);
         voucherType.setExpiryTimeReservation(15000);
         voucherType.setBypassStatusCheck(true);
@@ -118,8 +124,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         voucherType.setCountry("my_country");
         voucherType.setShopId("my_shop");
         voucherType.setEnabled(true);
-        voucherType.setStartDate(LocalDate.of(2016, 1, 1));
-        voucherType.setEndDate(LocalDate.of(2016, 1, 2));
+        voucherType.setStartDate(LocalDateTime.of(2020, 1, 1, 6, 6, 6).toInstant(ZoneOffset.UTC));
+        voucherType.setEndDate(LocalDateTime.of(2020, 1, 2, 6, 6, 6).toInstant(ZoneOffset.UTC));
         voucherType.setPriority(5);
         voucherType.setExpiryTimeReservation(15000);
         voucherType.setBypassStatusCheck(true);
@@ -138,8 +144,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherType.getPaymentProvider()).isEqualTo("my_payment");
         Assertions.assertThat(voucherType.getShopId()).isEqualTo("my_shop");
         Assertions.assertThat(voucherType.getEnabled()).isTrue();
-        Assertions.assertThat(voucherType.getStartDate()).isEqualTo(LocalDate.of(2016, 1, 1));
-        Assertions.assertThat(voucherType.getEndDate()).isEqualTo(LocalDate.of(2016, 1, 2));
+        Assertions.assertThat(voucherType.getStartDate()).isEqualTo(LocalDateTime.of(2020, 1, 1, 6, 6, 6).toInstant(ZoneOffset.UTC));
+        Assertions.assertThat(voucherType.getEndDate()).isEqualTo(LocalDateTime.of(2020, 1, 2, 6, 6, 6).toInstant(ZoneOffset.UTC));
         Assertions.assertThat(voucherType.getPriority()).isEqualTo(5);
         Assertions.assertThat(voucherType.getExpiryTimeReservation()).isEqualTo(15000);
         Assertions.assertThat(voucherType.getBypassStatusCheck()).isTrue();
@@ -157,8 +163,8 @@ public class VoucherTypeMapperTest extends BaseUnitTest {
         Assertions.assertThat(voucherTypes.getPaymentProvider()).isEqualTo("my_payment");
         Assertions.assertThat(voucherTypes.getShop()).isEqualTo("my_shop");
         Assertions.assertThat(voucherTypes.getEnabled()).isTrue();
-        Assertions.assertThat(voucherTypes.getStartDate()).isEqualTo(LocalDate.of(2016, 1, 1));
-        Assertions.assertThat(voucherTypes.getEndDate()).isEqualTo(LocalDate.of(2016, 1, 2));
+        Assertions.assertThat(voucherTypes.getStartDate()).isEqualTo(LocalDateTime.of(2020, 1, 1, 6, 6, 6).atOffset(ZoneOffset.UTC));
+        Assertions.assertThat(voucherTypes.getEndDate()).isEqualTo(LocalDateTime.of(2020, 1, 2, 6, 6, 6).atOffset(ZoneOffset.UTC));
         Assertions.assertThat(voucherTypes.getPriority()).isEqualTo(5);
         Assertions.assertThat(voucherTypes.getExpiryTimeReservation()).isEqualTo(15000);
         Assertions.assertThat(voucherTypes.getBypassStatusCheck()).isTrue();

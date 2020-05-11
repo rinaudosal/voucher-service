@@ -5,12 +5,13 @@ Feature: Redeem Voucher
 
   Background:
     Given exist the voucher types:
-      | typeId | description | merchant | enabled | startDate  | endDate    | bypassStatusCheck |
-      | TIN1M  | 1 Months    | tinder   | true    | 01/01/2020 | 31/12/2020 | false             |
-      | TIN3M  | 3 Months    | tinder   | true    | 01/01/2020 | 31/12/2020 | false             |
-      | TIN3D  | 3 Months D  | tinder   | false   | 01/01/2020 | 31/12/2020 | false             |
-      | TIN3E  | 3 Months E  | tinder   | false   | 01/01/2019 | 31/12/2019 | false             |
-      | TIN3S  | 3 Months S  | tinder   | true    | 01/01/2019 | 31/12/2019 | true              |
+      | typeId | description | merchant | enabled | startDate           | endDate             | bypassStatusCheck |
+      | TIN1M  | 1 Months    | tinder   | true    | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 | false             |
+      | TIN3M  | 3 Months    | tinder   | true    | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 | false             |
+      | TIN3D  | 3 Months D  | tinder   | false   | 01/01/2020 08:15:00 | 31/12/2020 08:15:00 | false             |
+      | TIN3E  | 3 Months E  | tinder   | false   | 01/01/2019 08:15:00 | 31/12/2019 08:15:00 | false             |
+      | TIN3S  | 3 Months S  | tinder   | true    | 01/01/2019 08:15:00 | 31/12/2019 08:15:00 | true              |
+
     And exist the voucher:
       | code     | typeId | status    |
       | VOU11PUR | TIN1M  | PURCHASED |
