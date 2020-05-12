@@ -5,7 +5,7 @@ Feature: Reserve Voucher
 
   Background:
     Given exist the voucher types:
-      | typeId  | description           | enabled | startDate  					| endDate    					| baseUrl           | shop       |
+      | typeId  | description           | enabled | startDate           | endDate             | baseUrl           | shop       |
       | TIN1M   | 1 Months              | true    | 01/01/2020 10:30:00 | 31/12/2020 10:30:00 | www.test.com/vip/ | my_shop_id |
       | TIN1MWR | 1 Months              | true    | 01/01/2020 10:30:00 | 31/12/2020 10:30:00 | www.test.com/vip/ | wrong      |
       | TIN1S   | 1 Months Sale!        | true    | 01/02/2020 10:30:00 | 18/08/2020 10:30:00 | www.test.com/vip/ | my_shop_id |
@@ -53,3 +53,4 @@ Feature: Reserve Voucher
       | TIN1M   | txtExisting1  | 13/08/2020 | EXISTING_TRANSACTION_ID | Transaction id txtExisting1 already exist for merchant TINDER  |
       | TIN1M   | txtExisting3  | 13/08/2020 | EXISTING_TRANSACTION_ID | Transaction id txtExisting3 already exist for merchant TINDER  |
       | TIN1MWR | txt1          | 13/08/2020 | UNAUTHORIZED_SHOP       | The shop my_shop_id is not enable to reserve vouchers of wrong |
+      | TIN3NO  | txt1          | 13/01/2020 | NO_VOUCHER_AVAILABLE    | No more voucher available to reserve for voucher type TIN3NO   |

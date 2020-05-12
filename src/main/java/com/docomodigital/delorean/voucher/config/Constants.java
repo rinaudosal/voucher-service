@@ -18,6 +18,7 @@ public final class Constants {
     public static final String TRANSACTIONAL_CONFLICT_ERROR = "TRANSACTIONAL_CONFLICT";
     public static final String CDR_ACCOUNTING_ERROR = "CDR_ACCOUNTING_ERROR";
     public static final String CDR_VALIDATION_ERROR = "CDR_VALIDATION_ERROR";
+    public static final String NO_VOUCHER_AVAILABLE_ERROR = "NO_VOUCHER_AVAILABLE";
 
     public static final String UNAUTHORIZED_SHOP_NAME = "UNAUTHORIZED_SHOP";
     public static final String API_KEY_HEADER = "X-Api-Key";

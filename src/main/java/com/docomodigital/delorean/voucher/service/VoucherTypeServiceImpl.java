@@ -192,7 +192,9 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             Voucher.class
         );
 
-        if (updateResult.getModifiedCount() != 1) {
+        if (updateResult.getModifiedCount() == 0) {
+            throw new BadRequestException(Constants.NO_VOUCHER_AVAILABLE_ERROR, "No more voucher available to reserve for voucher type " + type.getCode());
+        } else if (updateResult.getModifiedCount() > 1) {
             throw new BadRequestException(Constants.TRANSACTIONAL_CONFLICT_ERROR, "Errors occurred on update voucher to reserve");
         }
 
