@@ -23,7 +23,6 @@ public class VoucherFile extends AbstractAuditingEntity {
     @NotBlank
     private String filename;
 
-    @NotNull
     private VoucherType type;
 
     @NotNull

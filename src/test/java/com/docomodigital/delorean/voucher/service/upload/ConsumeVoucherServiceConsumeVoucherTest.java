@@ -42,7 +42,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
 
     @Before
     public void setUp() {
-        target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, clock, null, new ObjectMapper());
+        target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, clock, null, null);
 
         VoucherType voucherType = new VoucherType();
         voucherType.setId("my_type_id");

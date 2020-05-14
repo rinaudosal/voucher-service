@@ -1,6 +1,7 @@
 package com.docomodigital.delorean.voucher.domain;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 
@@ -9,7 +10,8 @@ import java.time.Instant;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-@Data
+@Getter
+@Setter
 public class VoucherConsumer {
 
     private String merchantId;
@@ -23,5 +25,6 @@ public class VoucherConsumer {
     private String transactionId;
     private Instant transactionDate;
     private String billingStatus;
+
 
 }

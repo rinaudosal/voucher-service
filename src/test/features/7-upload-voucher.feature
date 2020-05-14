@@ -38,7 +38,7 @@ Feature: Upload Voucher
       | TIN9M  | TYPE_EXPIRED   | Voucher Type TIN9M is expired  |
 
   Scenario: Voucher upload file malformed
-    When the operator wants to 'upload' the voucher file malformed for type 'TIN1M'
+    When the operator wants to upload the voucher file malformed for type 'TIN1M'
     Then the operator receive the error code 'FILE_MALFORMED' and description 'Error, the file is malformed'
 
   Scenario Outline: Voucher upload partial in error

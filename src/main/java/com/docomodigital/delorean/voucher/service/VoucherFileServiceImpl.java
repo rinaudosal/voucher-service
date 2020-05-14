@@ -5,9 +5,12 @@ import com.docomodigital.delorean.voucher.mapper.VoucherFileMapper;
 import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherFileRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
+import com.docomodigital.delorean.voucher.service.upload.RedeemVoucherComponent;
 import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
+import com.docomodigital.delorean.voucher.service.upload.UploadVoucherComponent;
 import com.docomodigital.delorean.voucher.service.upload.VoucherSingleProcessor;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRedeem;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Utility class to manage Voucher File (check & upload)
@@ -35,15 +35,21 @@ public class VoucherFileServiceImpl implements VoucherFileService {
     private final VoucherFileRepository voucherFileRepository;
     private final VoucherErrorRepository voucherErrorRepository;
     private final VoucherFileMapper voucherFileMapper;
+    private final UploadVoucherComponent uploadVoucherStrategy;
+    private final RedeemVoucherComponent redeemVoucherComponent;
 
     public VoucherFileServiceImpl(VoucherRepository voucherRepository,
                                   VoucherFileRepository voucherFileRepository,
                                   VoucherErrorRepository voucherErrorRepository,
-                                  VoucherFileMapper voucherFileMapper) {
+                                  VoucherFileMapper voucherFileMapper,
+                                  UploadVoucherComponent uploadVoucherStrategy,
+                                  RedeemVoucherComponent redeemVoucherComponent) {
         this.voucherRepository = voucherRepository;
         this.voucherFileRepository = voucherFileRepository;
         this.voucherErrorRepository = voucherErrorRepository;
         this.voucherFileMapper = voucherFileMapper;
+        this.uploadVoucherStrategy = uploadVoucherStrategy;
+        this.redeemVoucherComponent = redeemVoucherComponent;
     }
 
     @Override
@@ -55,16 +61,26 @@ public class VoucherFileServiceImpl implements VoucherFileService {
     }
 
     @Override
+    public VoucherRedeem redeemFile(MultipartFile file, List<VoucherType> voucherTypes) {
+        VoucherFile voucherFile = saveVoucherFile(file.getOriginalFilename(), null, UploadOperation.REDEEM);
+
+        saveData(file, voucherTypes, voucherFile, true, redeemVoucherComponent::processLine);
+
+        return voucherFileMapper.toRedeemDto(voucherFile);
+    }
+
+    @Override
     @Transactional
-    public VoucherUpload uploadFile(MultipartFile file, VoucherType type, UploadOperation uploadOperation, VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor, boolean skipHeaderLine) {
+    public VoucherUpload uploadFile(MultipartFile file, VoucherType type) {
 
-        VoucherFile voucherUpload = new VoucherFile();
-        voucherUpload.setFilename(file.getOriginalFilename());
-        voucherUpload.setType(type);
-        voucherUpload.setOperation(uploadOperation);
-        voucherUpload.setStatus(VoucherFileStatus.UPLOADED);
-        voucherFileRepository.save(voucherUpload);
+        VoucherFile voucherFile = saveVoucherFile(file.getOriginalFilename(), type, UploadOperation.UPLOAD);
 
+        saveData(file, Collections.singletonList(type), voucherFile, false, uploadVoucherStrategy::processLine);
+
+        return voucherFileMapper.toDto(voucherFile);
+    }
+
+    private void saveData(MultipartFile file, List<VoucherType> voucherTypes, VoucherFile voucherFile, boolean skipFirstLine, VoucherSingleProcessor<String, List<VoucherType>, Voucher> voucherSingleProcessor) {
         List<Voucher> vouchersToSave = new ArrayList<>();
         int lineNumber = 0;
         int uploaded = 0;
@@ -77,12 +93,9 @@ public class VoucherFileServiceImpl implements VoucherFileService {
                 String line = sc.nextLine();
                 lineNumber += 1;
 
-                if (lineNumber == 1 && skipHeaderLine) continue;
+                if (lineNumber == 1 && skipFirstLine) continue;
 
-
-                // this change from upload purchase or redeem
-
-                errors = checkSingleLine(type, voucherSingleProcessor, voucherUpload, vouchersToSave, lineNumber, errors, line);
+                errors = checkSingleLine(voucherTypes, voucherFile, voucherSingleProcessor, vouchersToSave, lineNumber, errors, line);
 
                 if (vouchersToSave.size() == BULK_SIZE || !sc.hasNextLine()) {
                     voucherRepository.saveAll(vouchersToSave);
@@ -92,32 +105,23 @@ public class VoucherFileServiceImpl implements VoucherFileService {
             }
         } catch (IOException e) {
             log.error("Exception on read file", e);
-            voucherUpload.setStatus(VoucherFileStatus.ERROR);
+            voucherFile.setStatus(VoucherFileStatus.ERROR);
         }
 
-        voucherUpload.setTotal(skipHeaderLine ? lineNumber - 1 : lineNumber);
-        voucherUpload.setUploaded(uploaded);
-        voucherUpload.setErrors(errors);
-
-        return voucherFileMapper.toDto(voucherUpload);
+        voucherFile.setTotal(skipFirstLine ? lineNumber - 1 : lineNumber);
+        voucherFile.setUploaded(uploaded);
+        voucherFile.setErrors(errors);
     }
 
-    private int checkSingleLine(VoucherType type,
-                                VoucherSingleProcessor<String, VoucherType, Voucher> voucherSingleProcessor,
-                                VoucherFile voucherUpload,
-                                List<Voucher> vouchersToSave,
-                                int lineNumber,
-                                int errors,
-                                String line) {
+    private int checkSingleLine(List<VoucherType> voucherTypes, VoucherFile voucherFile, VoucherSingleProcessor<String, List<VoucherType>, Voucher> voucherSingleProcessor, List<Voucher> vouchersToSave, int lineNumber, int errors, String line) {
         try {
-            Voucher voucherProcessed = voucherSingleProcessor.consume(line, type, voucherUpload.getId());
-            vouchersToSave.add(voucherProcessed);
+            vouchersToSave.add(voucherSingleProcessor.consume(line, voucherTypes, voucherFile.getId()));
         } catch (BadRequestException e) {
             log.error("Error on process line " + lineNumber + " with error " + e.getErrorCode(), e);
 
             errors += 1;
             VoucherError voucherError = new VoucherError();
-            voucherError.setVoucherFileId(voucherUpload.getId());
+            voucherError.setVoucherFileId(voucherFile.getId());
             voucherError.setLine(line);
             voucherError.setLineNumber(lineNumber);
             voucherError.setErrorCode(e.getErrorCode());
@@ -126,4 +130,15 @@ public class VoucherFileServiceImpl implements VoucherFileService {
         }
         return errors;
     }
+
+    private VoucherFile saveVoucherFile(String filename, VoucherType type, UploadOperation operation) {
+        VoucherFile voucherFile = new VoucherFile();
+        voucherFile.setFilename(filename);
+        voucherFile.setType(type);
+        voucherFile.setOperation(operation);
+        voucherFile.setStatus(VoucherFileStatus.UPLOADED);
+        return voucherFileRepository.save(voucherFile);
+    }
+
+
 }

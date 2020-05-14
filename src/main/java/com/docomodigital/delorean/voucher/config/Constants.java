@@ -24,16 +24,6 @@ public final class Constants {
     public static final String API_KEY_HEADER = "X-Api-Key";
     public static final String SIGNATURE_HEADER_NAME = "X-Signature";
     public static final String VOUCHER_TYPE_NOT_FOUND_MESSAGE = "Voucher Type %s not found";
-    
-	public static final int CDR_CLASS = 11;
-	public static final int CDR_TYPE = 5;
-	public static final int CDR_SERVICE_ID = 16;
-	public static final int CDR_INFO_3 = 0;
-	public static final int CDR_INFOR_2 = 0;
-	public static final int CDR_INFO_1 = 1;
-	public static final String CDR_SENDER_ID = "CHARGE";
-	public static final BigDecimal CDR_P_FACTOR = new BigDecimal("10000");
-	public static final BigDecimal CDR_CHARGING_AMOUNT = new BigDecimal(1);
 
     private Constants() {
     }
