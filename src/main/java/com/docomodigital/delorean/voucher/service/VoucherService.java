@@ -1,7 +1,7 @@
 package com.docomodigital.delorean.voucher.service;
 
 import com.docomodigital.delorean.voucher.domain.Voucher;
-import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRedeem;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
@@ -19,14 +19,23 @@ import java.util.Optional;
 public interface VoucherService {
 
     /**
-     * Upload a file containing list of files
+     * Upload a file containing list of vouchers to upload
      *
-     * @param file            file to upload
-     * @param type            the type for the vouchers
-     * @param uploadOperation the operation to upload
+     * @param file file to upload
+     * @param type the type for the vouchers
      * @return the stats of the file uploaded
      */
-    VoucherUpload processVouchers(MultipartFile file, String type, UploadOperation uploadOperation);
+    VoucherUpload processVouchers(MultipartFile file, String type);
+
+    /**
+     * Upload a file containing list of vouchers to redeem
+     *
+     * @param file     file to upload
+     * @param merchant the merchant identifier
+     * @return the stats of the file redeemed
+     */
+
+    VoucherRedeem redeemVouchers(MultipartFile file, String merchant);
 
     /**
      * Retrieve list of vouchers with the filters requested

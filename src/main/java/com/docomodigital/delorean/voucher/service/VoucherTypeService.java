@@ -82,4 +82,6 @@ public interface VoucherTypeService {
      * @return VoucherType object if found
      */
     VoucherType findById(String id);
+
+    VoucherType getValidVoucherType(String type);
 }

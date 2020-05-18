@@ -1,7 +1,7 @@
 package com.docomodigital.delorean.voucher.web.api;
 
 import com.docomodigital.delorean.voucher.service.VoucherService;
-import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRedeem;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
 import io.swagger.annotations.Api;
@@ -43,14 +43,14 @@ public class VoucherController implements VoucherApi {
 
     @Override
     public ResponseEntity<VoucherUpload> uploadVoucher(@Valid MultipartFile file, String type) {
-        VoucherUpload vouchersUploaded = voucherService.processVouchers(file, type, UploadOperation.UPLOAD);
+        VoucherUpload vouchersUploaded = voucherService.processVouchers(file, type);
 
         return ResponseEntity.ok(vouchersUploaded);
     }
 
     @Override
-    public ResponseEntity<VoucherUpload> redeemVoucher(@Valid MultipartFile file, String type) {
-        VoucherUpload vouchersUploaded = voucherService.processVouchers(file, type, UploadOperation.REDEEM);
+    public ResponseEntity<VoucherRedeem> redeemVoucher(@Valid MultipartFile file, String merchant) {
+        VoucherRedeem vouchersUploaded = voucherService.redeemVouchers(file, merchant);
 
         return ResponseEntity.ok(vouchersUploaded);
     }

@@ -8,10 +8,8 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.mapper.VoucherMapper;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
-import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherFactory;
-import com.docomodigital.delorean.voucher.service.upload.ProcessVoucherStrategy;
-import com.docomodigital.delorean.voucher.service.upload.UploadOperation;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRedeem;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherRequest;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import com.docomodigital.delorean.voucher.web.api.model.Vouchers;
@@ -42,37 +40,43 @@ public class VoucherServiceImpl implements VoucherService {
     private final VoucherRepository voucherRepository;
     private final VoucherTypeRepository voucherTypeRepository;
     private final VoucherFileService voucherFileService;
+    private final VoucherTypeService voucherTypeService;
     private final VoucherMapper voucherMapper;
     private final Clock clock;
-    private final ProcessVoucherFactory uploadFileFactory;
     private final AccountingService accountingService;
 
     public VoucherServiceImpl(VoucherRepository voucherRepository,
                               VoucherTypeRepository voucherTypeRepository,
                               VoucherFileService voucherFileService,
-                              VoucherMapper voucherMapper,
+                              VoucherTypeService voucherTypeService, VoucherMapper voucherMapper,
                               Clock clock,
-                              ProcessVoucherFactory uploadFileFactory,
                               AccountingService accountingService) {
         this.voucherRepository = voucherRepository;
         this.voucherTypeRepository = voucherTypeRepository;
         this.voucherFileService = voucherFileService;
+        this.voucherTypeService = voucherTypeService;
         this.voucherMapper = voucherMapper;
         this.clock = clock;
-        this.uploadFileFactory = uploadFileFactory;
         this.accountingService = accountingService;
     }
 
     @Override
-    public VoucherUpload processVouchers(MultipartFile file, String type, UploadOperation uploadOperation) {
+    public VoucherUpload processVouchers(MultipartFile file, String type) {
 
         voucherFileService.checkFileToUpload(file);
 
-        ProcessVoucherStrategy processVoucherStrategy = uploadFileFactory.getUploadFileStrategy(uploadOperation);
+        VoucherType voucherType = voucherTypeService.getValidVoucherType(type);
 
-        VoucherType voucherType = processVoucherStrategy.getValidVoucherType(type);
+        return voucherFileService.uploadFile(file, voucherType);
+    }
 
-        return voucherFileService.uploadFile(file, voucherType, uploadOperation, processVoucherStrategy::processLine, processVoucherStrategy.skipHeaderLine());
+    @Override
+    public VoucherRedeem redeemVouchers(MultipartFile file, String merchant) {
+        voucherFileService.checkFileToUpload(file);
+
+        List<VoucherType> voucherTypes = voucherTypeRepository.findAllByMerchantId(merchant);
+
+        return voucherFileService.redeemFile(file, voucherTypes).merchant(merchant);
     }
 
     @Override
@@ -152,7 +156,7 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setAmount(voucherRequest.getAmount());
             voucher.setCurrency(voucherRequest.getCurrency());
             voucher.setUserId(voucherRequest.getUserId());
-            if(!Strings.isNullOrEmpty(shop.getContractId())){
+            if (!Strings.isNullOrEmpty(shop.getContractId())) {
                 accountingService.call(voucher, voucherType, shop.getContractId());
             }
         } else {

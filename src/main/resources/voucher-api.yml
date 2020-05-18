@@ -348,15 +348,15 @@ paths:
                 file:
                   type: string
                   format: binary
-                typeId:
+                merchant:
                   type: string
-                  example: VOU1M
+                  example: tinder
               required:
                 - file
-                - typeId
+                - merchant
       responses:
         '200':      # Response
-          $ref: '#/components/responses/UploadResponse'
+          $ref: '#/components/responses/RedeemResponse'
 
 components:
   parameters:
@@ -408,6 +408,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/VoucherUpload'
+    RedeemResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VoucherRedeem'
+
   schemas:
     AvailableVoucherTypes:
       type: object
@@ -630,6 +637,23 @@ components:
           example: www.test.com/vip/1234-5647
           description: Resirection url of the single voucher
     VoucherUpload:
+      allOf:
+        - $ref: '#/components/schemas/GenericUpload'
+        - type: object
+          properties:
+            typeId:
+              type: string
+              example: TIN1M
+    VoucherRedeem:
+      allOf:
+        - $ref: '#/components/schemas/GenericUpload'
+        - type: object
+          properties:
+            merchant:
+              type: string
+              example: tinder
+
+    GenericUpload:
       type: object
       properties:
         status:
@@ -641,9 +665,6 @@ components:
         filename:
           type: string
           example: file.csv
-        typeId:
-          type: string
-          example: TIN1M
         total:
           type: integer
           example: 42

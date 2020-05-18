@@ -5,7 +5,6 @@ import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
-import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +14,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 2020/02/04
@@ -22,19 +23,15 @@ import java.time.format.DateTimeFormatter;
  * @author salvatore.rinaudo@docomodigital.com
  */
 @Component
-public class RedeemVoucherStrategyImpl implements ProcessVoucherStrategy {
-    private final VoucherTypeRepository voucherTypeRepository;
+public class RedeemVoucherComponent {
     private final VoucherRepository voucherRepository;
 
-    public RedeemVoucherStrategyImpl(VoucherTypeRepository voucherTypeRepository, VoucherRepository voucherRepository) {
-        this.voucherTypeRepository = voucherTypeRepository;
+    public RedeemVoucherComponent(VoucherRepository voucherRepository) {
         this.voucherRepository = voucherRepository;
     }
 
-    @Override
-    public Voucher processLine(String line, VoucherType type, String uploadId) {
+    public Voucher processLine(String line, List<VoucherType> voucherTypes, String uploadId) {
         String[] voucherData = StringUtils.split(line, ",");
-
         if (voucherData.length != 3) {
             throw new BadRequestException("INVALID_DATA", "Invalid Data line");
         }
@@ -42,10 +39,14 @@ public class RedeemVoucherStrategyImpl implements ProcessVoucherStrategy {
         String code = voucherData[1];
         Instant dateRedeemed = LocalDateTime.parse(voucherData[2], DateTimeFormatter.ofPattern("M/d/yy H:mm")).toInstant(ZoneOffset.UTC);
 
-        Voucher voucher = voucherRepository.findByCodeAndTypeId(code, type.getId())
+        Voucher voucher = voucherRepository.findByCodeAndTypeIdIn(code, voucherTypes.stream().map(VoucherType::getId).collect(Collectors.toList()))
             .orElseThrow(() -> new BadRequestException(Constants.VOUCHER_NOT_FOUND_ERROR,
-                String.format("Voucher %s not found for Type %s", code, type.getCode())));
-        if (!VoucherStatus.PURCHASED.equals(voucher.getStatus()) && BooleanUtils.isNotTrue(type.getBypassStatusCheck())) {
+                String.format("Voucher %s not found", code)));
+
+        VoucherType voucherType = voucherTypes.stream().filter(t -> t.getId().equals(voucher.getTypeId())).findFirst()
+            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR, String.format("Voucher type %s not found", voucher.getTypeId())));
+
+        if (!VoucherStatus.PURCHASED.equals(voucher.getStatus()) && BooleanUtils.isNotTrue(voucherType.getBypassStatusCheck())) {
             throw new BadRequestException(Constants.WRONG_STATUS_ERROR,
                 String.format("Voucher %s not redeemed, the status is %s", code, voucher.getStatus()));
         }
@@ -55,18 +56,6 @@ public class RedeemVoucherStrategyImpl implements ProcessVoucherStrategy {
         voucher.setRedeemFileId(uploadId);
 
         return voucher;
-    }
-
-    @Override
-    public VoucherType getValidVoucherType(String type) {
-        return voucherTypeRepository.findByCode(type)
-            .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR,
-                String.format("Voucher Type %s not found", type)));
-    }
-
-    @Override
-    public boolean skipHeaderLine() {
-        return true;
     }
 
 }

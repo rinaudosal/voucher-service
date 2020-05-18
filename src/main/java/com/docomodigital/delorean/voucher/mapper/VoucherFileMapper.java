@@ -1,6 +1,7 @@
 package com.docomodigital.delorean.voucher.mapper;
 
 import com.docomodigital.delorean.voucher.domain.VoucherFile;
+import com.docomodigital.delorean.voucher.web.api.model.VoucherRedeem;
 import com.docomodigital.delorean.voucher.web.api.model.VoucherUpload;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,4 +21,7 @@ public interface VoucherFileMapper extends EntityMapper<VoucherUpload, VoucherFi
     @Override
     @Mapping(source = "type.code", target = "typeId")
     VoucherUpload toDto(VoucherFile entity);
+
+    VoucherRedeem toRedeemDto(VoucherFile entity);
+
 }

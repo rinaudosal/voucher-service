@@ -4,6 +4,7 @@ import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherError;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
+import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.netm.billing.library.AccountingConnection;
 import net.netm.billing.library.exception.AccountingException;
@@ -32,9 +33,13 @@ public class AccountingService {
 
     private final AccountingConnection accountingConnection;
     private final Clock clock;
+    private final VoucherErrorRepository voucherErrorRepository;
 
-    public AccountingService(Clock clock) {
-        this.accountingConnection = new AccountingConnection();
+    public AccountingService(Clock clock,
+                             VoucherErrorRepository voucherErrorRepository,
+                             AccountingConnection accountingConnection) {
+        this.voucherErrorRepository = voucherErrorRepository;
+        this.accountingConnection = accountingConnection;
         this.clock = clock;
     }
 
@@ -53,6 +58,7 @@ public class AccountingService {
                     voucherType.getCode(),
                     contractId
                 ));
+            voucherErrorRepository.save(voucherError);
         } catch (CDRValidationException e) {
             log.error("Exception while calling CDR", e);
             VoucherError voucherError = new VoucherError();
@@ -63,6 +69,7 @@ public class AccountingService {
                     voucherType.getCode(),
                     contractId
                 ));
+            voucherErrorRepository.save(voucherError);
         }
     }
 
@@ -97,26 +104,30 @@ public class AccountingService {
             .withCdrInfo3(CDR_INFO_3)
             .withCountryId(voucherType.getCountry())
             .withAdditionalInfo("")
-            //.withDistanceTable(null) //FIXME fill it or remove
             .build();
     }
 
-    private Long converContract(String contractId) {
-        return NumberUtils.isCreatable(contractId) ? Long.parseLong(contractId) : 0L;
+    private Long converContract(String contractId) throws CDRValidationException {
+        if (!NumberUtils.isCreatable(contractId)) {
+            throw new CDRValidationException("wrong_contractId");
+        }
+
+        return Long.parseLong(contractId);
     }
 
-    private Date convertDate(Instant instant) {
-        Date result = null;
+    private Date convertDate(Instant instant) throws CDRValidationException {
         try {
-            result = Date.from(instant.atZone(clock.getZone()).toInstant());
+            return Date.from(instant.atZone(clock.getZone()).toInstant());
         } catch (Exception e) {
             log.debug("Error trying to convert to instant {}", instant);
+            throw new CDRValidationException("wrong_date");
         }
-        return result;
     }
 
-    private Integer convertAmount(BigDecimal voucherAmount) {
-        BigDecimal result = voucherAmount.multiply(CDR_P_FACTOR);
-        return result.intValue();
+    private Integer convertAmount(BigDecimal voucherAmount) throws CDRValidationException {
+        if (voucherAmount == null)
+            throw new CDRValidationException("wrong_amount");
+
+        return voucherAmount.multiply(CDR_P_FACTOR).intValue();
     }
 }

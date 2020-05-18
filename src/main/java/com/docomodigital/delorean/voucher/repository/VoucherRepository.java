@@ -28,7 +28,7 @@ public interface VoucherRepository extends MongoRepository<Voucher, String> {
      * Method to check if exist a voucher for specified type ids
      *
      * @param transactionId the voucher transactionId
-     * @param type the types when search
+     * @param type          the types when search
      * @return true if found, false otherwise
      */
     boolean existsVoucherByTransactionIdAndTypeIdIn(String transactionId, List<String> type);
@@ -60,6 +60,8 @@ public interface VoucherRepository extends MongoRepository<Voucher, String> {
      * @return The voucher if found
      */
     Optional<Voucher> findByCodeAndTypeId(String code, String type);
+
+    Optional<Voucher> findByCodeAndTypeIdIn(String code, List<String> voucherTypes);
 
     /**
      * Find all voucher in a specific status

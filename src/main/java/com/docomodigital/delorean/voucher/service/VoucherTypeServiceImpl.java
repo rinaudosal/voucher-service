@@ -168,7 +168,7 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
 
     @Override
     public Optional<Vouchers> reserveVoucher(String typeId, ReserveRequest reserveRequest) {
-        VoucherType type = getValidVoucherType(typeId);
+        VoucherType type = getValidVoucherTypeToReserve(typeId);
 
         List<String> voucherTypeIdByMerchantId = voucherTypeRepository.findAllByMerchantId(type.getMerchantId()).stream()
             .map(VoucherType::getId)
@@ -192,7 +192,9 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
             Voucher.class
         );
 
-        if (updateResult.getModifiedCount() != 1) {
+        if (updateResult.getModifiedCount() == 0) {
+            throw new BadRequestException(Constants.NO_VOUCHER_AVAILABLE_ERROR, "No more voucher available to reserve for voucher type " + type.getCode());
+        } else if (updateResult.getModifiedCount() > 1) {
             throw new BadRequestException(Constants.TRANSACTIONAL_CONFLICT_ERROR, "Errors occurred on update voucher to reserve");
         }
 
@@ -217,10 +219,30 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
                 String.format("Voucher Type %s not found", id)));
     }
 
-    private VoucherType getValidVoucherType(String type) {
+    @Override
+    public VoucherType getValidVoucherType(String type) {
         VoucherType voucherType = voucherTypeRepository.findByCode(type)
             .orElseThrow(() -> new BadRequestException(Constants.TYPE_NOT_FOUND_ERROR,
                 String.format("Voucher Type %s not found", type)));
+
+        if (!voucherType.getEnabled()) {
+            throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", type));
+        }
+
+        Instant today = Instant.now(clock);
+        if (voucherType.getEndDate().isBefore(today)) {
+            throw new BadRequestException(Constants.TYPE_EXPIRED_ERROR, String.format("Voucher Type %s is expired", type));
+        }
+
+        return voucherType;
+    }
+
+    private VoucherType getValidVoucherTypeToReserve(String type) {
+        VoucherType voucherType = getValidVoucherType(type);
+
+        if (voucherType.getStartDate().isAfter(Instant.now(clock))) {
+            throw new BadRequestException(Constants.TYPE_NOT_YET_AVAILABLE_ERROR, String.format("Voucher Type %s is not yet available", type));
+        }
 
         // User not enabled to reserve
         Shop shop = (Shop) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -229,19 +251,6 @@ public class VoucherTypeServiceImpl implements VoucherTypeService {
                 String.format("The shop %s is not enable to reserve vouchers of %s",
                     shop.getId(),
                     voucherType.getShopId()));
-        }
-
-        if (!voucherType.getEnabled()) {
-            throw new BadRequestException(Constants.TYPE_DISABLED_ERROR, String.format("Voucher Type %s is disabled", type));
-        }
-
-        Instant today = Instant.now(clock);
-        if (!voucherType.getEndDate().isAfter(today)) {
-            throw new BadRequestException(Constants.TYPE_EXPIRED_ERROR, String.format("Voucher Type %s is expired", type));
-        }
-
-        if (voucherType.getStartDate().isAfter(today)) {
-            throw new BadRequestException(Constants.TYPE_NOT_YET_AVAILABLE_ERROR, String.format("Voucher Type %s is not yet available", type));
         }
 
         return voucherType;
