@@ -46,7 +46,7 @@ public class AccountingServiceTest extends BaseUnitTest {
     @Before
     public void setUp() {
         setupClockMock(Instant.ofEpochSecond(21));
-        target = new AccountingService(clock, voucherErrorRepository, accountingConnection);
+        target = new AccountingServiceImpl(clock, voucherErrorRepository, accountingConnection);
         voucher = new Voucher();
         voucher.setTransactionDate(Instant.ofEpochMilli(123456));
         voucher.setPurchaseDate(Instant.ofEpochMilli(654321));
