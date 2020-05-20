@@ -28,7 +28,7 @@ public class AccountingConnectionConfiguration {
     }
 
     @Bean
-    @Profile("stg,prd")
+    @Profile({"stg","prd"})
     public AccountingService realAccountingService(Clock clock,
                                                    VoucherErrorRepository voucherErrorRepository,
                                                    AccountingConnection accountingConnection){
