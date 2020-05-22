@@ -28,7 +28,7 @@ public class AccountingConnectionConfiguration {
     }
 
     @Bean
-    @Profile({"stg","prd"})
+    @Profile({"stg","prod"})
     public AccountingService realAccountingService(Clock clock,
                                                    VoucherErrorRepository voucherErrorRepository,
                                                    AccountingConnection accountingConnection){
@@ -37,7 +37,7 @@ public class AccountingConnectionConfiguration {
     }
 
     @Bean
-    @Profile("!stg & !prd")
+    @Profile("!stg & !prod")
     public AccountingService mockAccountingService(){
         log.info("build mockAccountingService instance");
         return new MockedAccountingService();
