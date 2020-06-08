@@ -10,6 +10,7 @@ import net.netm.billing.library.AccountingConnection;
 import net.netm.billing.library.exception.AccountingException;
 import net.netm.billing.library.exception.CDRValidationException;
 import net.netm.billing.library.model.CDR;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.math.BigDecimal;
@@ -86,7 +87,7 @@ public class AccountingServiceImpl implements AccountingService {
             .withChargingAmount(CDR_CHARGING_AMOUNT)
             .withCostCenter(voucherType.getShopId())
             .withOriginAddress(voucher.getCode())
-            .withOriginProtocol(voucherType.getPromo())
+            .withOriginProtocol(StringUtils.trimToEmpty(voucherType.getPromo()))
             .withOriginId(voucherType.getCode())
             .withSenderId(CDR_SENDER_ID)
             .withDeliveryStatus(1)
