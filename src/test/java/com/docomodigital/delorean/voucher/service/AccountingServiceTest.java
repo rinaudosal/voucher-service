@@ -1,5 +1,7 @@
 package com.docomodigital.delorean.voucher.service;
 
+import com.docomodigital.delorean.client.merchant.MerchantClient;
+import com.docomodigital.delorean.client.merchant.model.Shop;
 import com.docomodigital.delorean.voucher.BaseUnitTest;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherError;
@@ -11,10 +13,7 @@ import net.netm.billing.library.exception.CDRValidationException;
 import net.netm.billing.library.model.CDR;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -35,6 +34,9 @@ public class AccountingServiceTest extends BaseUnitTest {
     @Mock
     private AccountingConnection accountingConnection;
 
+    @Mock
+    private MerchantClient merchantClient;
+
     @Captor
     private ArgumentCaptor<VoucherError> voucherErrorArgumentCaptor;
 
@@ -46,7 +48,7 @@ public class AccountingServiceTest extends BaseUnitTest {
     @Before
     public void setUp() {
         setupClockMock(Instant.ofEpochSecond(21));
-        target = new AccountingServiceImpl(clock, voucherErrorRepository, accountingConnection);
+        target = new AccountingServiceImpl(clock, voucherErrorRepository, accountingConnection, merchantClient);
         voucher = new Voucher();
         voucher.setTransactionDate(Instant.ofEpochMilli(123456));
         voucher.setPurchaseDate(Instant.ofEpochMilli(654321));
@@ -67,6 +69,24 @@ public class AccountingServiceTest extends BaseUnitTest {
     @Test
     public void callCDRCorrectlyWithAllValues() throws Exception {
         target.call(voucher, voucherType, "123456");
+
+        Mockito.verify(voucherErrorRepository, Mockito.never())
+            .save(Mockito.any(VoucherError.class));
+
+        Mockito.verify(accountingConnection).chargeOne(cdrArgumentCaptor.capture());
+
+        CDR cdr = cdrArgumentCaptor.getValue();
+
+        assertCDR(cdr);
+    }
+
+    @Test
+    public void callCDRCorrectlyWithAllValuesNoContractId() throws Exception {
+
+        BDDMockito.given(merchantClient.getShopById(Mockito.eq("my_shop")))
+            .willReturn(Shop.builder().contractId("123456").build());
+
+        target.call(voucher, voucherType);
 
         Mockito.verify(voucherErrorRepository, Mockito.never())
             .save(Mockito.any(VoucherError.class));

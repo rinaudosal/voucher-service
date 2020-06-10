@@ -29,8 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -242,6 +241,28 @@ public class VoucherStepDefs extends StepDefs {
             .content(objectMapper.writeValueAsString(voucherRequest)));
     }
 
+    @When("the operator wants to consume the voucher billed for shop {string}, product {string}, country {string} and paymentProvider {string}")
+    public void theOperatorWantsToConsumeTheVoucher(String shopCode, String product, String country, String paymentProvider) throws Exception {
+        String message = createJsonMessage(shopCode, product, country, paymentProvider);
+
+        voucherQueueReceiverService.handleMessage(message.getBytes());
+    }
+
+    @When("the operator wants to consume the voucher billed for shop {string}, product {string}, country {string} and paymentProvider {string} receiving the error code {string} and description {string}")
+    public void theOperatorWantsToConsumeTheVoucher(String shopCode, String product, String country, String paymentProvider, String errorCode, String errorDescription) throws Exception {
+        String message = createJsonMessage(shopCode, product, country, paymentProvider);
+
+        voucherQueueReceiverService.handleMessage(message.getBytes());
+
+    }
+
+    @When("the operator wants to notify the voucher {string} for the merchant {string} to the billing system")
+    public void notificationToTheBillingSystem(String voucherCode, String merchant) throws Exception {
+        resultComponent.resultActions = mockMvc.perform(post("/v1/voucher/" + voucherCode + "/billing-notification")
+            .accept(MediaType.APPLICATION_JSON)
+            .param("merchant", merchant));
+    }
+
     @Then("the operator {string} the voucher {string} correctly for typeId {string}")
     public void theOperatorOperationTheVoucherCorrectlyForTypeIdTypeId(String operation, String voucherCode, String typeId) throws Exception {
         resultComponent.resultActions.andExpect(status().isOk())
@@ -318,7 +339,7 @@ public class VoucherStepDefs extends StepDefs {
             .andExpect(jsonPath("$.uploaded").value(uploaded))
             .andExpect(jsonPath("$.errors").value(errors));
 
-        if(operation.equalsIgnoreCase("UPLOAD")) {
+        if (operation.equalsIgnoreCase("UPLOAD")) {
             resultComponent.resultActions.andExpect(jsonPath("$.typeId").value("TIN1M"));
         }
 
@@ -394,21 +415,6 @@ public class VoucherStepDefs extends StepDefs {
         return voucher;
     }
 
-    @When("the operator wants to consume the voucher billed for shop {string}, product {string}, country {string} and paymentProvider {string}")
-    public void theOperatorWantsToConsumeTheVoucher(String shopCode, String product, String country, String paymentProvider) throws Exception {
-        String message = createJsonMessage(shopCode, product, country, paymentProvider);
-
-        voucherQueueReceiverService.handleMessage(message.getBytes());
-    }
-
-    @When("the operator wants to consume the voucher billed for shop {string}, product {string}, country {string} and paymentProvider {string} receiving the error code {string} and description {string}")
-    public void theOperatorWantsToConsumeTheVoucher(String shopCode, String product, String country, String paymentProvider, String errorCode, String errorDescription) throws Exception {
-        String message = createJsonMessage(shopCode, product, country, paymentProvider);
-
-        voucherQueueReceiverService.handleMessage(message.getBytes());
-
-    }
-
     @Then("the operator receive the voucher {string} correctly")
     public void theOperatorReceiveTheVoucherCodeCorrectly(String voucherCode) {
         Voucher voucher = voucherRepository.findByCode(voucherCode).get();
@@ -418,6 +424,12 @@ public class VoucherStepDefs extends StepDefs {
         Assertions.assertThat(voucher.getTransactionId()).isNotNull();
         Assertions.assertThat(voucher.getTransactionDate()).isNotNull();
         Assertions.assertThat(voucher.getStatus()).isEqualTo(VoucherStatus.PURCHASED);
+    }
+
+    @Then("the operator sent the voucher {string} correctly to the billing system")
+    public void theOperatorSentTheVoucherCodeCorrectlyToTheBillingSystem(String voucherCode) throws Exception {
+        resultComponent.resultActions.andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(voucherCode));
     }
 
     @And("notification will be sent to requestor without error")
