@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -53,5 +54,11 @@ public class VoucherController implements VoucherApi {
         VoucherRedeem vouchersUploaded = voucherService.redeemVouchers(file, merchant);
 
         return ResponseEntity.ok(vouchersUploaded);
+    }
+
+    @Override
+    public ResponseEntity<Vouchers> billingNotification(@NotNull @Valid String merchant, String code) {
+        Vouchers voucherSent = voucherService.manualNotificationBillingSystem(code, merchant);
+        return ResponseEntity.ok(voucherSent);
     }
 }

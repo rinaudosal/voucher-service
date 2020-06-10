@@ -18,7 +18,7 @@ tags:
     description: Provides API to consume voucher codes
   - name: Voucher types configuration
     description: Provides API to configure voucher mangement system (internal only)
-  - name: Voucher Bulk API
+  - name: Voucher Management API
     description: Provides API to manage vouchers (internal only)
 
 paths:
@@ -92,6 +92,22 @@ paths:
         '400':
           $ref: '#/components/responses/ErrorDetails'
 
+  /voucher/{code}/billing-notification:
+    parameters:
+      - $ref: '#/components/parameters/MerchantCode'
+      - $ref: '#/components/parameters/VoucherCode'
+    post:
+      tags:
+        - Voucher Management API
+      summary: Billing Notification
+      operationId: billingNotification
+      description: send the billing information of the voucher already purchased to the billing system
+      responses:
+        '200':
+          $ref: '#/components/responses/VoucherResponse'
+        '400':
+          $ref: '#/components/responses/ErrorDetails'
+
   /voucher-type/available:
     get:
       tags:
@@ -100,13 +116,7 @@ paths:
       operationId: getAvailableVoucherTypes
       description: list of voucher types for specific merchant
       parameters:
-        - in: query
-          name: merchant
-          description: merchant identifier
-          required: true
-          example: tinder
-          schema:
-            type: string
+        - $ref: '#/components/parameters/MerchantCode'
         - in: query
           name: paymentProvider
           description: payment provider that can be consume the vouchers
@@ -372,6 +382,14 @@ components:
       name: code
       description: the vouchers code
       required: true
+      schema:
+        type: string
+    MerchantCode:
+      in: query
+      name: merchant
+      description: merchant identifier
+      required: true
+      example: tinder
       schema:
         type: string
 

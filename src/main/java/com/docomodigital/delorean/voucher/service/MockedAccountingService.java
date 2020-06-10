@@ -12,4 +12,9 @@ public class MockedAccountingService implements AccountingService {
         log.error("ALERT: Mocked Accounting Service implementation, nothing to do");
     }
 
+    @Override
+    public void call(Voucher voucher, VoucherType voucherType) {
+        log.error("ALERT: Mocked Accounting Service implementation, nothing to do");
+    }
+
 }

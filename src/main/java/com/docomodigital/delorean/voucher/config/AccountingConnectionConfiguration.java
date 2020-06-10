@@ -1,5 +1,6 @@
 package com.docomodigital.delorean.voucher.config;
 
+import com.docomodigital.delorean.client.merchant.MerchantClient;
 import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.service.AccountingService;
 import com.docomodigital.delorean.voucher.service.AccountingServiceImpl;
@@ -31,9 +32,10 @@ public class AccountingConnectionConfiguration {
     @Profile({"stg","prod"})
     public AccountingService realAccountingService(Clock clock,
                                                    VoucherErrorRepository voucherErrorRepository,
-                                                   AccountingConnection accountingConnection){
+                                                   AccountingConnection accountingConnection,
+                                                   MerchantClient merchantClient){
         log.info("build realAccountingService instance");
-        return new AccountingServiceImpl(clock, voucherErrorRepository, accountingConnection);
+        return new AccountingServiceImpl(clock, voucherErrorRepository, accountingConnection, merchantClient);
     }
 
     @Bean

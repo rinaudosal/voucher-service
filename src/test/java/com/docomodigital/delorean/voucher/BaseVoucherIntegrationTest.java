@@ -69,7 +69,7 @@ public abstract class BaseVoucherIntegrationTest {
     protected RabbitTemplate rabbitTemplate;
 
 
-    protected void setupMerchantClient(){
+    protected void setupMerchantClient() {
         ChannelResponse channelResponse = new ChannelResponse();
         channelResponse.setId("TEST_API_KEY");
         channelResponse.setStatus("enabled");
@@ -80,11 +80,17 @@ public abstract class BaseVoucherIntegrationTest {
         shop.setCountry("IN");
         shop.setSignatureKey("TEST_SIGNATURE_KEY");
         shop.setRequireSignedSession(true);
+        shop.setContractId("12345");
         channelResponse.setShop(shop);
 
         BDDMockito.given(merchantClient.getChannelByApiKey(eq("TEST_API_KEY")))
             .willReturn(channelResponse);
+
+        BDDMockito.given(merchantClient.getShopById(eq("asia")))
+            .willReturn(shop);
+
     }
+
 
     /**
      * Step before all integration test tha extends this class

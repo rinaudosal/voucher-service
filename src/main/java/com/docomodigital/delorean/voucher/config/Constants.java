@@ -1,7 +1,5 @@
 package com.docomodigital.delorean.voucher.config;
 
-import java.math.BigDecimal;
-
 /**
  * Application constants.
  */

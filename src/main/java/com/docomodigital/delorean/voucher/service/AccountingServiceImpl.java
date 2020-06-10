@@ -1,5 +1,7 @@
 package com.docomodigital.delorean.voucher.service;
 
+import com.docomodigital.delorean.client.merchant.MerchantClient;
+import com.docomodigital.delorean.client.merchant.model.Shop;
 import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.domain.Voucher;
 import com.docomodigital.delorean.voucher.domain.VoucherError;
@@ -33,13 +35,16 @@ public class AccountingServiceImpl implements AccountingService {
     private final AccountingConnection accountingConnection;
     private final Clock clock;
     private final VoucherErrorRepository voucherErrorRepository;
+    private final MerchantClient merchantClient;
 
     public AccountingServiceImpl(Clock clock,
                                  VoucherErrorRepository voucherErrorRepository,
-                                 AccountingConnection accountingConnection) {
+                                 AccountingConnection accountingConnection,
+                                 MerchantClient merchantClient) {
         this.voucherErrorRepository = voucherErrorRepository;
         this.accountingConnection = accountingConnection;
         this.clock = clock;
+        this.merchantClient = merchantClient;
     }
 
     @Override
@@ -71,6 +76,13 @@ public class AccountingServiceImpl implements AccountingService {
                 ));
             voucherErrorRepository.save(voucherError);
         }
+    }
+
+    @Override
+    public void call(Voucher voucher, VoucherType voucherType) {
+        Shop shop = merchantClient.getShopById(voucherType.getShopId());
+
+        this.call(voucher, voucherType, shop.getContractId());
     }
 
     private CDR createCdr(Voucher voucher, VoucherType voucherType, String contractId) throws CDRValidationException {

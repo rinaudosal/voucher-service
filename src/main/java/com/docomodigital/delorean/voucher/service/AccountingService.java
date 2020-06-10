@@ -10,4 +10,6 @@ import com.docomodigital.delorean.voucher.domain.VoucherType;
  */
 public interface AccountingService {
     void call(Voucher voucher, VoucherType voucherType, String contractId);
+
+    void call(Voucher voucher, VoucherType voucherType);
 }
