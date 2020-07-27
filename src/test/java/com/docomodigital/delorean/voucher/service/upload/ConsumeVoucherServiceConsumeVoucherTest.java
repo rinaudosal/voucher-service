@@ -6,9 +6,9 @@ import com.docomodigital.delorean.voucher.domain.VoucherConsumer;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
+import com.docomodigital.delorean.voucher.service.AccountingService;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,15 +36,20 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
     @Mock
     private VoucherTypeService voucherTypeService;
 
+    @Mock
+    private AccountingService accountingService;
+
     @Captor
     private ArgumentCaptor<Voucher> voucherArgumentCaptor;
     private VoucherConsumer input;
+    private Voucher voucher;
+    private VoucherType voucherType;
 
     @Before
     public void setUp() {
-        target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, clock, null, null);
+        target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, accountingService, clock, null, null);
 
-        VoucherType voucherType = new VoucherType();
+        voucherType = new VoucherType();
         voucherType.setId("my_type_id");
         voucherType.setBaseUrl("www.google.com/");
         BDDMockito.given(voucherTypeService.getVoucherType(
@@ -53,7 +58,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
             Mockito.eq("my_country"),
             Mockito.eq("my_product_id"))).willReturn(voucherType);
 
-        Voucher voucher = new Voucher();
+        voucher = new Voucher();
         voucher.setCode("PIPPO");
         BDDMockito.given(voucherRepository.findFirstByTypeIdAndStatusEquals(
             Mockito.eq("my_type_id"),
@@ -80,8 +85,11 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
 
         Voucher voucherReturned = target.consumeVoucher(input);
 
-        Mockito.verify(voucherRepository, Mockito.times(1))
+        Mockito.verify(voucherRepository)
             .save(voucherArgumentCaptor.capture());
+
+        Mockito.verify(accountingService)
+            .call(Mockito.eq(voucher), Mockito.eq(voucherType));
 
         Voucher voucherSaved = voucherArgumentCaptor.getValue();
         checkVoucher(voucherReturned);
@@ -105,7 +113,6 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
 
     @Test
     public void voucherNotFound() {
-
         BDDMockito.given(voucherRepository.findFirstByTypeIdAndStatusEquals(
             Mockito.eq("my_type_id"),
             Mockito.eq(VoucherStatus.ACTIVE))).willReturn(Optional.empty());
@@ -119,7 +126,6 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
 
     @Test
     public void requestNotBilled() {
-
         input.setBillingStatus("NOOOO");
 
         Assertions.assertThatThrownBy(() -> target.consumeVoucher(input))
@@ -128,9 +134,6 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
             .hasMessage("Wrong type of request, status must be BILLED, request status is NOOOO");
 
     }
-
-
-    // status not billed
 
     private void checkVoucher(Voucher voucher) {
         Assertions.assertThat(voucher).isNotNull();
