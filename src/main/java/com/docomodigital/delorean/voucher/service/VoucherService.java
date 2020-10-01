@@ -67,12 +67,4 @@ public interface VoucherService {
      */
     List<Voucher> findAllReservedVouchers();
 
-    /**
-     * This method call manually the billing system providi
-     *
-     * @param code     voucher code to send
-     * @param merchant merchant owner of the voucher
-     * @return the voucher sent if correct
-     */
-    Vouchers manualNotificationBillingSystem(String code, String merchant);
 }

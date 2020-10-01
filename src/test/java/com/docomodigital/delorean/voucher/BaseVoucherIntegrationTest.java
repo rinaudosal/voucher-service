@@ -5,13 +5,11 @@ import com.docomodigital.delorean.client.merchant.model.ChannelResponse;
 import com.docomodigital.delorean.client.merchant.model.Shop;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
-import com.docomodigital.delorean.voucher.service.AccountingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,9 +52,6 @@ public abstract class BaseVoucherIntegrationTest {
     protected Clock clock;
 
     @MockBean
-    protected AccountingService accountingService;
-
-    @MockBean
     protected MerchantClient merchantClient;
 
     @Autowired
@@ -64,10 +59,6 @@ public abstract class BaseVoucherIntegrationTest {
 
     @Autowired
     private MockMvc mvc;
-
-    @Autowired
-    protected RabbitTemplate rabbitTemplate;
-
 
     protected void setupMerchantClient() {
         ChannelResponse channelResponse = new ChannelResponse();

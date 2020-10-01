@@ -56,9 +56,4 @@ public class VoucherController implements VoucherApi {
         return ResponseEntity.ok(vouchersUploaded);
     }
 
-    @Override
-    public ResponseEntity<Vouchers> billingNotification(@NotNull @Valid String merchant, String code) {
-        Vouchers voucherSent = voucherService.manualNotificationBillingSystem(code, merchant);
-        return ResponseEntity.ok(voucherSent);
-    }
 }

@@ -27,12 +27,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ObjectMapper mapper;
     private final MerchantAuthenticationProvider authProvider;
-    private final SignatureComponent signatureComponent;
 
     public SecurityConfig(ObjectMapper mapper, MerchantAuthenticationProvider authProvider, SignatureComponent signatureComponent) {
         this.mapper = mapper;
         this.authProvider = authProvider;
-        this.signatureComponent = signatureComponent;
     }
 
     @Override
@@ -44,7 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf().disable()
             .addFilterBefore(new HeaderKeysAuthFilter(), BasicAuthenticationFilter.class)
             .authenticationProvider(authProvider)
-            .addFilterAfter(new SignedRequestFilter(signatureComponent), SwitchUserFilter.class)
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.exceptionHandling()

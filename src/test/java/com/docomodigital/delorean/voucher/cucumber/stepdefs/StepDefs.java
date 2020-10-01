@@ -11,7 +11,6 @@ import com.docomodigital.delorean.voucher.service.VoucherQueueReceiverService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
@@ -56,9 +55,6 @@ public abstract class StepDefs {
 
     @Autowired
     protected VoucherQueueReceiverService voucherQueueReceiverService;
-
-    @Autowired
-    protected RabbitTemplate rabbitTemplate;
 
     @Autowired
     protected VoucherRepository voucherRepository;

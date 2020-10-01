@@ -73,7 +73,7 @@ info:
   display-ribbon-on-profiles: 'dev'
   
 merchant-client:
-   url: http://dev-mch-dlr.docomodigital.com
+   url: http://localhost
    connectionTimeout: 10000
    readTimeout: 10000 
 

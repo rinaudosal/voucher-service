@@ -138,11 +138,6 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.docomodigital</groupId>
-            <artifactId>microservice-commons</artifactId>
-            <version>1.0.11</version>
-        </dependency>
         <!-- openfeign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -153,12 +148,6 @@
             <groupId>com.netflix.feign</groupId>
             <artifactId>feign-jackson</artifactId>
             <version>8.18.0</version>
-        </dependency>
-        <!-- accounting-library-rest -->
-        <dependency>
-            <groupId>net.netm.billing</groupId>
-            <artifactId>accounting-library-rest</artifactId>
-            <version>1.7.1</version>
         </dependency>
 
         <!-- Apache Commons libraries -->
@@ -211,24 +200,6 @@
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-spring</artifactId>
             <version>${cucumber-jvm.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Rabbit MQ dependency -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.fridujo</groupId>
-            <artifactId>rabbitmq-mock</artifactId>
-            <version>1.0.10</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.amqp</groupId>
-            <artifactId>spring-rabbit-test</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -952,16 +923,4 @@
         </profile>
         <!-- jhipster-needle-maven-add-profile -->
     </profiles>
-
-    <distributionManagement>
-        <repository>
-            <id>nexus</id>
-            <url>https://repo-04.dodi.io/repository/maven-ddp-releases-hosted/</url>
-        </repository>
-        <snapshotRepository>
-            <id>nexus</id>
-            <url>https://repo-04.dodi.io/repository/maven-ddp-snapshots-hosted/</url>
-            <uniqueVersion>true</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
 </project>

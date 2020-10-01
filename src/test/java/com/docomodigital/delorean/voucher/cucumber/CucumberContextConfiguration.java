@@ -8,13 +8,11 @@ import com.docomodigital.delorean.voucher.repository.VoucherErrorRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherFileRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
-import com.docomodigital.delorean.voucher.service.AccountingService;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.mockito.BDDMockito;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 @WebAppConfiguration
 @ContextConfiguration(classes = VoucherServiceApplication.class)
 @AutoConfigureMockMvc
-@MockBean(classes = {Clock.class, RabbitTemplate.class, MerchantClient.class, SignatureComponent.class, AccountingService.class})
+@MockBean(classes = {Clock.class, MerchantClient.class, SignatureComponent.class})
 public class CucumberContextConfiguration {
     @Autowired
     private VoucherRepository voucherRepository;

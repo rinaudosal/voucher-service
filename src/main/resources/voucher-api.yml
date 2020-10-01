@@ -92,22 +92,6 @@ paths:
         '400':
           $ref: '#/components/responses/ErrorDetails'
 
-  /voucher/{code}/billing-notification:
-    parameters:
-      - $ref: '#/components/parameters/MerchantCode'
-      - $ref: '#/components/parameters/VoucherCode'
-    post:
-      tags:
-        - Voucher Management API
-      summary: Billing Notification
-      operationId: billingNotification
-      description: send the billing information of the voucher already purchased to the billing system
-      responses:
-        '200':
-          $ref: '#/components/responses/VoucherResponse'
-        '400':
-          $ref: '#/components/responses/ErrorDetails'
-
   /voucher-type/available:
     get:
       tags:
