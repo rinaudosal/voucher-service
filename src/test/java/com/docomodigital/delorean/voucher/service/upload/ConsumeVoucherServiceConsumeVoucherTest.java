@@ -6,7 +6,6 @@ import com.docomodigital.delorean.voucher.domain.VoucherConsumer;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
-import com.docomodigital.delorean.voucher.service.AccountingService;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import org.assertj.core.api.Assertions;
@@ -36,9 +35,6 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
     @Mock
     private VoucherTypeService voucherTypeService;
 
-    @Mock
-    private AccountingService accountingService;
-
     @Captor
     private ArgumentCaptor<Voucher> voucherArgumentCaptor;
     private VoucherConsumer input;
@@ -47,7 +43,7 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
 
     @Before
     public void setUp() {
-        target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, accountingService, clock, null, null);
+        target = new ConsumeVoucherServiceImpl(voucherTypeService, voucherRepository, clock, null, null);
 
         voucherType = new VoucherType();
         voucherType.setId("my_type_id");
@@ -87,9 +83,6 @@ public class ConsumeVoucherServiceConsumeVoucherTest extends BaseUnitTest {
 
         Mockito.verify(voucherRepository)
             .save(voucherArgumentCaptor.capture());
-
-        Mockito.verify(accountingService)
-            .call(Mockito.eq(voucher), Mockito.eq(voucherType));
 
         Voucher voucherSaved = voucherArgumentCaptor.getValue();
         checkVoucher(voucherReturned);

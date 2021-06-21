@@ -6,7 +6,6 @@ import com.docomodigital.delorean.voucher.domain.VoucherConsumer;
 import com.docomodigital.delorean.voucher.domain.VoucherStatus;
 import com.docomodigital.delorean.voucher.domain.VoucherType;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
-import com.docomodigital.delorean.voucher.service.AccountingService;
 import com.docomodigital.delorean.voucher.service.VoucherTypeService;
 import com.docomodigital.delorean.voucher.web.api.error.BadRequestException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,20 +36,17 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
 
     private final VoucherTypeService voucherTypeService;
     private final VoucherRepository voucherRepository;
-    private final AccountingService accountingService;
     private final Clock clock;
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
 
     public ConsumeVoucherServiceImpl(VoucherTypeService voucherTypeService,
                                      VoucherRepository voucherRepository,
-                                     AccountingService accountingService,
                                      Clock clock,
                                      RabbitTemplate rabbitTemplate,
                                      ObjectMapper objectMapper) {
         this.voucherTypeService = voucherTypeService;
         this.voucherRepository = voucherRepository;
-        this.accountingService = accountingService;
         this.clock = clock;
         this.rabbitTemplate = rabbitTemplate;
         this.objectMapper = objectMapper;
@@ -105,8 +101,6 @@ public class ConsumeVoucherServiceImpl implements ConsumeVoucherService {
         voucherToBeConsume.setTransactionDate(voucherConsumer.getTransactionDate());
         voucherToBeConsume.setPurchaseDate(Instant.now(clock));
         voucherToBeConsume.setActivationUrl(voucherType.getBaseUrl() + voucherToBeConsume.getCode());
-
-        accountingService.call(voucherToBeConsume, voucherType);
 
         return voucherRepository.save(voucherToBeConsume);
     }

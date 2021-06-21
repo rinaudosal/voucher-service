@@ -3,7 +3,6 @@ package com.docomodigital.delorean.voucher.web.api.security;
 import com.docomodigital.delorean.client.merchant.model.Shop;
 import com.docomodigital.delorean.voucher.config.Constants;
 import com.docomodigital.delorean.voucher.config.SignatureComponent;
-import com.docomodigital.microservice.api.logging.CachedHttpServletRequestWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -13,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
@@ -29,14 +29,14 @@ public class SignedRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        CachedHttpServletRequestWrapper requestCacheWrapper = new CachedHttpServletRequestWrapper(request);
+        HttpServletRequestWrapper requestCacheWrapper = new HttpServletRequestWrapper(request);
 
         AuthenticatedMerchant merchant = (AuthenticatedMerchant) SecurityContextHolder.getContext().getAuthentication();
 
         String privateKey = ((Shop) merchant.getPrincipal()).getSignatureKey();
         String signatureKey = request.getHeader(Constants.SIGNATURE_HEADER_NAME);
 
-        byte[] body = requestCacheWrapper.getContent().getBytes(StandardCharsets.UTF_8);
+        byte[] body = requestCacheWrapper.getInputStream().readAllBytes();
 
         boolean requiredSignedSession = ((Shop) merchant.getPrincipal()).isRequireSignedSession();
 

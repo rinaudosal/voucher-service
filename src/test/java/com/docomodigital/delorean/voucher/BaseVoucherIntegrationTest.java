@@ -5,7 +5,6 @@ import com.docomodigital.delorean.client.merchant.model.ChannelResponse;
 import com.docomodigital.delorean.client.merchant.model.Shop;
 import com.docomodigital.delorean.voucher.repository.VoucherRepository;
 import com.docomodigital.delorean.voucher.repository.VoucherTypeRepository;
-import com.docomodigital.delorean.voucher.service.AccountingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
@@ -52,9 +51,6 @@ public abstract class BaseVoucherIntegrationTest {
 
     @MockBean
     protected Clock clock;
-
-    @MockBean
-    protected AccountingService accountingService;
 
     @MockBean
     protected MerchantClient merchantClient;

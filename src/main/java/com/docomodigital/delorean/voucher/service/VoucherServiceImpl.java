@@ -43,22 +43,19 @@ public class VoucherServiceImpl implements VoucherService {
     private final VoucherTypeService voucherTypeService;
     private final VoucherMapper voucherMapper;
     private final Clock clock;
-    private final AccountingService accountingService;
 
     public VoucherServiceImpl(VoucherRepository voucherRepository,
                               VoucherTypeRepository voucherTypeRepository,
                               VoucherFileService voucherFileService,
                               VoucherTypeService voucherTypeService,
                               VoucherMapper voucherMapper,
-                              Clock clock,
-                              AccountingService accountingService) {
+                              Clock clock) {
         this.voucherRepository = voucherRepository;
         this.voucherTypeRepository = voucherTypeRepository;
         this.voucherFileService = voucherFileService;
         this.voucherTypeService = voucherTypeService;
         this.voucherMapper = voucherMapper;
         this.clock = clock;
-        this.accountingService = accountingService;
     }
 
     @Override
@@ -157,9 +154,6 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setAmount(voucherRequest.getAmount());
             voucher.setCurrency(voucherRequest.getCurrency());
             voucher.setUserId(voucherRequest.getUserId());
-            if (!Strings.isNullOrEmpty(shop.getContractId())) {
-                accountingService.call(voucher, voucherType, shop.getContractId());
-            }
         } else {
             resetToActive(voucher);
         }
@@ -233,8 +227,6 @@ public class VoucherServiceImpl implements VoucherService {
             voucherTypeIdByMerchantId.stream().filter(s -> s.getId().equals(voucher.getTypeId())).findFirst()
                 .orElseThrow(() -> new BadRequestException("TYPE_NOT_FOUND",
                     String.format("VoucherType %s not found", voucher.getTypeId())));
-
-        accountingService.call(voucher, voucherType);
 
         return voucherMapper.toDto(voucher);
     }
