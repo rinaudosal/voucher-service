@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-public class VoucherRepositoryIntTest extends BaseVoucherIntegrationTest {
+public class VoucherRepositoryIT extends BaseVoucherIntegrationTest {
 
     @Test
     public void findByCodeWorks() {
