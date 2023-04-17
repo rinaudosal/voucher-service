@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-public class VoucherTypeRepositoryIntTest extends BaseVoucherIntegrationTest {
+public class VoucherTypeRepositoryIT extends BaseVoucherIntegrationTest {
 
     @Test
     public void findByCodeWorks() {

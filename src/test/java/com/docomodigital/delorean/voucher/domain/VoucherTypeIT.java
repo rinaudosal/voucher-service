@@ -8,7 +8,6 @@ import org.junit.Test;
 import javax.validation.ConstraintViolationException;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.List;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-public class VoucherTypeIntTest extends BaseVoucherIntegrationTest {
+public class VoucherTypeIT extends BaseVoucherIntegrationTest {
 
     private VoucherType voucherType;
 

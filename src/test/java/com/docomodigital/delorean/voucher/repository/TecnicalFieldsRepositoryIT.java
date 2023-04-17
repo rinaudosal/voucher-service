@@ -14,7 +14,7 @@ import java.time.Instant;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-public class TecnicalFieldsRepositoryIntTest extends BaseVoucherIntegrationTest {
+public class TecnicalFieldsRepositoryIT extends BaseVoucherIntegrationTest {
 
     private Voucher voucher;
 

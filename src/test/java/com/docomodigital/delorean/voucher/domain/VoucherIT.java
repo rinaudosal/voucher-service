@@ -9,8 +9,6 @@ import javax.validation.ConstraintViolationException;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -19,7 +17,7 @@ import java.util.List;
  *
  * @author salvatore.rinaudo@docomodigital.com
  */
-public class VoucherIntTest extends BaseVoucherIntegrationTest {
+public class VoucherIT extends BaseVoucherIntegrationTest {
 
     private Voucher voucher;
 
